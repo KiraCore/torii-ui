@@ -44,6 +44,7 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# DI
+# Genarated files
 locator.config.dart
 *.g.dart
+/l10n/generated/
