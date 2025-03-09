@@ -10,7 +10,6 @@ class IntroPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(context.isPreviousRouteDialog());
     TextTheme textTheme = Theme.of(context).textTheme;
     double width = 300;
     return Scaffold(
@@ -53,7 +52,7 @@ class IntroPage extends StatelessWidget {
                   KiraOutlinedButton(
                     width: width,
                     onPressed: () {
-                      router.push(SignInDrawerRoute().location);
+                      router.push(SignInKeyfileDrawerRoute().location);
                     },
                     title: S.of(context).keyfile,
                   ),

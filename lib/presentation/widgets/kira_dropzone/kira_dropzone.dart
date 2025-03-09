@@ -6,6 +6,7 @@ import 'package:torii_client/utils/exports.dart';
 
 typedef FilePreviewErrorBuilder = Widget Function(String? errorMessage);
 
+// TODO: refactor, simplify
 class KiraDropzone extends StatefulWidget {
   final bool hasFileBool;
   final double width;

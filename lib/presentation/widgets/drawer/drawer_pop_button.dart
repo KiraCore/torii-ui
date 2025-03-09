@@ -18,7 +18,7 @@ class DrawerPopButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: check in gorouter if 2+ dialogs are opened
-    if (context.isPreviousRouteDialog()) {
+    if (router.isPreviousRouteDialog()) {
       return IconButton(onPressed: onPop, icon: Icon(Icons.arrow_back, size: size, color: color));
     }
     return IconButton(onPressed: onClose, icon: Icon(Icons.close, size: size, color: color));

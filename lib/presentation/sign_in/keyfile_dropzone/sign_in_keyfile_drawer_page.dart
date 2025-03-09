@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/domain/exports.dart';
+import 'package:torii_client/presentation/session/cubit/session_cubit.dart';
 import 'package:torii_client/presentation/sign_in/keyfile_dropzone/cubit/keyfile_dropzone_state.dart';
 import 'package:torii_client/presentation/sign_in/keyfile_dropzone/cubit/sign_in_keyfile_drawer_page_cubit.dart';
 import 'package:torii_client/presentation/sign_in/keyfile_dropzone/keyfile_dropzone_preview.dart';
@@ -32,11 +33,17 @@ class _SignInKeyfileDrawerPage extends State<SignInKeyfileDrawerPage> {
 
   @override
   Widget build(BuildContext context) {
+    final keyfileDropzoneCubit = getIt<KeyfileDropzoneCubit>();
     return MultiBlocProvider(
       providers: [
-        BlocProvider<KeyfileDropzoneCubit>(create: (_) => getIt<KeyfileDropzoneCubit>()),
+        BlocProvider<KeyfileDropzoneCubit>(create: (_) => keyfileDropzoneCubit),
         BlocProvider<SignInKeyfileDrawerPageCubit>(
-          create: (BuildContext context) => getIt<SignInKeyfileDrawerPageCubit>(),
+          create:
+              (BuildContext context) => SignInKeyfileDrawerPageCubit(
+                sessionCubit: context.read<SessionCubit>(),
+                // NOTE: we need to pass the same instance of the cubit to the cubit and the provider
+                keyfileDropzoneCubit: keyfileDropzoneCubit,
+              ),
         ),
       ],
       child: BlocConsumer<SignInKeyfileDrawerPageCubit, SignInKeyfileDrawerPageState>(

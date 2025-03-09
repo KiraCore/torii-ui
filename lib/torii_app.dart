@@ -31,7 +31,14 @@ class ToriiApp extends StatelessWidget {
               BlocProvider(create: (_) => getIt<SessionCubit>()),
               BlocProvider(create: (_) => getIt<MetamaskCubit>()),
             ],
-            child: navigator!,
+            child: BlocListener<SessionCubit, SessionState>(
+              listenWhen: (previous, current) => previous.isLoggedIn != current.isLoggedIn,
+              listener: (context, state) {
+                // TODO: test if triggers local redirect
+                router.refresh();
+              },
+              child: navigator!,
+            ),
           ),
         );
       },

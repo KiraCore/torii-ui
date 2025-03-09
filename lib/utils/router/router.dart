@@ -1,26 +1,44 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:torii_client/presentation/intro/intro_page.dart';
+import 'package:torii_client/presentation/session/cubit/session_cubit.dart';
 import 'package:torii_client/presentation/sign_in/keyfile_dropzone/sign_in_keyfile_drawer_page.dart';
 import 'package:torii_client/presentation/sign_in/mnemonic/sign_in_mnemonic_drawer_page.dart';
 import 'package:torii_client/presentation/sign_in/sign_in_drawer_page.dart';
+import 'package:torii_client/presentation/transfer/input/transfer_input_page.dart';
 import 'package:torii_client/utils/exports.dart';
 
 import 'router_dialog_page.dart';
 part 'router.g.dart';
+
 
 final GoRouter router = GoRouter(
   routes: $appRoutes,
   navigatorKey: navigatorKey,
   debugLogDiagnostics: kDebugMode,
   initialLocation: const IntroRoute().location,
+  // TODO: refactor
+  // redirect: (context, state) {
+  // },
 );
+
 
 @TypedGoRoute<IntroRoute>(path: '/intro')
 class IntroRoute extends GoRouteData {
   const IntroRoute();
 
+  @override
+  FutureOr<String?> redirect(BuildContext context, GoRouterState state) {
+    if (context.read<SessionCubit>().state.isLoggedIn) {
+      return TransferRoute.initialRoute;
+    }
+    return super.redirect(context, state);
+  }
+  
   @override
   Widget build(BuildContext context, GoRouterState state) => const IntroPage();
 }
@@ -45,11 +63,27 @@ class TransferInputRoute extends GoRouteData {
   const TransferInputRoute();
 
   @override
-  Widget build(BuildContext context, GoRouterState state) => const IntroPage();
+  FutureOr<String?> redirect(BuildContext context, GoRouterState state) {
+    if (!context.read<SessionCubit>().state.isLoggedIn) {
+      return const IntroRoute().location;
+    }
+    return super.redirect(context, state);
+  }
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) => const TransferInputPage();
 }
 
 class TransferInProgressRoute extends GoRouteData {
   const TransferInProgressRoute();
+
+  @override
+  FutureOr<String?> redirect(BuildContext context, GoRouterState state) {
+    if (!context.read<SessionCubit>().state.isLoggedIn) {
+      return const IntroRoute().location;
+    }
+    return super.redirect(context, state);
+  }
 
   @override
   Widget build(BuildContext context, GoRouterState state) => const IntroPage();
@@ -59,18 +93,33 @@ class TransferReadyToClaimRoute extends GoRouteData {
   const TransferReadyToClaimRoute();
 
   @override
+  FutureOr<String?> redirect(BuildContext context, GoRouterState state) {
+    if (!context.read<SessionCubit>().state.isLoggedIn) {
+      return const IntroRoute().location;
+    }
+    return super.redirect(context, state);
+  }
+
+  @override
   Widget build(BuildContext context, GoRouterState state) => const IntroPage();
 }
 
 // ---- Dialogs ----
 
-// TODO: try mnemonic and keyfile as shell routes
 @TypedGoRoute<SignInDrawerRoute>(path: '/sign-in-drawer')
 class SignInDrawerRoute extends GoRouteData {
   const SignInDrawerRoute();
 
   // NOTE: obligated for dialogs: go from navigator key state because of parent ShellRoutes
   static final GlobalKey<NavigatorState> $parentNavigatorKey = navigatorKey;
+
+  @override
+  FutureOr<String?> redirect(BuildContext context, GoRouterState state) {
+    if (context.read<SessionCubit>().state.isLoggedIn) {
+      return TransferRoute.initialRoute;
+    }
+    return super.redirect(context, state);
+  }
 
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
@@ -86,6 +135,14 @@ class SignInMnemonicDrawerRoute extends GoRouteData {
   static final GlobalKey<NavigatorState> $parentNavigatorKey = navigatorKey;
 
   @override
+  FutureOr<String?> redirect(BuildContext context, GoRouterState state) {
+    if (context.read<SessionCubit>().state.isLoggedIn) {
+      return TransferRoute.initialRoute;
+    }
+    return super.redirect(context, state);
+  }
+
+  @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
     return RouterDialogPage(builder: (_) => SignInMnemonicDrawerPage());
   }
@@ -97,6 +154,14 @@ class SignInKeyfileDrawerRoute extends GoRouteData {
 
   // NOTE: obligated for dialogs: go from navigator key state because of parent ShellRoutes
   static final GlobalKey<NavigatorState> $parentNavigatorKey = navigatorKey;
+
+  @override
+  FutureOr<String?> redirect(BuildContext context, GoRouterState state) {
+    if (context.read<SessionCubit>().state.isLoggedIn) {
+      return TransferRoute.initialRoute;
+    }
+    return super.redirect(context, state);
+  }
 
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {

@@ -2,6 +2,7 @@ export 'di/locator.dart';
 export 'di/locator.config.dart';
 export 'extensions/list_extension.dart';
 export 'extensions/build_context_extension.dart';
+export 'extensions/go_router_extension.dart';
 export 'extensions/string_extension.dart';
 export 'l10n/generated/l10n.dart';
 export 'models/file_model.dart';

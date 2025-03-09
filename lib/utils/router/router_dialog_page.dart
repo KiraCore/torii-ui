@@ -22,7 +22,7 @@ class RouterDialogPage<T> extends Page<T> {
       barrierDismissible: barrierDismissible,
       useSafeArea: false,
       // TODO: color from theme
-      barrierColor: context.isPreviousRouteDialog() ? Colors.transparent : const Color(0x66000000),
+      barrierColor: router.isPreviousRouteDialog() ? Colors.transparent : const Color(0x66000000),
       settings: this,
       builder:
           (BuildContext context) => Dialog(
