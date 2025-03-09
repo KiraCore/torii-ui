@@ -1,0 +1,1 @@
+enum KeyfileExceptionType { invalidKeyfile, wrongPassword }

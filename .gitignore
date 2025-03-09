@@ -47,4 +47,4 @@ app.*.map.json
 # Genarated files
 locator.config.dart
 *.g.dart
-/l10n/generated/
+**/l10n/generated/
