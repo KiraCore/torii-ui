@@ -10,7 +10,6 @@ import 'package:torii_client/presentation/widgets/buttons/kira_elevated_button.d
 import 'package:torii_client/presentation/widgets/drawer/drawer_subtitle.dart';
 import 'package:torii_client/presentation/widgets/kira_dropzone/kira_dropzone.dart';
 import 'package:torii_client/presentation/widgets/kira_text_field/kira_text_field.dart';
-import 'package:torii_client/presentation/widgets/kira_text_field/kira_text_field_controller.dart';
 import 'package:torii_client/utils/exports.dart';
 
 import 'cubit/keyfile_dropzone_cubit.dart';
@@ -23,11 +22,11 @@ class SignInKeyfileDrawerPage extends StatefulWidget {
 }
 
 class _SignInKeyfileDrawerPage extends State<SignInKeyfileDrawerPage> {
-  final KiraTextFieldController keyfileKiraTextFieldController = KiraTextFieldController();
+  final TextEditingController textFieldController = TextEditingController();
 
   @override
   void dispose() {
-    keyfileKiraTextFieldController.close();
+    textFieldController.dispose();
     super.dispose();
   }
 
@@ -48,12 +47,8 @@ class _SignInKeyfileDrawerPage extends State<SignInKeyfileDrawerPage> {
       ],
       child: BlocConsumer<SignInKeyfileDrawerPageCubit, SignInKeyfileDrawerPageState>(
         listener: (BuildContext context, SignInKeyfileDrawerPageState signInKeyfileDrawerPageState) {
-          String? errorMessage = _selectTextFieldErrorMessage(signInKeyfileDrawerPageState.keyfileExceptionType);
-          keyfileKiraTextFieldController.setErrorMessage(errorMessage);
-          _selectDropzoneErrorMessage(signInKeyfileDrawerPageState.keyfileExceptionType);
-
           if (signInKeyfileDrawerPageState.signInSuccessBool) {
-            router.pop();
+            router.pop(true);
           }
         },
         builder: (BuildContext context, SignInKeyfileDrawerPageState signInKeyfileDrawerPageState) {
@@ -90,18 +85,26 @@ class _SignInKeyfileDrawerPage extends State<SignInKeyfileDrawerPage> {
               ),
               const SizedBox(height: 16),
               KiraTextField(
-                controller: keyfileKiraTextFieldController,
+                controller: textFieldController,
                 hint: S.of(context).keyfileEnterPassword,
-                inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.deny(StringUtils.whitespacesRegExp)],
+                inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.deny(StringRegExp.whitespaces)],
                 obscureText: true,
+                errorText: _selectTextFieldErrorMessage(signInKeyfileDrawerPageState.keyfileExceptionType),
+                onChanged:
+                    signInKeyfileDrawerPageState.keyfileExceptionType != null
+                        ? (String value) {
+                          context.read<SignInKeyfileDrawerPageCubit>().onHandledKeyfileException();
+                        }
+                        : null,
               ),
               const SizedBox(height: 24),
               KiraElevatedButton(
                 title: S.of(context).connectWalletButtonSignIn,
-                disabled: signInKeyfileDrawerPageState.isLoading,
+                disabled:
+                    signInKeyfileDrawerPageState.isLoading || signInKeyfileDrawerPageState.keyfileExceptionType != null,
                 onPressed:
                     () => context.read<SignInKeyfileDrawerPageCubit>().signIn(
-                      keyfileKiraTextFieldController.textEditingController.text,
+                      textFieldController.text,
                     ),
               ),
               const SizedBox(height: 32),
@@ -121,7 +124,7 @@ class _SignInKeyfileDrawerPage extends State<SignInKeyfileDrawerPage> {
   }
 
   String? _selectTextFieldErrorMessage(KeyfileExceptionType? keyfileExceptionType) {
-    if (keyfileKiraTextFieldController.textEditingController.text.isEmpty) {
+    if (textFieldController.text.isEmpty) {
       return null;
     }
     return switch (keyfileExceptionType) {

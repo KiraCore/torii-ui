@@ -23,7 +23,7 @@ class SignInMnemonicDrawerPage extends StatelessWidget {
     return BlocListener<SessionCubit, SessionState>(
       listener: (BuildContext context, SessionState sessionState) {
         if (sessionState.kiraWallet != null) {
-          router.pop();
+          router.pop(true);
         }
       },
       child: BlocProvider(

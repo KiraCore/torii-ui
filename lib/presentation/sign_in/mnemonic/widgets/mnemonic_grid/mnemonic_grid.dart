@@ -46,7 +46,7 @@ class _MnemonicGrid extends State<MnemonicGrid> with SingleTickerProviderStateMi
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          'S.of(context).mnemonicWordsSelectAmount',
+          S.of(context).mnemonicWordsSelectAmount,
           style: textTheme.bodySmall!.copyWith(color: DesignColors.white2),
         ),
         const SizedBox(height: 10),

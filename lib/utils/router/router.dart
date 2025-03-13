@@ -26,14 +26,14 @@ final GoRouter router = GoRouter(
   // },
 );
 
-
 @TypedGoRoute<IntroRoute>(path: '/intro')
 class IntroRoute extends GoRouteData {
   const IntroRoute();
 
   @override
-  FutureOr<String?> redirect(BuildContext context, GoRouterState state) {
+  FutureOr<String?> redirect(BuildContext context, GoRouterState state) async {
     if (context.read<SessionCubit>().state.isLoggedIn) {
+      await Future.delayed(Duration.zero);
       return TransferRoute.initialRoute;
     }
     return super.redirect(context, state);
@@ -114,14 +114,6 @@ class SignInDrawerRoute extends GoRouteData {
   static final GlobalKey<NavigatorState> $parentNavigatorKey = navigatorKey;
 
   @override
-  FutureOr<String?> redirect(BuildContext context, GoRouterState state) {
-    if (context.read<SessionCubit>().state.isLoggedIn) {
-      return TransferRoute.initialRoute;
-    }
-    return super.redirect(context, state);
-  }
-
-  @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
     return RouterDialogPage(builder: (_) => SignInDrawerPage());
   }
@@ -135,14 +127,6 @@ class SignInMnemonicDrawerRoute extends GoRouteData {
   static final GlobalKey<NavigatorState> $parentNavigatorKey = navigatorKey;
 
   @override
-  FutureOr<String?> redirect(BuildContext context, GoRouterState state) {
-    if (context.read<SessionCubit>().state.isLoggedIn) {
-      return TransferRoute.initialRoute;
-    }
-    return super.redirect(context, state);
-  }
-
-  @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
     return RouterDialogPage(builder: (_) => SignInMnemonicDrawerPage());
   }
@@ -154,14 +138,6 @@ class SignInKeyfileDrawerRoute extends GoRouteData {
 
   // NOTE: obligated for dialogs: go from navigator key state because of parent ShellRoutes
   static final GlobalKey<NavigatorState> $parentNavigatorKey = navigatorKey;
-
-  @override
-  FutureOr<String?> redirect(BuildContext context, GoRouterState state) {
-    if (context.read<SessionCubit>().state.isLoggedIn) {
-      return TransferRoute.initialRoute;
-    }
-    return super.redirect(context, state);
-  }
 
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {

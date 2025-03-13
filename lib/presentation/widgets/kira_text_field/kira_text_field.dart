@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:torii_client/presentation/widgets/kira_text_field/kira_text_field_controller.dart';
 import 'package:torii_client/utils/exports.dart';
 
 class KiraTextField extends StatefulWidget {
-  final KiraTextFieldController controller;
+  final TextEditingController? controller;
+  final FocusNode? focusNode;
   final String? hint;
   final String? label;
   final bool obscureText;
@@ -15,8 +15,12 @@ class KiraTextField extends StatefulWidget {
   final ValueChanged<String>? onChanged;
   final FormFieldValidator<String>? validator;
 
+  /// [errorText] is dedicated for external error text. It'll be reset after value change.
+  final String? errorText;
+
   const KiraTextField({
-    required this.controller,
+    this.controller,
+    this.focusNode,
     this.hint,
     this.label,
     this.obscureText = false,
@@ -25,6 +29,7 @@ class KiraTextField extends StatefulWidget {
     this.inputFormatters,
     this.onChanged,
     this.validator,
+    this.errorText,
     super.key,
   });
 
@@ -33,18 +38,27 @@ class KiraTextField extends StatefulWidget {
 }
 
 class _KiraTextField extends State<KiraTextField> {
+  String? errorText;
+  late bool obscureText;
+  
   @override
   void initState() {
     super.initState();
-    widget.controller.obscureTextNotifier.value = widget.obscureText;
-    // TODO: simplify
-    widget.controller.addListener(_handleValidateTextField);
+    obscureText = widget.obscureText;
+    errorText = widget.errorText;
   }
 
   @override
-  void dispose() {
-    widget.controller.removeListener(_handleValidateTextField);
-    super.dispose();
+  void didUpdateWidget(covariant KiraTextField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.errorText != oldWidget.errorText) {
+      errorText = widget.errorText;
+      setState(() {});
+    }
+    if (widget.obscureText != oldWidget.obscureText) {
+      obscureText = widget.obscureText;
+      setState(() {});
+    }
   }
 
   @override
@@ -64,64 +78,61 @@ class _KiraTextField extends State<KiraTextField> {
           Text(widget.label!, style: textTheme.bodyMedium!.copyWith(color: _getLabelColor())),
           const SizedBox(height: 8),
         ],
-        AnimatedBuilder(
-          animation: Listenable.merge(<Listenable>[
-            widget.controller.obscureTextNotifier,
-            widget.controller.errorNotifier,
-          ]),
-          builder: (BuildContext context, _) {
-            return TextField(
-              focusNode: widget.controller.focusNode,
-              controller: widget.controller.textEditingController,
-              onChanged: widget.onChanged,
-              obscureText: widget.controller.obscureTextNotifier.value,
-              readOnly: widget.readOnly,
-              inputFormatters: widget.inputFormatters,
-              style: textTheme.bodyLarge!.copyWith(color: DesignColors.white1),
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: DesignColors.black,
-                hoverColor: DesignColors.greyHover2,
-                errorText: widget.controller.errorNotifier.value,
-                errorStyle: textTheme.bodySmall!.copyWith(color: DesignColors.redStatus1),
-                suffixIcon: _getSuffixIcon(),
-                errorMaxLines: 1,
-                hintText: widget.hint,
-                hintStyle: textTheme.bodyLarge!.copyWith(color: DesignColors.grey1),
-                border: outlineInputBorder,
-                enabledBorder: outlineInputBorder.copyWith(
-                  borderSide: outlineInputBorder.borderSide.copyWith(color: DesignColors.greyOutline),
-                ),
-                focusedBorder: outlineInputBorder.copyWith(
-                  borderSide: outlineInputBorder.borderSide.copyWith(color: DesignColors.white1),
-                ),
-                errorBorder: outlineInputBorder.copyWith(
-                  borderSide: outlineInputBorder.borderSide.copyWith(color: DesignColors.redStatus1),
-                ),
-                focusedErrorBorder: outlineInputBorder.copyWith(
-                  borderSide: outlineInputBorder.borderSide.copyWith(color: DesignColors.redStatus1),
-                ),
-              ),
-            );
+        TextField(
+          focusNode: widget.focusNode,
+          controller: widget.controller,
+          onChanged: (String value) {
+            widget.onChanged?.call(value);
+            _handleValidateTextField();
           },
+          obscureText: widget.obscureText,
+          readOnly: widget.readOnly,
+          inputFormatters: widget.inputFormatters,
+          style: textTheme.bodyLarge!.copyWith(color: DesignColors.white1),
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: DesignColors.black,
+            hoverColor: DesignColors.greyHover2,
+            errorText: errorText,
+            errorStyle: textTheme.bodySmall!.copyWith(color: DesignColors.redStatus1),
+            suffixIcon: _getSuffixIcon(),
+            errorMaxLines: 1,
+            hintText: widget.hint,
+            hintStyle: textTheme.bodyLarge!.copyWith(color: DesignColors.grey1),
+            border: outlineInputBorder,
+            enabledBorder: outlineInputBorder.copyWith(
+              borderSide: outlineInputBorder.borderSide.copyWith(color: DesignColors.greyOutline),
+            ),
+            focusedBorder: outlineInputBorder.copyWith(
+              borderSide: outlineInputBorder.borderSide.copyWith(color: DesignColors.white1),
+            ),
+            errorBorder: outlineInputBorder.copyWith(
+              borderSide: outlineInputBorder.borderSide.copyWith(color: DesignColors.redStatus1),
+            ),
+            focusedErrorBorder: outlineInputBorder.copyWith(
+              borderSide: outlineInputBorder.borderSide.copyWith(color: DesignColors.redStatus1),
+            ),
+          ),
         ),
       ],
     );
   }
 
   void _handleValidateTextField() {
-    if (widget.validator == null) {
-      widget.controller.errorNotifier.value = null;
-    } else {
-      widget.controller.errorNotifier.value = widget.validator!(widget.controller.textEditingController.text);
+    final oldErrorText = errorText;
+    if (widget.validator != null) {
+      errorText = widget.validator!(widget.controller?.text ?? '');
+    }
+    if (oldErrorText != errorText) {
+      setState(() {});
     }
   }
 
   Color _getLabelColor() {
-    if (widget.controller.errorNotifier.value != null) {
+    if (errorText != null) {
       return DesignColors.redStatus1;
     }
-    if (widget.controller.focusNode.hasFocus) {
+    if (widget.focusNode?.hasFocus ?? false) {
       return DesignColors.white1;
     }
     return DesignColors.white2;
@@ -132,21 +143,19 @@ class _KiraTextField extends State<KiraTextField> {
     if (widget.suffixIcon != null) {
       iconWidget = widget.suffixIcon;
     }
-    if (widget.obscureText == true && widget.controller.obscureTextNotifier.value == true) {
+     else {
+      if (widget.obscureText) {
       iconWidget = IconButton(
-        onPressed: () => widget.controller.obscureTextNotifier.value = false,
+          onPressed: () => setState(() => obscureText = false),
         icon: const Icon(AppIcons.eye_hidden, size: 16, color: DesignColors.accent),
       );
-    }
-    if (widget.obscureText == true && widget.controller.obscureTextNotifier.value == false) {
+      } else {
       iconWidget = IconButton(
-        onPressed: () => widget.controller.obscureTextNotifier.value = true,
+          onPressed: () => setState(() => obscureText = true),
         icon: const Icon(AppIcons.eye_visible, size: 16, color: DesignColors.accent),
-      );
+        );
+      }
     }
-    if (iconWidget != null) {
-      return Padding(padding: const EdgeInsets.only(right: 12), child: iconWidget);
-    }
-    return null;
+    return Padding(padding: const EdgeInsets.only(right: 12), child: iconWidget);
   }
 }

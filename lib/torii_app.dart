@@ -11,6 +11,7 @@ class ToriiApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
       onGenerateTitle: (BuildContext context) => S.of(context).torii,
       // TODO:
       theme: ThemeConfig.buildTheme(isSmallScreen: false),
@@ -32,9 +33,15 @@ class ToriiApp extends StatelessWidget {
               BlocProvider(create: (_) => getIt<MetamaskCubit>()),
             ],
             child: BlocListener<SessionCubit, SessionState>(
-              listenWhen: (previous, current) => previous.isLoggedIn != current.isLoggedIn,
+              listenWhen:
+                  (previous, current) =>
+                      previous.isKiraLoggedIn != current.isKiraLoggedIn ||
+                      previous.isEthereumLoggedIn != current.isEthereumLoggedIn,
               listener: (context, state) {
-                // TODO: test if triggers local redirect
+                // NOTE: we shouldn't need to refresh the router if the current 2 routes are dialogs because the dialog is already working on closing itself, and refresh will cause a conflict
+                if (router.isPreviousRouteDialog()) {
+                  return;
+                }
                 router.refresh();
               },
               child: navigator!,

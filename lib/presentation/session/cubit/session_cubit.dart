@@ -11,14 +11,14 @@ class SessionCubit extends Cubit<SessionState> {
 
   void signIn(Wallet wallet) {
     if (wallet.isEthereum) {
-      emit(SessionState(ethereumWallet: wallet));
+      emit(SessionState(ethereumWallet: wallet, kiraWallet: state.kiraWallet));
     } else {
-      emit(SessionState(kiraWallet: wallet));
+      emit(SessionState(kiraWallet: wallet, ethereumWallet: state.ethereumWallet));
     }
   }
 
   void signOutKira() {
-    emit(state.copyWith(ethereumWallet: () => null));
+    emit(state.copyWith(kiraWallet: () => null));
   }
 
   void signOutEthereum() {

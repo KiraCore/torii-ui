@@ -7,11 +7,13 @@ class SessionState extends Equatable {
   const SessionState({this.kiraWallet, this.ethereumWallet});
 
   bool get isLoggedIn => kiraWallet != null || ethereumWallet != null;
+  bool get isEthereumLoggedIn => ethereumWallet != null;
+  bool get isKiraLoggedIn => kiraWallet != null;
 
   SessionState copyWith({Wallet? Function()? kiraWallet, Wallet? Function()? ethereumWallet}) {
     return SessionState(
-      kiraWallet: kiraWallet?.call() ?? this.kiraWallet,
-      ethereumWallet: ethereumWallet?.call() ?? this.ethereumWallet,
+      kiraWallet: kiraWallet != null ? kiraWallet() : this.kiraWallet,
+      ethereumWallet: ethereumWallet != null ? ethereumWallet() : this.ethereumWallet,
     );
   }
 

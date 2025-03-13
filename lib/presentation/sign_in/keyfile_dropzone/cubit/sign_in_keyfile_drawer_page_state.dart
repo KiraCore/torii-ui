@@ -12,12 +12,12 @@ class SignInKeyfileDrawerPageState extends Equatable {
   });
 
   SignInKeyfileDrawerPageState copyWith({
-    KeyfileExceptionType? keyfileExceptionType,
+    KeyfileExceptionType? Function()? keyfileExceptionType,
     bool? isLoading,
     bool? signInSuccessBool,
   }) {
     return SignInKeyfileDrawerPageState(
-      keyfileExceptionType: keyfileExceptionType ?? this.keyfileExceptionType,
+      keyfileExceptionType: keyfileExceptionType != null ? keyfileExceptionType() : this.keyfileExceptionType,
       isLoading: isLoading ?? this.isLoading,
       signInSuccessBool: signInSuccessBool ?? this.signInSuccessBool,
     );

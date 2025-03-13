@@ -27,7 +27,11 @@ class SignInKeyfileDrawerPageCubit extends Cubit<SignInKeyfileDrawerPageState> {
       emit(state.copyWith(signInSuccessBool: true, isLoading: false));
     } catch (e) {
       getIt<Logger>().e('Cannot generate wallet: $e');
-      emit(state.copyWith(keyfileExceptionType: KeyfileExceptionType.wrongPassword));
+      emit(state.copyWith(keyfileExceptionType: () => KeyfileExceptionType.wrongPassword, isLoading: false));
     }
+  }
+
+  void onHandledKeyfileException() {
+    emit(state.copyWith(keyfileExceptionType: () => null));
   }
 }

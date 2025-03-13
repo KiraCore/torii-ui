@@ -31,6 +31,7 @@ extension GoRouterExtension on GoRouter {
 
   bool isCurrentRoute(String route) => currentRouteLocation == route;
 
+  bool isCurrentRouteDialog() => currentRoute?.parentNavigatorKey == navigatorKey;
   bool isPreviousRouteDialog() => previousRoute?.parentNavigatorKey == navigatorKey;
 
   /// For example, route is in the context, but the current route is Dialog
