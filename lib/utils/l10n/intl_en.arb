@@ -25,7 +25,93 @@
   "connectWalletOptions": "Choose your wallet connection method.",
   "keyfile": "Keyfile",
   "mnemonic": "Mnemonic",
-  "createWalletMessage": "Do not have a wallet? Create one using MIRO app.",
-  "connectWalletConnecting": "connectWalletConnecting",
-  "metamask": "Metamask"
+  "createWalletMessage": "Do not have a wallet?\nCreate one using MIRO app.",
+  "connectWalletConnecting": "Connecting into account...",
+  "metamask": "Metamask",
+  "toastHashCopied": "Hash copied to clipboard",
+  "mnemonicWordsSelectAmount": "Select the amount of words",
+  "txMsgClaimTokens": "Claim",
+  "txMsgSendReceiveTokens": "Receive",
+  "txMsgSendSendTokens": "Send",
+  "txMsgUndefined": "Unknown transaction type",
+  "errorNoResults": "No results",
+  "error": "Error",
+  "errorUndefined": "Undefined error",
+  "balancesAmount": "Amount",
+  "balancesDenomination": "Denomination",
+  "balancesSend": "Send",
+  "txToken": "Token",
+  "txSearchTokens": "Search tokens",
+  "txAvailableBalances": "Available: {availableAmountText} {tokenDenominationModelName}",
+  "@txAvailableBalances": {
+    "placeholders": {
+      "availableAmountText": {
+        "type": "String"
+      },
+      "tokenDenominationModelName": {
+        "type": "String"
+      }
+    }
+  },
+  "txErrorNotEnoughTokens": "Not enough tokens",
+  "txPleaseSelectToken": "Please select a token",
+
+  "networkButtonCancelConnection": "Cancel connection",
+  "networkButtonConnect": "Connect",
+  "networkButtonConnected": "Connected",
+  "networkButtonCheckConnection": "Check connection",
+  "networkButtonConnecting": "Connecting...",
+  "networkButtonArrowTip": "Go to the next page",
+  "networkErrorUndefinedName": "undefined",
+  "networkErrorCannotConnect": "Cannot connect to server",
+  "networkErrorAddressEmpty": "Field can't be empty",
+  "networkErrorAddressInvalid": "Invalid network address",
+  "networkHintCustomAddress": "Custom address",
+  "networkWarningMissingInfo": "Connecting a wallet unavailable due to missing essential data from network.",
+  "networkWarningIncompatible": "The application is incompatible with this server. Some views may not work correctly.",
+  "networkWarningWhenLastBlock": "The last available block on this interx was created long time ago {latestBlockTime}. The displayed contents may be out of date.",
+  "@networkWarningWhenLastBlock": {
+    "placeholders": {
+      "latestBlockTime": {
+        "type": "String"
+      }
+    }
+  },
+  "networkSelectServers": "Select available servers",
+  "networkConnectionCancelled": "Connection cancelled",
+  "networkConnectionEstablished": "Connection established",
+  "networkProblemReason": "Reason: Found problems with server you are trying to connect",
+  "networkServerToConnect": "Server you are trying to connect:",
+  "networkBlockTime": "Block time",
+  "networkBlockHeight": "Block Height",
+  "networkOtherServers": "Other available servers:",
+  "networkNoAvailable": "No available networks",
+  "networkSwitchCustomAddress": "Enable custom address",
+  "networkCheckedConnection": "Checked connection",
+  "networkServerOfflineReason": "Reason: Server is offline",
+  "networkServerOffline": "Selected server is offline\nPlease choose different server",
+  "networkChoose": "Choose network",
+  "networkList": "List of networks",
+  "networkHowManyProblems": "Found {errorsCount} problems with server",
+  "@networkHowManyProblems": {
+    "placeholders": {
+      "errorsCount": {
+        "type": "int"
+      }
+    }
+  },
+  "networkConnectingTo": "Connecting to <{networkName}>{separator} Please wait... {parsedRemainingTime}",
+  "@networkConnectingTo": {
+    "placeholders": {
+      "separator": {
+        "type": "String"
+      },
+      "networkName": {
+        "type": "String"
+      },
+      "parsedRemainingTime": {
+        "type": "String"
+      }
+    }
+  }
 }

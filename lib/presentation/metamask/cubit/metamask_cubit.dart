@@ -12,6 +12,8 @@ import 'package:torii_client/utils/exports.dart';
 
 part 'metamask_state.dart';
 
+const _useCacheKiraFromEth = false;
+
 @singleton
 class MetamaskCubit extends Cubit<MetamaskState> {
   // TODO(Mykyta): fix parameters once INTERX supports Eth chain for MetaMask
@@ -54,7 +56,9 @@ class MetamaskCubit extends Cubit<MetamaskState> {
       ..handleAccountsChanged(_handleAccountsChanged)
       ..handleChainChanged(_handleChainChanged);
 
-    await connect();
+    if (_keyValueRepository.wasIntroShown()) {
+      await connect();
+    }
   }
 
   Future<void> connect() async {
@@ -76,8 +80,8 @@ class MetamaskCubit extends Cubit<MetamaskState> {
     }
     await _switchNetworkToKira();
 
-    if (_keyValueRepository.readEthSignatureResult(accounts!.first) != null) {
-      _signIn(address: accounts.first, chainId: chainId);
+    if (!_useCacheKiraFromEth || _keyValueRepository.readEthSignatureResult(accounts!.first) != null) {
+      _signIn(address: accounts!.first, chainId: chainId);
     } else {
       emit(
         MetamaskState(
@@ -203,6 +207,10 @@ class MetamaskCubit extends Cubit<MetamaskState> {
     try {
       Wallet wallet = Wallet(address: EthereumWalletAddress.fromString(address));
       _sessionCubit.signIn(wallet);
+
+      if (_useCacheKiraFromEth) {
+        _cachedEthAddresses[EthereumWalletAddress.fromString(address)] = CosmosWalletAddress.fromBech32(address);
+      }
 
       emit(MetamaskState(address: address, chainId: chainId));
     } catch (e) {

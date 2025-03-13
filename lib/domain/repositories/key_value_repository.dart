@@ -11,8 +11,12 @@ class KeyValueRepository {
 
   EthereumSignatureDecodeResult? readEthSignatureResult(String ethereumAddress) {
     try {
+      final result = _shardsDao.readEthSignatureResult(ethereumAddress);
+      if (result == null) {
+        return null;
+      }
       return EthereumSignatureDecodeResult.fromDataJson(
-        _shardsDao.readEthSignatureResult(ethereumAddress)!,
+        result,
         ethAddress: ethereumAddress,
       );
     } catch (e) {
@@ -23,5 +27,13 @@ class KeyValueRepository {
 
   Future<void> writeEthSignatureResult(EthereumSignatureDecodeResult result) async {
     await _shardsDao.writeEthSignatureResult(ethereumAddress: result.ethAddress, result: result.toDataJson());
+  }
+
+  bool wasIntroShown() {
+    return _shardsDao.wasIntroShown();
+  }
+
+  Future<void> setIntroShown() async {
+    await _shardsDao.setIntroShown();
   }
 }

@@ -1,12 +1,8 @@
 // import 'package:flutter/material.dart';
-// import 'package:miro/blocs/widgets/transactions/token_form/token_form_state.dart';
-// import 'package:miro/generated/l10n.dart';
-// import 'package:miro/shared/models/tokens/token_amount_model.dart';
-// import 'package:miro/shared/models/transactions/form_models/msg_send_form_model.dart';
-// import 'package:miro/shared/models/wallet/address/a_wallet_address.dart';
-// import 'package:miro/views/widgets/transactions/memo_text_field/memo_text_field.dart';
-// import 'package:miro/views/widgets/transactions/token_form/token_form.dart';
-// import 'package:miro/views/widgets/transactions/wallet_address_text_field.dart';
+// import 'package:torii_client/domain/exports.dart';
+// import 'package:torii_client/presentation/transfer/widgets/token_form/token_form.dart';
+// import 'package:torii_client/presentation/transfer/widgets/wallet_address_text_field.dart';
+// import 'package:torii_client/utils/exports.dart';
 
 // class MsgSendForm extends StatefulWidget {
 //   final GlobalKey<FormState> formKey;
@@ -17,8 +13,8 @@
 //     required this.formKey,
 //     required this.msgSendFormModel,
 //     required this.feeTokenAmountModel,
-//     Key? key,
-//   }) : super(key: key);
+//     super.key,
+//   });
 
 //   @override
 //   State<StatefulWidget> createState() => _MsgSendForm();
@@ -51,14 +47,14 @@
 //         mainAxisSize: MainAxisSize.min,
 //         children: <Widget>[
 //           WalletAddressTextField(
-//             label: S.of(context).txHintSendFrom,
+//             label: 'S.of(context).txHintSendFrom',
 //             disabledBool: true,
 //             onChanged: _handleSenderAddressChanged,
 //             defaultWalletAddress: widget.msgSendFormModel.senderWalletAddress,
 //           ),
 //           const SizedBox(height: 14),
 //           WalletAddressTextField(
-//             label: S.of(context).txHintSendTo,
+//             label: 'S.of(context).txHintSendTo',
 //             onChanged: _handleRecipientAddressChanged,
 //             defaultWalletAddress: widget.msgSendFormModel.recipientWalletAddress,
 //           ),
@@ -67,22 +63,22 @@
 //             valueListenable: walletAddressNotifier,
 //             builder: (_, AWalletAddress? walletAddress, __) {
 //               return TokenForm(
-//                 label: S.of(context).balancesAmount,
+//                 label: 'S.of(context).balancesAmount',
 //                 feeTokenAmountModel: widget.feeTokenAmountModel,
-//                 defaultBalanceModel: widget.msgSendFormModel.balanceModel,
+//                 // defaultTokenAmountModel: widget.msgSendFormModel.balance,
 //                 defaultTokenAmountModel: widget.msgSendFormModel.tokenAmountModel,
 //                 defaultTokenDenominationModel: widget.msgSendFormModel.tokenDenominationModel,
-//                 onChanged: _handleTokenAmountChanged,
+//                 // onChanged: _handleTokenAmountChanged,
 //                 walletAddress: walletAddress,
 //               );
 //             },
 //           ),
 //           const SizedBox(height: 19),
-//           MemoTextField(
-//             label: S.of(context).txHintMemo,
-//             onChanged: _handleMemoChanged,
-//             memoTextEditingController: memoTextEditingController,
-//           ),
+//           // MemoTextField(
+//           //   label: S.of(context).txHintMemo,
+//           //   onChanged: _handleMemoChanged,
+//           //   memoTextEditingController: memoTextEditingController,
+//           // ),
 //         ],
 //       ),
 //     );
@@ -102,13 +98,13 @@
 //     widget.msgSendFormModel.recipientWalletAddress = walletAddress;
 //   }
 
-//   void _handleTokenAmountChanged(TokenFormState tokenFormState) {
-//     widget.msgSendFormModel.balanceModel = tokenFormState.balanceModel;
-//     widget.msgSendFormModel.tokenAmountModel = tokenFormState.tokenAmountModel;
-//     widget.msgSendFormModel.tokenDenominationModel = tokenFormState.tokenDenominationModel;
-//   }
+//   // void _handleTokenAmountChanged(TokenFormState tokenFormState) {
+//   //   widget.msgSendFormModel.balance = tokenFormState.balance;
+//   //   widget.msgSendFormModel.tokenAmountModel = tokenFormState.tokenAmountModel;
+//   //   widget.msgSendFormModel.tokenDenominationModel = tokenFormState.tokenDenominationModel;
+//   // }
 
-//   void _handleMemoChanged(String memo) {
-//     widget.msgSendFormModel.memo = memo;
-//   }
+//   // void _handleMemoChanged(String memo) {
+//   //   widget.msgSendFormModel.memo = memo;
+//   // }
 // }

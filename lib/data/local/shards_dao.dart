@@ -23,6 +23,14 @@ class ShardsDao {
     await _shards.setString('$_ethereumKey${ethereumAddress.toLowerCase()}', json.encode(result));
   }
 
+  bool wasIntroShown() {
+    return _shards.getBool('intro_shown') ?? false;
+  }
+
+  Future<void> setIntroShown() async {
+    await _shards.setBool('intro_shown', true);
+  }
+
   Future<bool> dropData() async {
     return await _shards.clear();
   }

@@ -1,0 +1,99 @@
+import 'package:dio/dio.dart';
+import 'package:torii_client/data/dto/api_kira/query_kira_tokens_aliases/request/query_kira_tokens_aliases_req.dart';
+import 'package:torii_client/data/dto/api_kira/query_kira_tokens_aliases/response/query_kira_tokens_aliases_resp.dart';
+import 'package:torii_client/data/dto/api_request_model.dart';
+import 'package:torii_client/domain/models/tokens/token_alias_model.dart';
+import 'package:torii_client/domain/models/tokens/token_default_denom_model.dart';
+import 'package:torii_client/domain/repositories/api_kira_repository.dart';
+import 'package:torii_client/presentation/network/bloc/network_module_bloc.dart';
+import 'package:torii_client/utils/exports.dart';
+
+class QueryKiraTokensAliasesService {
+  final IApiKiraRepository _apiKiraRepository = getIt<IApiKiraRepository>();
+
+  Future<List<TokenAliasModel>> getTokenAliasModels() async {
+    Uri networkUri = getIt<NetworkModuleBloc>().state.networkUri;
+    Response<dynamic> response = await _apiKiraRepository.fetchQueryKiraTokensAliases<dynamic>(
+      ApiRequestModel<QueryKiraTokensAliasesReq>(
+        networkUri: networkUri,
+        requestData: const QueryKiraTokensAliasesReq(),
+      ),
+    );
+
+    try {
+      QueryKiraTokensAliasesResp queryKiraTokensAliasesResp = QueryKiraTokensAliasesResp.fromJson(
+        response.data as Map<String, dynamic>,
+      );
+      return queryKiraTokensAliasesResp.tokenAliases.map(TokenAliasModel.fromDto).toList();
+    } catch (e) {
+      getIt<Logger>().e('QueryKiraTokensAliasesService: Cannot parse getTokenAliasModels() for URI $networkUri $e');
+      rethrow;
+    }
+  }
+
+  Future<TokenDefaultDenomModel> getTokenDefaultDenomModel(Uri networkUri, {bool forceRequestBool = false}) async {
+    TokenDefaultDenomModel initialTokenDefaultDenomModel = await _getTokenDefaultDenom(
+      networkUri,
+      forceRequestBool: forceRequestBool,
+    );
+    try {
+      TokenAliasModel defaultTokenAliasModel = await _getAliasByTokenName(
+        initialTokenDefaultDenomModel.defaultTokenAliasModel!.name,
+        networkUri: networkUri,
+        forceRequestBool: forceRequestBool,
+      );
+      return TokenDefaultDenomModel(
+        valuesFromNetworkExistBool: true,
+        bech32AddressPrefix: initialTokenDefaultDenomModel.bech32AddressPrefix,
+        defaultTokenAliasModel: defaultTokenAliasModel,
+      );
+    } catch (e) {
+      return initialTokenDefaultDenomModel;
+    }
+  }
+
+  Future<TokenDefaultDenomModel> _getTokenDefaultDenom(Uri networkUri, {bool forceRequestBool = false}) async {
+    Response<dynamic> response = await _apiKiraRepository.fetchQueryKiraTokensAliases<dynamic>(
+      ApiRequestModel<QueryKiraTokensAliasesReq>(
+        networkUri: networkUri,
+        // get only "default_denom" and "bech32_prefix", 0 records in "token_aliases_data" for quicker response
+        requestData: const QueryKiraTokensAliasesReq(offset: 0, limit: 0),
+        forceRequestBool: forceRequestBool,
+      ),
+    );
+
+    try {
+      QueryKiraTokensAliasesResp queryKiraTokensAliasesResp = QueryKiraTokensAliasesResp.fromJson(
+        response.data as Map<String, dynamic>,
+      );
+      return TokenDefaultDenomModel.fromDto(queryKiraTokensAliasesResp);
+    } catch (e) {
+      return TokenDefaultDenomModel.empty();
+    }
+  }
+
+  Future<TokenAliasModel> _getAliasByTokenName(
+    String tokenName, {
+    Uri? networkUri,
+    bool forceRequestBool = false,
+  }) async {
+    networkUri ??= getIt<NetworkModuleBloc>().state.networkUri;
+    Response<dynamic> response = await _apiKiraRepository.fetchQueryKiraTokensAliases<dynamic>(
+      ApiRequestModel<QueryKiraTokensAliasesReq>(
+        networkUri: networkUri,
+        requestData: QueryKiraTokensAliasesReq(tokens: <String>[tokenName]),
+        forceRequestBool: forceRequestBool,
+      ),
+    );
+
+    try {
+      QueryKiraTokensAliasesResp queryKiraTokensAliasesResp = QueryKiraTokensAliasesResp.fromJson(
+        response.data as Map<String, dynamic>,
+      );
+      return TokenAliasModel.fromDto(queryKiraTokensAliasesResp.tokenAliases.first);
+    } catch (e) {
+      getIt<Logger>().e('QueryKiraTokensAliasesService: Cannot parse getAliasByTokenName() for URI $networkUri $e');
+      rethrow;
+    }
+  }
+}

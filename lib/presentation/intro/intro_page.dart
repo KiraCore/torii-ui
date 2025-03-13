@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:torii_client/domain/exports.dart';
 import 'package:torii_client/presentation/metamask/cubit/metamask_cubit.dart';
 import 'package:torii_client/presentation/widgets/buttons/kira_outlined_button.dart';
 import 'package:torii_client/utils/exports.dart';
@@ -11,6 +12,12 @@ class IntroPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
+
+    // TODO: move this somewhere else
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getIt<KeyValueRepository>().setIntroShown();
+    });
+
     double width = 300;
     return Scaffold(
       body: Column(

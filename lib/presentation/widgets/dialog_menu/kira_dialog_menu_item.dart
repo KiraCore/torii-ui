@@ -17,13 +17,14 @@ class KiraDialogMenuItem extends StatelessWidget {
       onTap: onTap,
       childBuilder: (Set<WidgetState> states) {
         Color color = _selectColor(states);
-
         return Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
           decoration: BoxDecoration(color: _selectBackgroundColor(states)),
           child: Text(
             title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: textTheme.bodyMedium!.copyWith(color: onTap != null ? color : color.withOpacity(0.5)),
           ),
         );

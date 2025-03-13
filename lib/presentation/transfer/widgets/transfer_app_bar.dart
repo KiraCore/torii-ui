@@ -3,9 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:torii_client/presentation/metamask/cubit/metamask_cubit.dart';
 import 'package:torii_client/presentation/session/cubit/session_cubit.dart';
-import 'package:torii_client/presentation/widgets/buttons/kira_outlined_button.dart';
-import 'package:torii_client/presentation/widgets/dialog_menu/kira_dialog_menu.dart';
-import 'package:torii_client/presentation/widgets/dialog_menu/kira_dialog_menu_item.dart';
+import 'package:torii_client/presentation/widgets/exports.dart';
 import 'package:torii_client/utils/exports.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -18,45 +16,87 @@ class TransferAppBar extends StatelessWidget {
     return BlocBuilder<SessionCubit, SessionState>(
       builder: (context, state) {
         return Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Text('Signed in with:', style: textTheme.bodyMedium),
-              const SizedBox(width: 48),
+              Text('Signed in with:', style: textTheme.bodySmall),
+              const SizedBox(width: 12),
               if (state.kiraWallet != null) ...[
-                KiraDialogMenu(
-                  popup: KiraDialogMenuItem(
-                    title: 'Disconnect',
-                    onTap: () {
-                      context.read<SessionCubit>().signOutKira();
-                    },
-                  ),
-                  button: Row(
-                    children: [
-                      SvgPicture.asset('assets/icons/kira_logo.svg', width: 24, height: 24),
-                      const SizedBox(width: 8),
-                      Text(state.kiraWallet!.address.address),
-                    ],
-                  ),
+                Row(
+                  children: [
+                    KiraDialogMenu(
+                      key: const ValueKey('kira-dialog-menu'),
+                      popupWidth: 170,
+                      popupItems: [
+                        KiraDialogMenuItem(
+                          title: 'Disconnect',
+                          onTap: () {
+                            context.read<SessionCubit>().signOutKira();
+                          },
+                        ),
+                      ],
+                      button: KiraToolTip(
+                        childMargin: EdgeInsets.zero,
+                        message: state.kiraWallet!.address.address,
+                        child: Row(
+                          children: [
+                            SvgPicture.asset('assets/icons/kira_logo.svg', width: 24, height: 24),
+                            const SizedBox(width: 8),
+                            Text(
+                              state.kiraWallet!.address.address.toShortenedAddress(),
+                              overflow: TextOverflow.ellipsis,
+                              style: textTheme.bodyMedium!.copyWith(color: DesignColors.white2),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 2),
+                    CopyButton(
+                      value: state.kiraWallet!.address.address,
+                      notificationText: S.of(context).toastHashCopied,
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 24),
+                const SizedBox(width: 18),
               ],
               if (state.ethereumWallet != null)
-                KiraDialogMenu(
-                  popup: KiraDialogMenuItem(
-                    title: 'Disconnect',
-                    onTap: () {
-                      context.read<SessionCubit>().signOutEthereum();
-                    },
-                  ),
-                  button: Row(
-                    children: [
-                      SvgPicture.asset('assets/icons/ethereum_logo.svg', width: 24, height: 24),
-                      const SizedBox(width: 8),
-                      Text(state.ethereumWallet!.address.address),
-                    ],
-                  ),
+                Row(
+                  children: [
+                    KiraDialogMenu(
+                      key: const ValueKey('eth-dialog-menu'),
+                      popupWidth: 170,
+                      popupItems: [
+                        KiraDialogMenuItem(
+                          title: 'Disconnect',
+                          onTap: () {
+                            context.read<SessionCubit>().signOutEthereum();
+                          },
+                        ),
+                      ],
+                      button: KiraToolTip(
+                        childMargin: EdgeInsets.zero,
+                        message: state.ethereumWallet!.address.address,
+                        child: Row(
+                          children: [
+                            SvgPicture.asset('assets/icons/ethereum_logo.svg', width: 24, height: 24),
+                            const SizedBox(width: 8),
+                            Text(
+                              state.ethereumWallet!.address.address.toShortenedAddress(),
+                              overflow: TextOverflow.ellipsis,
+                              style: textTheme.bodyMedium!.copyWith(color: DesignColors.white2),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 2),
+                    CopyButton(
+                      value: state.ethereumWallet!.address.address,
+                      notificationText: S.of(context).toastHashCopied,
+                    ),
+                  ],
                 )
               else
                 KiraOutlinedButton(
@@ -72,9 +112,7 @@ class TransferAppBar extends StatelessWidget {
                   height: 40,
                 ),
               if (state.kiraWallet == null) ...[
-                const SizedBox(width: 12),
-                SvgPicture.asset('assets/icons/kira_logo.svg', width: 24, height: 24),
-                const SizedBox(width: 8),
+                const SizedBox(width: 18),
                 KiraOutlinedButton(
                   onPressed: () {
                     router.push(SignInDrawerRoute().location);
@@ -84,7 +122,6 @@ class TransferAppBar extends StatelessWidget {
                   height: 40,
                 ),
               ],
-              const SizedBox(width: 12),
             ],
           ),
         );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
+import 'package:torii_client/presentation/widgets/dialog_menu/kira_dialog_menu_item.dart';
 import 'package:torii_client/presentation/widgets/mouse_state_listener.dart';
 import 'package:torii_client/utils/exports.dart';
 
@@ -7,14 +8,16 @@ class KiraDialogMenu extends StatelessWidget {
   final bool disabled;
   final Color backgroundColor;
   final Widget button;
-  final Widget popup;
-
+  final List<KiraDialogMenuItem> popupItems;
+  final double popupWidth;
+  
   const KiraDialogMenu({
+    required super.key,
     required this.button,
-    required this.popup,
+    required this.popupItems,
+    required this.popupWidth,
     this.backgroundColor = DesignColors.background,
     this.disabled = false,
-    super.key,
   });
 
   @override
@@ -39,14 +42,25 @@ class KiraDialogMenu extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(3),
           decoration: BoxDecoration(color: backgroundColor, borderRadius: BorderRadius.circular(8)),
-          child: popup,
+          width: popupWidth,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: popupItems,
+          ),
         ),
       ),
       child: MouseStateListener(
-        // NOTE: async is required due to the controller.showTooltip() call bug
-        onTap: disabled ? null : () async => controller.showTooltip(),
+        onTap:
+            disabled
+                ? null
+                : () async {
+                  // NOTE: async is required due to the controller.showTooltip() call bug
+                  await Future.delayed(const Duration(milliseconds: 0));
+                  return controller.showTooltip();
+                },
         childBuilder: (Set<WidgetState> states) {
-          return Container(color: Colors.transparent, child: button);
+          return Padding(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), child: button);
         },
       ),
     );
