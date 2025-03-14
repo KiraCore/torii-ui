@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:torii_client/domain/services/miro/network_module_service.dart';
 import 'package:torii_client/presentation/network/network_list/network_custom_section/network_custom_section_state.dart';
 import 'package:torii_client/utils/exports.dart';
@@ -9,6 +10,7 @@ import 'package:torii_client/utils/network/status/a_network_status_model.dart';
 import 'package:torii_client/utils/network/status/network_unknown_model.dart';
 import 'package:uuid/uuid.dart';
 
+@injectable
 class NetworkCustomSectionCubit extends Cubit<NetworkCustomSectionState> {
   final AppConfig _appConfig = getIt<AppConfig>();
   final NetworkModuleService _networkModuleService = getIt<NetworkModuleService>();
@@ -62,7 +64,7 @@ class NetworkCustomSectionCubit extends Cubit<NetworkCustomSectionState> {
     }
   }
 
-  Future<void> updateNetworks([ANetworkStatusModel? connectedNetworkStatusModel]) async {
+  void updateNetworks([ANetworkStatusModel? connectedNetworkStatusModel]) {
     bool customNetworkBool = _isNetworkCustom(connectedNetworkStatusModel);
     bool differentNetworkBool =
         NetworkUtils.compareUrisByUrn(connectedNetworkStatusModel?.uri, state.connectedNetworkStatusModel?.uri) ==
@@ -74,7 +76,8 @@ class NetworkCustomSectionCubit extends Cubit<NetworkCustomSectionState> {
     bool customNetworkConnectedBool = state.connectedNetworkStatusModel != null;
 
     if (customNetworkBool) {
-      _activeStateId = Uuid().v4();
+      // TODO: getIt
+      _activeStateId = const Uuid().v4();
     }
 
     emit(
@@ -124,7 +127,7 @@ class NetworkCustomSectionCubit extends Cubit<NetworkCustomSectionState> {
             : NetworkUnknownModel.fromNetworkStatusModel(networkStatusModel);
 
     ANetworkStatusModel refreshedNetworkStatusModel = await _networkModuleService.getNetworkStatusModel(
-      networkUnknownModel.copyWith(uri: networkUnknownModel.uri.replace(scheme: 'https')),
+      networkUnknownModel,
       previousNetworkUnknownModel: networkUnknownModel,
     );
 
