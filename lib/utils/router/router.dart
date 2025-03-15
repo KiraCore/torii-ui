@@ -28,52 +28,52 @@ final KiraGoRouter router = KiraGoRouter(
   initialLocation: const IntroRoute().location,
   // TODO: refactor
   redirect: (context, state) {
-    print('redirecting ${state.fullPath}');
+    debugPrint('redirecting ${state.fullPath}');
     return null;
   },
 );
 
-extension GoRouterStateX on GoRouter {
-  Future<T?> pushWithState<T extends Object?>(String location, {Object? extra}) async {
-    // GoRouteData goRouteData = _addQueryParameters(GoRouteData(location));
-    return push(location, extra: extra);
-  }
+// extension GoRouterStateX on GoRouter {
+//   Future<T?> pushWithState<T extends Object?>(String location, {Object? extra}) async {
+//     // GoRouteData goRouteData = _addQueryParameters(GoRouteData(location));
+//     return push(location, extra: extra);
+//   }
 
-  void popWithState<T extends Object?>([T? result]) {
-    print('ppp popping ${routerDelegate.currentConfiguration.uri}');
-    routerDelegate.pop<T>(result);
-  }
+//   void popWithState<T extends Object?>([T? result]) {
+//     debugPrint('ppp popping ${routerDelegate.currentConfiguration.uri}');
+//     routerDelegate.pop<T>(result);
+//   }
 
-  // GoRouteData _addQueryParameters(String location) {
-  //   List<GoRouteData> pageRouteInfoList = pageRouteInfo.flattened.reversed.toList();
-  //   late GoRouteData newGoRouteData;
+// GoRouteData _addQueryParameters(String location) {
+//   List<GoRouteData> pageRouteInfoList = pageRouteInfo.flattened.reversed.toList();
+//   late GoRouteData newGoRouteData;
 
-  //   for (int i = 0; i < pageRouteInfoList.length; i++) {
-  //     GoRouteData localGoRouteData = pageRouteInfoList[i].copyWith(children: <GoRouteData>[]);
+//   for (int i = 0; i < pageRouteInfoList.length; i++) {
+//     GoRouteData localGoRouteData = pageRouteInfoList[i].copyWith(children: <GoRouteData>[]);
 
-  //     if (i == 0) {
-  //       newGoRouteData = _setupTargetRoute(localGoRouteData);
-  //     } else {
-  //       newGoRouteData = _wrapRoute(localGoRouteData, newGoRouteData);
-  //     }
-  //   }
-  //   return newGoRouteData;
-  // }
+//     if (i == 0) {
+//       newGoRouteData = _setupTargetRoute(localGoRouteData);
+//     } else {
+//       newGoRouteData = _wrapRoute(localGoRouteData, newGoRouteData);
+//     }
+//   }
+//   return newGoRouteData;
+// }
 
-  // Map<String, dynamic> _parseQueryParameters(String location) {
-  //   // GoRouteData _setupTargetRoute(GoRouteData pageRouteInfo) {
-  //   //   String networkUrl = getIt<NetworkModuleBloc>().state.networkUri.toString();
+// Map<String, dynamic> _parseQueryParameters(String location) {
+//   // GoRouteData _setupTargetRoute(GoRouteData pageRouteInfo) {
+//   //   String networkUrl = getIt<NetworkModuleBloc>().state.networkUri.toString();
 
-  //   //   return pageRouteInfo.copyWith(
-  //   //     queryParams: <String, dynamic>{RpcBrowserUrlController.rpcQueryParameterKey: networkUrl},
-  //   //   );
-  //   // }
+//   //   return pageRouteInfo.copyWith(
+//   //     queryParams: <String, dynamic>{RpcBrowserUrlController.rpcQueryParameterKey: networkUrl},
+//   //   );
+//   // }
 
-  //   // GoRouteData _wrapRoute(GoRouteData parentGoRouteData, GoRouteData childGoRouteData) {
-  //   //   return parentGoRouteData.copyWith(children: <GoRouteData>[childGoRouteData]);
-  //   // }
-  // }
-}
+//   // GoRouteData _wrapRoute(GoRouteData parentGoRouteData, GoRouteData childGoRouteData) {
+//   //   return parentGoRouteData.copyWith(children: <GoRouteData>[childGoRouteData]);
+//   // }
+// }
+// }
 
 @TypedGoRoute<IntroRoute>(path: '/intro')
 class IntroRoute extends GoRouteData {
