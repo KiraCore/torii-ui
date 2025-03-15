@@ -1,16 +1,16 @@
 import 'package:dio/browser.dart';
 import 'package:dio/dio.dart';
+import 'package:injectable/injectable.dart';
+import 'package:torii_client/data/api/http_client_interceptor.dart';
 import 'package:torii_client/utils/browser/browser_url_controller.dart';
-import 'package:torii_client/utils/exports.dart';
 import 'package:torii_client/utils/network/app_config.dart';
 import 'package:torii_client/utils/network/network_utils.dart';
 
+@injectable
 class HttpClientManager {
-  final AppConfig _appConfig = getIt<AppConfig>();
+  final AppConfig _appConfig;
 
-  final Dio? customDio;
-
-  HttpClientManager({this.customDio});
+  HttpClientManager(this._appConfig);
 
   Future<Response<T>> get<T>({
     required Uri networkUri,
@@ -66,15 +66,13 @@ class HttpClientManager {
       appUri: const BrowserUrlController().uri,
     );
     Dio httpClientDio;
-    if (customDio != null) {
-      httpClientDio = customDio!;
-    } else if (proxyActiveBool) {
+    if (proxyActiveBool) {
       uriAsString = '${_appConfig.proxyServerUri}/${uri.toString()}';
       httpClientDio = DioForBrowser(BaseOptions(baseUrl: uriAsString, headers: <String, dynamic>{'Origin': uri.host}));
     } else {
       httpClientDio = DioForBrowser(BaseOptions(baseUrl: uriAsString));
     }
-    // httpClientDio.interceptors.add(HttpClientInterceptor(apiCacheConfigModel: apiCacheConfigModel));
+    httpClientDio.interceptors.add(HttpClientInterceptor());
     return httpClientDio;
   }
 

@@ -7,52 +7,53 @@ import 'package:torii_client/utils/network/status/network_unknown_model.dart';
 
 @singleton
 class AppConfig {
+  final Uri proxyServerUri;
   final int bulkSinglePageSize;
   final Duration defaultApiCacheMaxAge;
   final Duration outdatedBlockDuration;
   final Duration loadingPageTimerDuration;
   final List<String> supportedInterxVersions;
   final RpcBrowserUrlController rpcBrowserUrlController;
+  final int _refreshIntervalSeconds;
 
-  final int _defaultRefreshIntervalSeconds;
-
-  late Uri? proxyServerUri;
-  late Duration _refreshInterval;
   late List<NetworkUnknownModel> _networkList = List<NetworkUnknownModel>.empty(growable: true);
 
   AppConfig({
+    required this.proxyServerUri,
     required this.bulkSinglePageSize,
     required this.defaultApiCacheMaxAge,
     required this.outdatedBlockDuration,
     required this.loadingPageTimerDuration,
     required this.supportedInterxVersions,
     required this.rpcBrowserUrlController,
-    required int defaultRefreshIntervalSeconds,
-  }) : _defaultRefreshIntervalSeconds = defaultRefreshIntervalSeconds;
+    required int refreshIntervalSeconds,
+  }) : _refreshIntervalSeconds = refreshIntervalSeconds;
 
-  factory AppConfig.buildDefaultConfig() {
+  @factoryMethod
+  factory AppConfig.buildDefaultConfig(RpcBrowserUrlController rpcBrowserUrlController) {
     return AppConfig(
+      proxyServerUri: Uri.parse('https://cors.kira.network'),
       bulkSinglePageSize: 500,
       defaultApiCacheMaxAge: const Duration(seconds: 60),
       outdatedBlockDuration: const Duration(minutes: 5),
       loadingPageTimerDuration: const Duration(seconds: 4),
       supportedInterxVersions: <String>['v0.4.46', 'v0.4.48'],
-      rpcBrowserUrlController: RpcBrowserUrlController(),
-      defaultRefreshIntervalSeconds: 60,
+      rpcBrowserUrlController: rpcBrowserUrlController,
+      refreshIntervalSeconds: 60,
     );
   }
 
-  int get defaultRefreshIntervalSeconds => _defaultRefreshIntervalSeconds;
+  int get refreshIntervalSeconds => _refreshIntervalSeconds;
 
-  Duration get refreshInterval => _refreshInterval;
+  Duration get refreshInterval => Duration(seconds: _refreshIntervalSeconds);
 
   List<NetworkUnknownModel> get networkList => _networkList;
 
-  void init(Map<String, dynamic> configJson) {
-    _initProxyServerUri(configJson['proxy_server_url'] as String?);
-    _initIntervalSeconds(configJson['refresh_interval_seconds']);
-    _initNetworkList(configJson['network_list']);
-  }
+  // void init({String proxyServerUrl = 'https://cors.kira.network', int refreshIntervalSeconds = 60}) {
+  //   _initProxyServerUri(proxyServerUrl);
+  //   _initIntervalSeconds(refreshIntervalSeconds);
+  //   // _initNetworkList(configJson['network_list']);
+  // }
 
   NetworkUnknownModel findNetworkModelInConfig(NetworkUnknownModel networkUnknownModel) {
     List<NetworkUnknownModel> matchingNetworkUnknownModels =
@@ -66,8 +67,8 @@ class AppConfig {
     return matchingNetworkUnknownModels.first;
   }
 
-  Future<NetworkUnknownModel> getDefaultNetworkUnknownModel() async {
-    NetworkUnknownModel? urlNetworkUnknownModel = await _getNetworkUnknownModelFromUrl();
+NetworkUnknownModel getDefaultNetworkUnknownModel() {
+    NetworkUnknownModel? urlNetworkUnknownModel = _getNetworkUnknownModelFromUrl();
     if (urlNetworkUnknownModel == null) {
       return networkList.first;
     }
@@ -84,47 +85,31 @@ class AppConfig {
     }
   }
 
-  void _initProxyServerUri(String? proxyServerUrlText) {
-    try {
-      proxyServerUri = NetworkUtils.parseNoSchemeToHTTPS(proxyServerUrlText!);
-    } catch (_) {
-      getIt<Logger>().e('Proxy server url is invalid: $proxyServerUrlText');
-      proxyServerUri = null;
-    }
-  }
+  // TODO: recover previously entered network list
+  // void _initNetworkList(dynamic networkListJson) {
+  //   _networkList = List<NetworkUnknownModel>.empty(growable: true);
+  //   if (networkListJson is List<dynamic>) {
+  //     for (dynamic networkListItem in networkListJson) {
+  //       try {
+  //         _networkList.add(NetworkUnknownModel.fromJson(networkListItem as Map<String, dynamic>));
+  //       } catch (_) {
+  //         getIt<Logger>().e('CONFIG: Cannot parse network list item from network_list_config.json: $networkListItem');
+  //       }
+  //     }
+  //   }
 
-  void _initIntervalSeconds(dynamic refreshIntervalSecondsJson) {
-    if (refreshIntervalSecondsJson is num && refreshIntervalSecondsJson > _defaultRefreshIntervalSeconds) {
-      _refreshInterval = Duration(seconds: refreshIntervalSecondsJson.round());
-    } else {
-      _refreshInterval = Duration(seconds: _defaultRefreshIntervalSeconds);
-    }
-  }
+  //   if (_networkList.isEmpty) {
+  //     _networkList.add(
+  //       NetworkUnknownModel(
+  //         connectionStatusType: ConnectionStatusType.disconnected,
+  //         uri: Uri.parse('https://testnet-rpc.kira.network'),
+  //         lastRefreshDateTime: DateTime.now(),
+  //       ),
+  //     );
+  //   }
+  // }
 
-  void _initNetworkList(dynamic networkListJson) {
-    _networkList = List<NetworkUnknownModel>.empty(growable: true);
-    if (networkListJson is List<dynamic>) {
-      for (dynamic networkListItem in networkListJson) {
-        try {
-          _networkList.add(NetworkUnknownModel.fromJson(networkListItem as Map<String, dynamic>));
-        } catch (_) {
-          getIt<Logger>().e('CONFIG: Cannot parse network list item from network_list_config.json: $networkListItem');
-        }
-      }
-    }
-
-    if (_networkList.isEmpty) {
-      _networkList.add(
-        NetworkUnknownModel(
-          connectionStatusType: ConnectionStatusType.disconnected,
-          uri: Uri.parse('https://testnet-rpc.kira.network'),
-          lastRefreshDateTime: DateTime.now(),
-        ),
-      );
-    }
-  }
-
-  Future<NetworkUnknownModel?> _getNetworkUnknownModelFromUrl() async {
+  NetworkUnknownModel? _getNetworkUnknownModelFromUrl() {
     String? networkAddress = rpcBrowserUrlController.getRpcAddress();
     if (networkAddress == null) {
       return null;

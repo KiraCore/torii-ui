@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:torii_client/presentation/transfer/tx_send_tokens/tx_send_tokens_page.dart';
 import 'package:torii_client/presentation/transfer/widgets/transfer_app_bar.dart';
-import 'package:torii_client/utils/theme/design_colors.dart';
 
 class TransferInputPage extends StatelessWidget {
   const TransferInputPage({super.key});
@@ -8,7 +8,7 @@ class TransferInputPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(children: [TransferAppBar(), Expanded(child: Container(color: DesignColors.background))]),
+      body: Column(children: [TransferAppBar(), TxSendTokensPage()]),
     );
   }
 }

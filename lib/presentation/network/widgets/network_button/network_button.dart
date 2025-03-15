@@ -13,9 +13,14 @@ import 'package:torii_client/utils/network/status/online/a_network_online_model.
 class NetworkButton extends StatelessWidget {
   final bool arrowEnabledBool;
   final ANetworkStatusModel networkStatusModel;
-  final ValueChanged<ANetworkStatusModel>? onConnected;
+  final ValueChanged<ANetworkStatusModel> onConnected;
 
-  const NetworkButton({required this.arrowEnabledBool, required this.networkStatusModel, this.onConnected, super.key});
+  const NetworkButton({
+    required this.arrowEnabledBool,
+    required this.networkStatusModel,
+    required this.onConnected,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +76,7 @@ class NetworkButton extends StatelessWidget {
     }
   }
 
-  void _handleConnectToNetworkPressed() {
+  Future<void> _handleConnectToNetworkPressed() async {
     ANetworkStatusModel networkStatusModelToConnect = networkStatusModel;
     bool networkConnectedBool =
         networkStatusModelToConnect.connectionStatusType == ConnectionStatusType.connected ||
@@ -80,7 +85,10 @@ class NetworkButton extends StatelessWidget {
       if (networkConnectedBool == false) {
         getIt<NetworkModuleBloc>().add(NetworkModuleConnectEvent(networkStatusModelToConnect));
       }
-      onConnected?.call(networkStatusModelToConnect);
+
+      // TODO: fix bug - we should wait for init of rpc url in browser url controller
+      await Future.delayed(const Duration(milliseconds: 100));
+      onConnected(networkStatusModelToConnect);
     }
   }
 }

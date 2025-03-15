@@ -85,7 +85,7 @@
 //                     ),
 //                     const SizedBox(height: 8),
 //                     if (state is ListLoadingState)
-//                       const Expanded(child: CenterLoadSpinner())
+//                       const Expanded(child: LoadingContainer())
 //                     else if (state is ListLoadedState<T>)
 //                       Expanded(
 //                         child: PopupInfinityListContent<T>(

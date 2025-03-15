@@ -38,7 +38,8 @@ class InterxHeaders extends Equatable {
       requestHash: headers.value('interx_request_hash') as String,
       signature: headers.value('interx_signature') as String,
       timestamp: int.parse(headers.value('interx_timestamp') as String),
-      dataSource: headers.value(dataSourceHeaderKey) as String,
+      // TODO: it null for some reason, but it wasnt
+      dataSource: headers.value(dataSourceHeaderKey) ?? '',
       blockDateTime: DateTime.parse(headers.value('interx_blocktime') as String),
       cacheExpirationDateTime:
           headers.value(cacheExpirationTimeHeaderKey) != null

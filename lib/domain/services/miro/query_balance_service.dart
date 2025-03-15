@@ -1,5 +1,6 @@
 import 'package:decimal/decimal.dart';
 import 'package:dio/dio.dart';
+import 'package:injectable/injectable.dart';
 import 'package:torii_client/data/api/interx_headers.dart';
 import 'package:torii_client/data/dto/api_kira/query_balance/request/query_balance_req.dart';
 import 'package:torii_client/data/dto/api_kira/query_balance/response/balance.dart';
@@ -12,8 +13,11 @@ import 'package:torii_client/domain/services/miro/query_kira_tokens_aliases_serv
 import 'package:torii_client/presentation/network/bloc/network_module_bloc.dart';
 import 'package:torii_client/utils/exports.dart';
 
+@injectable
 class QueryBalanceService {
-  final IApiKiraRepository _apiKiraRepository = getIt<IApiKiraRepository>();
+  final IApiKiraRepository _apiKiraRepository;
+
+  QueryBalanceService(this._apiKiraRepository);
 
   Future<TokenAmountModel> getBalanceByToken(AWalletAddress walletAddress, TokenAliasModel tokenAliasModel) async {
     // TODO(dominik): Temporary solution, should be replaced with a proper query to INTERX

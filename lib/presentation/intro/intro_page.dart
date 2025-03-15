@@ -4,6 +4,7 @@ import 'package:torii_client/domain/exports.dart';
 import 'package:torii_client/presentation/metamask/cubit/metamask_cubit.dart';
 import 'package:torii_client/presentation/widgets/buttons/kira_outlined_button.dart';
 import 'package:torii_client/utils/exports.dart';
+import 'package:torii_client/utils/router/router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class IntroPage extends StatelessWidget {
@@ -102,6 +103,14 @@ class IntroPage extends StatelessWidget {
               ),
               const Spacer(flex: 2),
             ],
+          ),
+          const SizedBox(height: 30),
+          KiraOutlinedButton(
+            width: width * 2 + 20, // Width of two buttons plus spacing
+            onPressed: () {
+              router.go(NetworkListRoute().location);
+            },
+            title: 'Network Settings',
           ),
         ],
       ),

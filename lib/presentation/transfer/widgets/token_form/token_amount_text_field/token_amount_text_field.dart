@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:torii_client/domain/models/tokens/token_denomination_model.dart';
 import 'package:torii_client/presentation/transfer/widgets/token_form/token_amount_text_field/token_amount_text_field_actions.dart';
 import 'package:torii_client/presentation/transfer/widgets/token_form/token_amount_text_field/token_amount_text_field_content.dart';
+import 'package:torii_client/presentation/transfer/widgets/token_form/tx_input_static_label.dart';
 import 'package:torii_client/presentation/transfer/widgets/tx_input_wrapper.dart';
 
 class TokenAmountTextField extends StatelessWidget {
@@ -34,9 +35,9 @@ class TokenAmountTextField extends StatelessWidget {
               (FocusNode focusNode) => SizedBox(
                 height: double.infinity,
                 child: Center(
-                  // child: TxInputStaticLabel(
-                  //   label: label,
-                  //   contentPadding: const EdgeInsets.only(top: 9, bottom: 5),
+                  child: TxInputStaticLabel(
+                    label: label,
+                    contentPadding: const EdgeInsets.only(top: 9, bottom: 5),
                   child: TokenAmountTextFieldContent(
                     disabledBool: correctDisabledBool,
                     label: label,
@@ -45,7 +46,7 @@ class TokenAmountTextField extends StatelessWidget {
                     focusNode: focusNode,
                     errorExistsBool: errorExistsBool,
                   ),
-                  // ),
+                  ),
                 ),
               ),
         ),

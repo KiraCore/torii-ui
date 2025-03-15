@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:injectable/injectable.dart';
 import 'package:torii_client/data/api/http_client_manager.dart';
 import 'package:torii_client/data/dto/api/query_transactions/request/query_transactions_req.dart';
 import 'package:torii_client/data/dto/api_request_model.dart';
@@ -12,8 +13,11 @@ abstract class IApiRepository {
   Future<Response<T>> fetchQueryTransactions<T>(ApiRequestModel<QueryTransactionsReq> apiRequestModel);
 }
 
+@Injectable(as: IApiRepository)
 class RemoteApiRepository implements IApiRepository {
-  final HttpClientManager _httpClientManager = HttpClientManager();
+  final HttpClientManager _httpClientManager;
+
+  RemoteApiRepository(this._httpClientManager);
 
   @override
   Future<Response<T>> fetchDashboard<T>(ApiRequestModel<void> apiRequestModel) async {

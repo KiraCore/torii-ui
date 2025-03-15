@@ -61,7 +61,13 @@ class _NetworkListTile extends State<NetworkListTile> {
             children: <Widget>[
               const SizedBox(width: 35),
               Expanded(
-                child: NetworkButton(networkStatusModel: networkStatusModel, arrowEnabledBool: widget.arrowEnabledBool),
+                child: NetworkButton(
+                  networkStatusModel: networkStatusModel,
+                  arrowEnabledBool: widget.arrowEnabledBool,
+                  onConnected: (networkStatusModel) {
+                    router.go(IntroRoute().location);
+                  },
+                ),
               ),
               const SizedBox(width: 35),
             ],

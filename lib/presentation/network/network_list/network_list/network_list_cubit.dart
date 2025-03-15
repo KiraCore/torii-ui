@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:torii_client/presentation/network/network_list/network_list/a_network_list_state.dart';
 import 'package:torii_client/presentation/network/network_list/network_list/states/network_list_loaded_state.dart';
 import 'package:torii_client/presentation/network/network_list/network_list/states/network_list_loading_state.dart';
@@ -7,6 +8,7 @@ import 'package:torii_client/utils/network/app_config.dart';
 import 'package:torii_client/utils/network/network_utils.dart';
 import 'package:torii_client/utils/network/status/a_network_status_model.dart';
 
+@injectable
 class NetworkListCubit extends Cubit<ANetworkListState> {
   final AppConfig appConfig = getIt<AppConfig>();
 

@@ -34,9 +34,6 @@
 //   late final BalancesListController balancesListController = BalancesListController(
 //     walletAddress: widget.walletAddress!,
 //   );
-//   late final FavouritesBloc<TokenAmountModel> favouritesBloc = FavouritesBloc<TokenAmountModel>(
-//     listController: balancesListController,
-//   );
 
 //   TokenAliasModel? selectedTokenAliasModel;
 
@@ -53,7 +50,6 @@
 //   void dispose() {
 //     sortBloc.close();
 //     filtersBloc.close();
-//     favouritesBloc.close();
 //     super.dispose();
 //   }
 

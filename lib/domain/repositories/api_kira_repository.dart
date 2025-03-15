@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:injectable/injectable.dart';
 import 'package:torii_client/data/api/http_client_manager.dart';
 import 'package:torii_client/data/dto/api_kira/broadcast/request/broadcast_req.dart';
 import 'package:torii_client/data/dto/api_kira/query_account/request/query_account_req.dart';
@@ -22,8 +23,11 @@ abstract class IApiKiraRepository {
   Future<Response<T>> fetchQueryNetworkProperties<T>(ApiRequestModel<void> apiRequestModel);
 }
 
+@Injectable(as: IApiKiraRepository)
 class RemoteApiKiraRepository implements IApiKiraRepository {
-  final HttpClientManager _httpClientManager = HttpClientManager();
+  final HttpClientManager _httpClientManager;
+
+  RemoteApiKiraRepository(this._httpClientManager);
 
   @override
   Future<Response<T>> broadcast<T>(ApiRequestModel<BroadcastReq> apiRequestModel) async {

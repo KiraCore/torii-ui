@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:injectable/injectable.dart';
 import 'package:torii_client/data/dto/api_kira/query_kira_tokens_aliases/request/query_kira_tokens_aliases_req.dart';
 import 'package:torii_client/data/dto/api_kira/query_kira_tokens_aliases/response/query_kira_tokens_aliases_resp.dart';
 import 'package:torii_client/data/dto/api_request_model.dart';
@@ -8,8 +9,11 @@ import 'package:torii_client/domain/repositories/api_kira_repository.dart';
 import 'package:torii_client/presentation/network/bloc/network_module_bloc.dart';
 import 'package:torii_client/utils/exports.dart';
 
+@injectable
 class QueryKiraTokensAliasesService {
-  final IApiKiraRepository _apiKiraRepository = getIt<IApiKiraRepository>();
+  final IApiKiraRepository _apiKiraRepository;
+
+  QueryKiraTokensAliasesService(this._apiKiraRepository);
 
   Future<List<TokenAliasModel>> getTokenAliasModels() async {
     Uri networkUri = getIt<NetworkModuleBloc>().state.networkUri;

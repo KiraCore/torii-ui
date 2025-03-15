@@ -11,7 +11,9 @@ import 'package:torii_client/utils/exports.dart';
 
 @injectable
 class QueryAccountService {
-  final IApiKiraRepository _apiKiraRepository = getIt<IApiKiraRepository>();
+  final IApiKiraRepository _apiKiraRepository;
+
+  QueryAccountService(this._apiKiraRepository);
 
   Future<TxRemoteInfoModel> getTxRemoteInfo(String accountAddress) async {
     Uri networkUri = getIt<NetworkModuleBloc>().state.networkUri;

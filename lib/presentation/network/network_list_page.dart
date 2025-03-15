@@ -31,85 +31,86 @@ class _NetworkListPage extends State<NetworkListPage> {
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
     ConnectionErrorModel? connectionErrorModel = _selectConnectionErrorModel();
-    return BlocBuilder<NetworkModuleBloc, NetworkModuleState>(
-      bloc: getIt<NetworkModuleBloc>(),
-      builder: (BuildContext context, NetworkModuleState networkModuleState) {
-        return SingleChildScrollView(
-          child: Center(
-            child: Padding(
-              padding: EdgeInsets.only(top: 100), // AppSizes.defaultMobilePageMargin.copyWith(top: 100),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  SizedBox(width: 40, height: 42, child: Image.asset(Assets.assetsLogoSignet, fit: BoxFit.contain)),
-                  const SizedBox(height: 16),
-
-                  _NetworkHeadline(
-                    textStyle: textTheme.displayLarge!.copyWith(color: DesignColors.white1),
-                    networkModuleState: networkModuleState,
-                  ),
-                  const SizedBox(height: 4),
-                  if (connectionErrorModel != null) ...<Widget>[
-                    Text(
-                      connectionErrorModel.message,
-                      textAlign: TextAlign.center,
-                      style: textTheme.bodyMedium!.copyWith(color: connectionErrorModel.color),
-                    ),
+    return Scaffold(
+      body: BlocBuilder<NetworkModuleBloc, NetworkModuleState>(
+        builder: (BuildContext context, NetworkModuleState networkModuleState) {
+          return SingleChildScrollView(
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.only(top: 100), // AppSizes.defaultMobilePageMargin.copyWith(top: 100),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    SizedBox(width: 40, height: 42, child: Image.asset(Assets.assetsLogoSignet, fit: BoxFit.contain)),
                     const SizedBox(height: 16),
-                  ],
-                  if (_isAutoDisconnected == false) ...<Widget>[
-                    Text(
-                      S.of(context).networkSelectServers,
-                      style: textTheme.bodyLarge!.copyWith(color: DesignColors.white1),
+
+                    _NetworkHeadline(
+                      textStyle: textTheme.displayLarge!.copyWith(color: DesignColors.white1),
+                      networkModuleState: networkModuleState,
                     ),
-                    const SizedBox(height: 10),
-                  ],
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    constraints: const BoxConstraints(maxWidth: 400),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        const SizedBox(height: 20),
-                        if (_isAutoDisconnected) ...<Widget>[
-                          Text(
-                            S.of(context).networkServerToConnect,
-                            style: textTheme.bodyLarge!.copyWith(color: DesignColors.white1),
-                          ),
-                          const SizedBox(height: 10),
-                          NetworkListTile(
-                            networkStatusModel: widget.canceledNetworkStatusModel!,
+                    const SizedBox(height: 4),
+                    if (connectionErrorModel != null) ...<Widget>[
+                      Text(
+                        connectionErrorModel.message,
+                        textAlign: TextAlign.center,
+                        style: textTheme.bodyMedium!.copyWith(color: connectionErrorModel.color),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                    if (_isAutoDisconnected == false) ...<Widget>[
+                      Text(
+                        S.of(context).networkSelectServers,
+                        style: textTheme.bodyLarge!.copyWith(color: DesignColors.white1),
+                      ),
+                      const SizedBox(height: 10),
+                    ],
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      constraints: const BoxConstraints(maxWidth: 400),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          const SizedBox(height: 20),
+                          if (_isAutoDisconnected) ...<Widget>[
+                            Text(
+                              S.of(context).networkServerToConnect,
+                              style: textTheme.bodyLarge!.copyWith(color: DesignColors.white1),
+                            ),
+                            const SizedBox(height: 10),
+                            NetworkListTile(
+                              networkStatusModel: widget.canceledNetworkStatusModel!,
+                              moduleState: networkModuleState,
+                              arrowEnabledBool: true,
+                            ),
+                            const SizedBox(height: 20),
+                            Text(
+                              S.of(context).networkOtherServers,
+                              style: textTheme.bodyLarge!.copyWith(color: DesignColors.white1),
+                            ),
+                            const SizedBox(height: 10),
+                          ],
+                          NetworkList(
+                            hiddenNetworkStatusModel: _isAutoDisconnected ? widget.canceledNetworkStatusModel : null,
                             moduleState: networkModuleState,
+                            emptyListWidget: Text(
+                              S.of(context).networkNoAvailable,
+                              style: textTheme.bodyMedium!.copyWith(color: DesignColors.white2),
+                            ),
                             arrowEnabledBool: true,
                           ),
-                          const SizedBox(height: 20),
-                          Text(
-                            S.of(context).networkOtherServers,
-                            style: textTheme.bodyLarge!.copyWith(color: DesignColors.white1),
-                          ),
-                          const SizedBox(height: 10),
+                          NetworkCustomSection(arrowEnabledBool: true, moduleState: networkModuleState),
+                          const SizedBox(height: 100),
                         ],
-                        NetworkList(
-                          hiddenNetworkStatusModel: _isAutoDisconnected ? widget.canceledNetworkStatusModel : null,
-                          moduleState: networkModuleState,
-                          emptyListWidget: Text(
-                            S.of(context).networkNoAvailable,
-                            style: textTheme.bodyMedium!.copyWith(color: DesignColors.white2),
-                          ),
-                          arrowEnabledBool: true,
-                        ),
-                        NetworkCustomSection(arrowEnabledBool: true, moduleState: networkModuleState),
-                        const SizedBox(height: 100),
-                      ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 

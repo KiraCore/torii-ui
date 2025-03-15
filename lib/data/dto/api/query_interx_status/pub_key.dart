@@ -10,9 +10,10 @@ class PubKey extends Equatable {
   });
 
   factory PubKey.fromJson(Map<String, dynamic> json) => PubKey(
-        type: json['type'] as String,
-        value: json['value'] as String,
-      );
+    // TODO: recheck. It was type before
+    type: json['type'] ?? json['@type'] as String,
+    value: json['value'] as String,
+  );
 
   @override
   List<Object?> get props => <Object?>[type, value];

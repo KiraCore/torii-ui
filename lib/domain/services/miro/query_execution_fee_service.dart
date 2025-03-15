@@ -1,5 +1,6 @@
 import 'package:decimal/decimal.dart';
 import 'package:dio/dio.dart';
+import 'package:injectable/injectable.dart';
 import 'package:torii_client/data/dto/api_kira/query_execution_fee/request/query_execution_fee_request.dart';
 import 'package:torii_client/data/dto/api_kira/query_execution_fee/response/query_execution_fee_response.dart';
 import 'package:torii_client/data/dto/api_request_model.dart';
@@ -9,9 +10,12 @@ import 'package:torii_client/domain/services/miro/query_network_properties_servi
 import 'package:torii_client/presentation/network/bloc/network_module_bloc.dart';
 import 'package:torii_client/utils/exports.dart';
 
+@injectable
 class QueryExecutionFeeService {
-  final IApiKiraRepository _apiKiraRepository = getIt<IApiKiraRepository>();
-  final QueryNetworkPropertiesService _queryNetworkPropertiesService = getIt<QueryNetworkPropertiesService>();
+  final IApiKiraRepository _apiKiraRepository;
+  final QueryNetworkPropertiesService _queryNetworkPropertiesService;
+
+  QueryExecutionFeeService(this._apiKiraRepository, this._queryNetworkPropertiesService);
 
   Future<TokenAmountModel> getExecutionFeeForMessage(String messageName) async {
     Uri networkUri = getIt<NetworkModuleBloc>().state.networkUri;

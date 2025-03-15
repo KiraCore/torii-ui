@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/domain/exports.dart';
+import 'package:torii_client/presentation/transfer/widgets/token_form/cubit/token_form_cubit.dart';
 import 'package:torii_client/presentation/transfer/widgets/token_form/token_amount_text_field/token_amount_text_input_formatter.dart';
 import 'package:torii_client/presentation/transfer/widgets/tx_text_field.dart';
+import 'package:torii_client/utils/extensions/tx_utils.dart';
 
 class TokenAmountTextFieldContent extends StatefulWidget {
   final bool disabledBool;
@@ -58,13 +61,13 @@ class _TokenAmountTextFieldContentState extends State<TokenAmountTextFieldConten
 
   void _handleTextFieldChanged() {
     String text = widget.textEditingController.text;
-    // BlocProvider.of<TokenFormCubit>(context).notifyTokenAmountTextChanged(text);
+    BlocProvider.of<TokenFormCubit>(context).notifyTokenAmountTextChanged(text);
   }
 
   void _handleFocusChanged() {
     bool focusedBool = widget.focusNode.hasFocus;
     String text = widget.textEditingController.text;
-    String displayedAmount = '0'; //TxUtils.buildAmountString(text, widget.tokenDenominationModel);
+    String displayedAmount = TxUtils.buildAmountString(text, widget.tokenDenominationModel);
     if (focusedBool == false && text.isEmpty) {
       widget.textEditingController.text = '0';
     } else if (focusedBool == false) {

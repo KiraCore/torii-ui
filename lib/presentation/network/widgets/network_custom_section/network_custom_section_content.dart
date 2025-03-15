@@ -88,7 +88,7 @@ class _NetworkCustomSectionContent extends State<NetworkCustomSectionContent> {
           },
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 7),
+          padding: const EdgeInsets.symmetric(vertical: 16),
           child: KiraElevatedButton(
             title: S.of(context).networkButtonCheckConnection,
             onPressed: _pressCheckConnectionButton,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:torii_client/presentation/metamask/cubit/metamask_cubit.dart';
+import 'package:torii_client/presentation/network/network_drawer_page/current_network_button.dart';
 import 'package:torii_client/presentation/session/cubit/session_cubit.dart';
 import 'package:torii_client/presentation/widgets/exports.dart';
 import 'package:torii_client/utils/exports.dart';
@@ -20,6 +21,8 @@ class TransferAppBar extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
+              CurrentNetworkButton(size: const Size(200, 40)),
+              const SizedBox(width: 24),
               Text('Signed in with:', style: textTheme.bodySmall),
               const SizedBox(width: 12),
               if (state.kiraWallet != null) ...[

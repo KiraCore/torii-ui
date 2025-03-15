@@ -10,6 +10,10 @@
 // import 'package:miro/views/widgets/transactions/token_form/token_dropdown/token_dropdown_button.dart';
 // import 'package:miro/views/widgets/transactions/token_form/token_dropdown/token_dropdown_list.dart';
 // import 'package:miro/views/widgets/transactions/tx_input_wrapper.dart';
+// import 'package:torii_client/domain/models/tokens/token_amount_model.dart';
+// import 'package:torii_client/presentation/transfer/widgets/token_form/cubit/token_form_cubit.dart';
+// import 'package:torii_client/presentation/transfer/widgets/token_form/token_dropdown/token_dropdown_button.dart';
+// import 'package:torii_client/presentation/transfer/widgets/tx_input_wrapper.dart';
 
 // class TokenDropdown extends StatefulWidget {
 //   final bool disabledBool;
@@ -54,7 +58,7 @@
 //         width: boxConstraints.maxWidth,
 //         padding: const EdgeInsets.all(16),
 //         child: TokenDropdownButton(
-//           tokenAliasModel: widget.defaultTokenAmountModel?.tokenAmountModel.tokenAliasModel,
+//           tokenAliasModel: widget.defaultTokenAmountModel?.tokenAliasModel,
 //           disabledBool: widget.disabledBool,
 //         ),
 //       ),
@@ -65,10 +69,10 @@
 //     return Container(
 //       padding: const EdgeInsets.all(8),
 //       width: boxConstraints.maxWidth,
-//       height: const ResponsiveValue<double?>(largeScreen: 250, mediumScreen: 250, smallScreen: null).get(context),
+//       height: 250,
 //       constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.7),
 //       child: TokenDropdownList(
-//         initialTokenAliasModel: widget.defaultTokenAmountModel?.tokenAmountModel.tokenAliasModel,
+//         initialTokenAliasModel: widget.defaultTokenAmountModel?.tokenAliasModel,
 //         initialFilterOption: widget.initialFilterOption,
 //         onTokenAmountModelSelected: _handleTokenAmountModelChanged,
 //         walletAddress: widget.walletAddress,

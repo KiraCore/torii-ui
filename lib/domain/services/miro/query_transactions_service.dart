@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:injectable/injectable.dart';
 import 'package:torii_client/data/api/interx_headers.dart';
 import 'package:torii_client/data/dto/api/query_transactions/request/query_transactions_req.dart';
 import 'package:torii_client/data/dto/api/query_transactions/response/query_transactions_resp.dart';
@@ -9,8 +10,11 @@ import 'package:torii_client/domain/repositories/api_repository.dart';
 import 'package:torii_client/presentation/network/bloc/network_module_bloc.dart';
 import 'package:torii_client/utils/exports.dart';
 
+@injectable
 class QueryTransactionsService {
-  final IApiRepository _apiRepository = getIt<IApiRepository>();
+  final IApiRepository _apiRepository;
+
+  QueryTransactionsService(this._apiRepository);
 
   Future<PageData<TxListItemModel>> getTransactionList(
     QueryTransactionsReq queryTransactionsReq, {

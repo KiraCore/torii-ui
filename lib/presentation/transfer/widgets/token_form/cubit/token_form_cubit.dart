@@ -1,15 +1,18 @@
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:torii_client/data/dto/api_kira/query_balance/request/query_balance_req.dart';
 import 'package:torii_client/domain/exports.dart';
+import 'package:torii_client/domain/models/page_data.dart';
 import 'package:torii_client/domain/services/miro/query_balance_service.dart';
+import 'package:torii_client/utils/exports.dart';
 import 'package:torii_client/utils/extensions/tx_utils.dart';
 
 import 'token_form_state.dart';
 
 class TokenFormCubit extends Cubit<TokenFormState> {
   final GlobalKey<FormFieldState<TokenAmountModel>> formFieldKey = GlobalKey<FormFieldState<TokenAmountModel>>();
-  final QueryBalanceService queryBalanceService = QueryBalanceService();
+  final QueryBalanceService queryBalanceService = getIt<QueryBalanceService>();
   final TextEditingController amountTextEditingController = TextEditingController(text: '0');
 
   TokenFormCubit.fromBalance({
@@ -48,7 +51,7 @@ class TokenFormCubit extends Cubit<TokenFormState> {
     if (balanceExistsBool) {
       _updateTextFieldValue();
     } else {
-      // _initWithFirstBalance(filterOption);
+      _initWithFirstBalance();
     }
   }
 
@@ -100,23 +103,23 @@ class TokenFormCubit extends Cubit<TokenFormState> {
     _updateTextFieldValue();
   }
 
-  // Future<void> _initWithFirstBalance(FilterOption<TokenAmountModel>? filterOption) async {
-  //   try {
-  //     PageData<TokenAmountModel> balanceData = await queryBalanceService.getTokenAmountModelList(
-  //       QueryBalanceReq(address: state.walletAddress!.address, offset: 0, limit: 500),
-  //     );
-  //     List<TokenAmountModel> balanceList = balanceData.listItems;
+  Future<void> _initWithFirstBalance() async {
+    try {
+      PageData<TokenAmountModel> balanceData = await queryBalanceService.getTokenAmountModelList(
+        QueryBalanceReq(address: state.walletAddress!.address, offset: 0, limit: 500),
+      );
+      List<TokenAmountModel> balanceList = balanceData.listItems;
 
-  //     if (filterOption != null) {
-  //       balanceList = balanceList.where(filterOption.filterComparator).toList();
-  //     }
+      // if (filterOption != null) {
+      //   balanceList = balanceList.where(filterOption.filterComparator).toList();
+      // }
 
-  //     TokenAmountModel TnitialtokenAmountModel = balanceList.first;
-  //     updateBalance(TnitialtokenAmountModel);
-  //   } catch (_) {
-  //     emit(state.copyWith(errorBool: true));
-  //   }
-  // }
+      TokenAmountModel initialtokenAmountModel = balanceList.first;
+      updateBalance(initialtokenAmountModel);
+    } catch (_) {
+      emit(state.copyWith(errorBool: true));
+    }
+  }
 
   void _updateTextFieldValue() {
     bool amountFieldEnabledBool = state.tokenAmountModel != null && state.tokenDenominationModel != null;

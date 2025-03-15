@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:torii_client/presentation/transfer/widgets/token_form/cubit/token_form_cubit.dart';
+import 'package:torii_client/utils/exports.dart';
 
 class TokenAmountTextFieldActions extends StatefulWidget {
   final bool disabled;
@@ -18,22 +21,22 @@ class _TokenAmountTextFieldActions extends State<TokenAmountTextFieldActions> {
         TextButton(
           onPressed: widget.disabled ? null : _handleSendAllPressed,
           style: ButtonStyle(padding: WidgetStateProperty.all<EdgeInsets>(EdgeInsets.zero)),
-          child: Text('S.of(context).txButtonSendAll'),
+          child: Text(S.of(context).txButtonSendAll),
         ),
         TextButton(
           onPressed: widget.disabled ? null : _handleClearPressed,
           style: ButtonStyle(padding: WidgetStateProperty.all<EdgeInsets>(EdgeInsets.zero)),
-          child: Text('S.of(context).txButtonClear'),
+          child: Text(S.of(context).txButtonClear),
         ),
       ],
     );
   }
 
   void _handleSendAllPressed() {
-    // BlocProvider.of<TokenFormCubit>(context).setAllAvailableAmount();
+    BlocProvider.of<TokenFormCubit>(context).setAllAvailableAmount();
   }
 
   void _handleClearPressed() {
-    // BlocProvider.of<TokenFormCubit>(context).clearTokenAmount();
+    BlocProvider.of<TokenFormCubit>(context).clearTokenAmount();
   }
 }

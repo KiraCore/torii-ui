@@ -1,3 +1,4 @@
+import 'package:injectable/injectable.dart';
 import 'package:torii_client/data/dto/api/query_interx_status/query_interx_status_resp.dart';
 import 'package:torii_client/domain/models/tokens/token_default_denom_model.dart';
 import 'package:torii_client/domain/services/miro/query_interx_status_service.dart';
@@ -10,9 +11,12 @@ import 'package:torii_client/utils/network/status/network_offline_model.dart';
 import 'package:torii_client/utils/network/status/network_unknown_model.dart';
 import 'package:torii_client/utils/network/status/online/a_network_online_model.dart';
 
+@injectable
 class NetworkModuleService {
-  final QueryInterxStatusService _queryInterxStatusService = getIt<QueryInterxStatusService>();
-  final QueryKiraTokensAliasesService _queryKiraTokensAliasesService = getIt<QueryKiraTokensAliasesService>();
+  final QueryInterxStatusService _queryInterxStatusService;
+  final QueryKiraTokensAliasesService _queryKiraTokensAliasesService;
+
+  NetworkModuleService(this._queryInterxStatusService, this._queryKiraTokensAliasesService);
 
   Future<ANetworkStatusModel> getNetworkStatusModel(
     NetworkUnknownModel networkUnknownModel, {

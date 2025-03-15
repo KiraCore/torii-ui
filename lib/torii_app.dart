@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:torii_client/presentation/metamask/cubit/metamask_cubit.dart';
+import 'package:torii_client/presentation/network/bloc/network_module_bloc.dart';
 import 'package:torii_client/presentation/session/cubit/session_cubit.dart';
 import 'package:torii_client/utils/exports.dart';
 
@@ -31,6 +32,7 @@ class ToriiApp extends StatelessWidget {
             providers: [
               BlocProvider(create: (_) => getIt<SessionCubit>()),
               BlocProvider(create: (_) => getIt<MetamaskCubit>()),
+              BlocProvider(create: (_) => getIt<NetworkModuleBloc>()),
             ],
             child: BlocListener<SessionCubit, SessionState>(
               listenWhen:

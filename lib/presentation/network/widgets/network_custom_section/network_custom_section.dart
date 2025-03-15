@@ -31,24 +31,24 @@ class _NetworkCustomSection extends State<NetworkCustomSection> {
           width: double.infinity,
           child: Column(
             children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 17),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text(
-                      S.of(context).networkSwitchCustomAddress,
-                      style: textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.w400, color: DesignColors.white1),
-                    ),
-                    Switch(
-                      value: sectionExpandedBool,
-                      onChanged: _handleSwitchChanged,
-                      activeColor: DesignColors.greenStatus1,
-                    ),
-                  ],
-                ),
-              ),
-              if (sectionExpandedBool)
+              // Padding(
+              //   padding: const EdgeInsets.symmetric(vertical: 17),
+              //   child: Row(
+              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //     children: <Widget>[
+              //       Text(
+              //         S.of(context).networkSwitchCustomAddress,
+              //         style: textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.w400, color: DesignColors.white1),
+              //       ),
+              //       Switch(
+              //         value: sectionExpandedBool,
+              //         onChanged: _handleSwitchChanged,
+              //         activeColor: DesignColors.greenStatus1,
+              //       ),
+              //     ],
+              //   ),
+              // ),
+              // if (sectionExpandedBool)
                 NetworkCustomSectionContent(
                   networkCustomSectionCubit: networkCustomSectionCubit,
                   arrowEnabledBool: widget.arrowEnabledBool,

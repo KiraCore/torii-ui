@@ -37,6 +37,7 @@
   "errorNoResults": "No results",
   "error": "Error",
   "errorUndefined": "Undefined error",
+  "errorExplorer": "Error explorer",
   "balancesAmount": "Amount",
   "balancesDenomination": "Denomination",
   "balancesSend": "Send",
@@ -110,6 +111,95 @@
         "type": "String"
       },
       "parsedRemainingTime": {
+        "type": "String"
+      }
+    }
+  },
+
+  "txHintSendFrom": "Send from",
+  "txHintSendTo": "Send to",
+  "txHintMemo": "Memo",
+
+  "tx": "Transactions",
+  "txButtonSendAll": "Send all",
+  "txButtonClear": "Clear",
+  "txButtonNext": "Next",
+  "txButtonEdit": "Edit",
+  "txButtonClaimAllRewards": "Claim All Rewards",
+  "txButtonConfirmSend": "Confirm & send",
+  "txButtonBackToAccount": "Back to account",
+  "txButtonEditTransaction": "Edit transaction",
+  "txErrorNotEnoughTokens": "Not enough tokens",
+  "txErrorAccountNumberNotExist": "Cannot create transaction. Deposit tokens to your account and try again.",
+  "txErrorCannotCreate": "Cannot create transaction. Check your connection.",
+  "txErrorCannotLoadBalances": "Cannot load balances. Try again later.",
+  "txErrorCannotFetchDetails": "Cannot fetch transaction details. Check your internet connection.",
+  "txErrorEnterValidAddress": "Please enter a valid address",
+  "txErrorFailed": "Transaction failed",
+  "txErrorSeeMore": "See more on Explorer",
+  "txErrorHttpRequest": "Request",
+  "txErrorHttpResponse": "Response",
+  "txHintAmountToClaim": "Amount to claim",
+  "txHintClaim": "Claim",
+  "txHintClaimBy": "Claim by",
+  "txHintStakeBy": "Stake by",
+  "txHintStakeOn": "Stake on",
+  "txHintClaimTo": "Claim to",
+  "txHintSendFrom": "Send from",
+  "txHintSendTo": "Send to",
+  "txHintMemo": "Memo",
+  "txHintUnstakeFrom": "Unstake from",
+  "txHintUnstakeBy": "Unstake by",
+  "txHintVerifyBy": "Verify by",
+  "txNoticeFee": "Transaction fee {widgetFeeTokenAmountModel}",
+  "@txNoticeFee": {
+    "placeholders": {
+      "widgetFeeTokenAmountModel": {
+        "type": "String"
+      }
+    }
+  },
+  "txCannotLoadBalancesTryAgain": "Cannot load balances, try again",
+  "txTryAgain": "Try again",
+  "txFetchingRemoteData": "Fetching remote data. Please wait...",
+  "txSendTokens": "Send tokens",
+  "txTotalAmount": "Total amount",
+  "txRecipientWillGet": "Recipient will get",
+  "txYouWillGet": "You will get",
+  "txUnstakedLabel": "This will be visible in your list of unstaked",
+  "txUnstakedToolTip": "The amount will be available to claim after the unstake period has expired",
+  "txSigning": "Signing transaction",
+  "txSearchTokens": "Search tokens",
+  "txConfirm": "Confirm transaction",
+  "txIsBeingBroadcast": "Your transaction is being broadcast",
+  "txWarningDoNotCloseWindow": "Do not close this window",
+  "txCompleted": "Transaction completed",
+  "txToastHashCopied": "Transaction hash copied to clipboard",
+  "txToken": "Token",
+  "txPleaseSelectToken": "Please select a token",
+  "txHash": "Transaction hash: 0x{hash}",
+  "@txHash": {
+    "placeholders": {
+      "hash": {
+        "type": "String"
+      }
+    }
+  },
+  "txAvailableBalances": "Available: {availableAmountText} {tokenDenominationModelName}",
+  "@txAvailableBalances": {
+    "placeholders": {
+      "availableAmountText": {
+        "type": "String"
+      },
+      "tokenDenominationModelName": {
+        "type": "String"
+      }
+    }
+  },
+  "txPreviewUnavailable": "Preview for {txMsgType} unavailable",
+  "@txPreviewUnavailable": {
+    "placeholders": {
+      "txMsgType": {
         "type": "String"
       }
     }

@@ -85,12 +85,12 @@
 //                   hasScrollBody: false,
 //                   child: Container(
 //                     margin: const EdgeInsets.only(bottom: 20),
-//                     child: const CenterLoadSpinner(),
+//                     child: const LoadingContainer(),
 //                   ),
 //                 ),
 //               )
 //             else if (loadingOverlayVisibleBool)
-//               const SliverPositioned.fill(child: CenterLoadSpinner())
+//               const SliverPositioned.fill(child: LoadingContainer())
 //           ],
 //         ),
 //       ],
