@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:go_router/go_router.dart';
 import 'package:torii_client/torii_app.dart';
 import 'package:torii_client/utils/exports.dart';
 
@@ -9,6 +11,8 @@ void main() {
     () async {
       WidgetsFlutterBinding.ensureInitialized();
       await setupDependencies();
+
+      usePathUrlStrategy();
 
       runApp(const ToriiApp());
     },

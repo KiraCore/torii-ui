@@ -1,7 +1,8 @@
 import 'package:go_router/go_router.dart';
 import 'package:torii_client/utils/exports.dart';
+import 'package:torii_client/utils/router/kira_go_router.dart';
 
-extension GoRouterExtension on GoRouter {
+extension GoRouterExtension on KiraGoRouter {
   void tryPop() => canPop() ? pop() : null;
 
   String? get currentRouteLocation {

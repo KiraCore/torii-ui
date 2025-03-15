@@ -1,15 +1,15 @@
 
+import 'package:injectable/injectable.dart';
 import 'package:torii_client/utils/browser/browser_url_controller.dart';
 import 'package:torii_client/utils/network/status/a_network_status_model.dart';
 
+@injectable
 class RpcBrowserUrlController {
   static String rpcQueryParameterKey = 'rpc';
 
   final BrowserUrlController browserUrlController;
 
-  RpcBrowserUrlController({
-    this.browserUrlController = const BrowserUrlController(),
-  });
+  RpcBrowserUrlController(this.browserUrlController);
 
   String? getRpcAddress() {
     Map<String, dynamic> queryParameters = browserUrlController.extractQueryParameters();
