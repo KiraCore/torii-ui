@@ -128,7 +128,7 @@ class MetamaskCubit extends Cubit<MetamaskState> {
     }
     await _switchNetworkToKira();
     String address;
-    switch (to.runtimeType) {
+    switch (to) {
       case EthereumWalletAddress _:
         address = to.address;
       case CosmosWalletAddress _:

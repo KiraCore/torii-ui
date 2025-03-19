@@ -54,6 +54,14 @@ class EthereumService {
 
   Future<int?> getChainId() async => ethereum?.getChainId();
 
+  Future<int?> getBalance(String address) async {
+    final String? balance = await ethereum?.request('eth_getBalance', <String>[address, 'latest']);
+    if (balance == null) {
+      return null;
+    }
+    return int.tryParse(balance.withoutHexPrefix(), radix: 16);
+  }
+
   Future<String?> getPublicKey(String address) async =>
       ethereum?.request('eth_getEncryptionPublicKey', <String>[address]);
 
