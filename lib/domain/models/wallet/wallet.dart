@@ -45,6 +45,7 @@ class Wallet extends Equatable {
   }
 
   bool get isEthereum => address is EthereumWalletAddress;
+  bool get isKira => address is CosmosWalletAddress;
 
   @override
   List<Object?> get props => <Object?>[address, ecPrivateKey];

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/domain/models/tokens/a_msg_form_model.dart';
+import 'package:torii_client/domain/models/tokens/msg_send_form_model.dart';
 import 'package:torii_client/presentation/transfer/send/tx_dialog_error.dart';
 import 'package:torii_client/presentation/transfer/send/tx_dialog_loading.dart';
 import 'package:torii_client/presentation/transfer/tx_broadcast/tx_broadcast_page.dart';
@@ -39,12 +40,6 @@ class TxProcessWrapper<T extends AMsgFormModel> extends StatefulWidget {
 
 class _TxProcessWrapper<T extends AMsgFormModel> extends State<TxProcessWrapper<T>> {
   @override
-  void initState() {
-    super.initState();
-    widget.txProcessCubit.init(formEnabledBool: widget.formEnabledBool);
-  }
-
-  @override
   Widget build(BuildContext context) {
     return BlocProvider<TxProcessCubit<T>>.value(
       value: widget.txProcessCubit,
@@ -61,7 +56,11 @@ class _TxProcessWrapper<T extends AMsgFormModel> extends State<TxProcessWrapper<
           } else if (txProcessState is TxProcessConfirmState) {
             dialogWidget = widget.txFormPreviewWidgetBuilder(txProcessState);
           } else if (txProcessState is TxProcessBroadcastState) {
-            dialogWidget = TxBroadcastPage<T>(signedTxModel: txProcessState.signedTxModel);
+            dialogWidget = TxBroadcastPage<T>(
+              signedTxModel: txProcessState.signedTxModel,
+              // TODO: refactor
+              msgSendFormModel: widget.txProcessCubit.msgFormModel as MsgSendFormModel,
+            );
           } else if (txProcessState is TxProcessErrorState) {
             dialogWidget = TxDialogError<T>(accountErrorBool: txProcessState.accountErrorBool);
           }

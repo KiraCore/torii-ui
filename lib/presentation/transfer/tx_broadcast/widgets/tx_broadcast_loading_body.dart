@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:torii_client/presentation/transfer/tx_broadcast/cubit/states/tx_broadcast_loading_state.dart';
 import 'package:torii_client/utils/assets.dart';
 import 'package:torii_client/utils/exports.dart';
 
 class TxBroadcastLoadingBody extends StatelessWidget {
-  final TxBroadcastLoadingState txBroadcastLoadingState;
-
-  const TxBroadcastLoadingBody({required this.txBroadcastLoadingState, Key? key}) : super(key: key);
+  const TxBroadcastLoadingBody({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

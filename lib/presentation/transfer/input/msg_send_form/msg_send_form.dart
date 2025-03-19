@@ -67,7 +67,7 @@ class _MsgSendForm extends State<MsgSendForm> {
               return TokenForm(
                 label: S.of(context).balancesAmount,
                 feeTokenAmountModel: widget.feeTokenAmountModel,
-                // defaultTokenAmountModel: widget.msgSendFormModel.balance,
+                balance: widget.msgSendFormModel.balance,
                 defaultTokenAmountModel: widget.msgSendFormModel.tokenAmountModel,
                 defaultTokenDenominationModel: widget.msgSendFormModel.tokenDenominationModel,
                 onChanged: _handleTokenAmountChanged,

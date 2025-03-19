@@ -1,3 +1,4 @@
+import 'package:decimal/decimal.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/domain/exports.dart';
 import 'package:torii_client/domain/models/messages/interx_msg_types.dart';
@@ -31,7 +32,7 @@ class TxProcessCubit<T extends AMsgFormModel> extends Cubit<ATxProcessState> {
 
   TxProcessCubit({required this.txMsgType, required this.msgFormModel}) : super(const TxProcessLoadingState());
 
-  Future<void> init({bool formEnabledBool = true}) async {
+  Future<void> init({required bool sendFromKira, bool formEnabledBool = true}) async {
     emit(const TxProcessLoadingState());
 
     if (sessionCubit.state.isLoggedIn == false) {
@@ -42,31 +43,48 @@ class TxProcessCubit<T extends AMsgFormModel> extends Cubit<ATxProcessState> {
     String msgTypeName = InterxMsgTypes.getName(txMsgType);
 
     try {
-      if (sessionCubit.state.kiraWallet == null) {
-        emit(const TxProcessErrorState(accountErrorBool: true));
-        return;
-      }
-      bool txRemoteInfoAvailableBool = await _queryAccountService.isAccountRegistered(
-        sessionCubit.state.kiraWallet!.address.address,
-      );
-      if (txRemoteInfoAvailableBool == false) {
-        emit(const TxProcessErrorState(accountErrorBool: true));
-        return;
-      }
-      TokenAmountModel feeTokenAmountModel = await _queryExecutionFeeService.getExecutionFeeForMessage(msgTypeName);
-      NetworkPropertiesModel networkPropertiesModel = await _queryNetworkPropertiesService.getNetworkProperties();
-      TxProcessLoadedState txProcessLoadedState = TxProcessLoadedState(
-        feeTokenAmountModel: feeTokenAmountModel,
-        networkPropertiesModel: networkPropertiesModel,
-      );
-      if (formEnabledBool) {
-        emit(txProcessLoadedState);
-        return;
-      }
+      if (sendFromKira) {
+        bool txRemoteInfoAvailableBool = await _queryAccountService.isAccountRegistered(
+          sessionCubit.state.kiraWallet!.address.address,
+        );
+        if (txRemoteInfoAvailableBool == false) {
+          emit(const TxProcessErrorState(accountErrorBool: true));
+          return;
+        }
+        TokenAmountModel feeTokenAmountModel = await _queryExecutionFeeService.getExecutionFeeForMessage(msgTypeName);
+        NetworkPropertiesModel networkPropertiesModel = await _queryNetworkPropertiesService.getNetworkProperties();
+        TxProcessLoadedState txProcessLoadedState = TxProcessLoadedState(
+          feeTokenAmountModel: feeTokenAmountModel,
+          networkPropertiesModel: networkPropertiesModel,
+        );
+        if (formEnabledBool) {
+          emit(txProcessLoadedState);
+          return;
+        }
 
-      SignedTxModel signedTxModel = await _buildSignedTransaction(feeTokenAmountModel);
-      if (isClosed == false) {
-        emit(TxProcessConfirmState(txProcessLoadedState: txProcessLoadedState, signedTxModel: signedTxModel));
+        SignedTxModel signedTxModel = await _buildSignedTransaction(feeTokenAmountModel);
+        if (isClosed == false) {
+          emit(TxProcessConfirmState(txProcessLoadedState: txProcessLoadedState, signedTxModel: signedTxModel));
+        }
+      } else {
+        emit(
+          TxProcessLoadedState(
+            feeTokenAmountModel: TokenAmountModel(
+              defaultDenominationAmount: Decimal.fromInt(0),
+              tokenAliasModel: TokenAliasModel.local('ETH'),
+            ),
+            networkPropertiesModel: NetworkPropertiesModel(
+              minTxFee: TokenAmountModel(
+                defaultDenominationAmount: Decimal.fromInt(0),
+                tokenAliasModel: TokenAliasModel.local('ETH'),
+              ),
+              minIdentityApprovalTip: TokenAmountModel(
+                defaultDenominationAmount: Decimal.fromInt(0),
+                tokenAliasModel: TokenAliasModel.local('ETH'),
+              ),
+            ),
+          ),
+        );
       }
     } catch (e) {
       if (isClosed == false) {

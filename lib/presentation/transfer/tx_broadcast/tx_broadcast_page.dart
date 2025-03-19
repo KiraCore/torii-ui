@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:torii_client/domain/exports.dart';
 import 'package:torii_client/domain/models/tokens/a_msg_form_model.dart';
 import 'package:torii_client/domain/models/transaction/signed_transaction_model.dart';
 import 'package:torii_client/presentation/transfer/tx_broadcast/cubit/a_tx_broadcast_state.dart';
@@ -14,8 +15,9 @@ import 'package:torii_client/utils/exports.dart';
 
 class TxBroadcastPage<T extends AMsgFormModel> extends StatefulWidget {
   final SignedTxModel signedTxModel;
+  final MsgSendFormModel msgSendFormModel;
 
-  const TxBroadcastPage({required this.signedTxModel, Key? key}) : super(key: key);
+  const TxBroadcastPage({required this.signedTxModel, required this.msgSendFormModel, Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _TxBroadcastPage<T>();
@@ -40,7 +42,14 @@ class _TxBroadcastPage<T extends AMsgFormModel> extends State<TxBroadcastPage<T>
   Widget build(BuildContext context) {
     return BlocProvider<TxBroadcastCubit>.value(
       value: txBroadcastCubit,
-      child: BlocBuilder<TxBroadcastCubit, ATxBroadcastState>(
+      child: BlocConsumer<TxBroadcastCubit, ATxBroadcastState>(
+        listener: (BuildContext context, ATxBroadcastState txBroadcastState) {
+          if (txBroadcastState is TxBroadcastCompletedState) {
+            ClaimProgressRoute(
+              ClaimProgressRouteExtra(signedTx: widget.signedTxModel, msgSendFormModel: widget.msgSendFormModel),
+            ).replace(context);
+          }
+        },
         builder: (BuildContext context, ATxBroadcastState txBroadcastState) {
           return AnimatedSwitcher(
             duration: const Duration(milliseconds: 200),
@@ -57,10 +66,8 @@ class _TxBroadcastPage<T extends AMsgFormModel> extends State<TxBroadcastPage<T>
         errorExplorerModel: txBroadcastState.errorExplorerModel,
         signedTxModel: widget.signedTxModel,
       );
-    } else if (txBroadcastState is TxBroadcastLoadingState) {
-      return TxBroadcastLoadingBody(txBroadcastLoadingState: txBroadcastState);
-    } else if (txBroadcastState is TxBroadcastCompletedState) {
-      return TxBroadcastCompleteBody(txBroadcastCompletedState: txBroadcastState);
+    } else if (txBroadcastState is TxBroadcastLoadingState || txBroadcastState is TxBroadcastCompletedState) {
+      return TxBroadcastLoadingBody();
     } else {
       getIt<Logger>().e('Unexpected ATxBroadcastState state $txBroadcastState');
       return const SizedBox();

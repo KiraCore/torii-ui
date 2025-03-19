@@ -37,15 +37,15 @@ class TokenAmountTextField extends StatelessWidget {
                 child: Center(
                   child: TxInputStaticLabel(
                     label: label,
-                    contentPadding: const EdgeInsets.only(top: 9, bottom: 5),
-                  child: TokenAmountTextFieldContent(
-                    disabledBool: correctDisabledBool,
-                    label: label,
-                    textEditingController: textEditingController,
-                    tokenDenominationModel: tokenDenominationModel,
-                    focusNode: focusNode,
-                    errorExistsBool: errorExistsBool,
-                  ),
+                    contentPadding: const EdgeInsets.only(top: 8, bottom: 4),
+                    child: TokenAmountTextFieldContent(
+                      disabledBool: correctDisabledBool,
+                      label: label,
+                      textEditingController: textEditingController,
+                      tokenDenominationModel: tokenDenominationModel,
+                      focusNode: focusNode,
+                      errorExistsBool: errorExistsBool,
+                    ),
                   ),
                 ),
               ),

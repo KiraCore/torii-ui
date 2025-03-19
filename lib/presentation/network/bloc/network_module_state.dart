@@ -4,7 +4,7 @@ import 'package:torii_client/utils/network/status/a_network_status_model.dart';
 import 'package:torii_client/utils/network/status/network_empty_model.dart';
 
 class NetworkModuleState extends Equatable {
-  final ANetworkStatusModel networkStatusModel; // NetworkEmptyModel
+  final ANetworkStatusModel networkStatusModel;
 
   NetworkModuleState.connecting(ANetworkStatusModel networkStatusModel)
     : networkStatusModel = networkStatusModel.copyWith(connectionStatusType: ConnectionStatusType.connecting);

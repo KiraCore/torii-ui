@@ -20,7 +20,6 @@ import 'package:torii_client/utils/network/app_config.dart';
 import 'package:torii_client/utils/network/network_utils.dart';
 import 'package:torii_client/utils/network/status/a_network_status_model.dart';
 import 'package:torii_client/utils/network/status/network_empty_model.dart';
-import 'package:torii_client/utils/network/status/network_offline_model.dart';
 import 'package:torii_client/utils/network/status/network_unknown_model.dart';
 import 'package:torii_client/utils/network/status/online/a_network_online_model.dart';
 
@@ -36,8 +35,6 @@ class NetworkModuleBloc extends Bloc<ANetworkModuleEvent, NetworkModuleState> {
 
   late Timer _timer;
   TokenDefaultDenomModel tokenDefaultDenomModel = TokenDefaultDenomModel.empty();
-  
-  static const List<String> _ignoredNetworks = <String>['148.251.69.56', '128.140.42.2'];
 
   NetworkModuleBloc(
     this._networkModuleService,
@@ -51,6 +48,9 @@ class NetworkModuleBloc extends Bloc<ANetworkModuleEvent, NetworkModuleState> {
     on<NetworkModuleAutoConnectEvent>(_mapAutoConnectEventToState);
     on<NetworkModuleConnectEvent>(_mapConnectEventToState);
     on<NetworkModuleDisconnectEvent>(_mapDisconnectEventToState);
+    if (_rpcBrowserUrlController.getRpcAddress() != null) {
+      add(NetworkModuleInitEvent());
+    }
   }
 
   @override
@@ -60,10 +60,11 @@ class NetworkModuleBloc extends Bloc<ANetworkModuleEvent, NetworkModuleState> {
   }
 
   void _mapInitEventToState(NetworkModuleInitEvent networkModuleInitEvent, Emitter<NetworkModuleState> emit) {
-    NetworkUnknownModel defaultNetworkUnknownModel = _appConfig.getDefaultNetworkUnknownModel();
-
-    add(NetworkModuleAutoConnectEvent(defaultNetworkUnknownModel));
-    _updateNetworkStatusModelList(ignoreNetworkUnknownModel: defaultNetworkUnknownModel);
+    NetworkUnknownModel? defaultNetworkUnknownModel = _appConfig.getDefaultNetworkUnknownModel();
+    if (defaultNetworkUnknownModel != null) {
+      add(NetworkModuleAutoConnectEvent(defaultNetworkUnknownModel));
+      _updateNetworkStatusModelList(ignoreNetworkUnknownModel: defaultNetworkUnknownModel);
+    }
 
     _timer = Timer.periodic(_appConfig.refreshInterval, (Timer timer) {
       add(NetworkModuleRefreshEvent());
@@ -174,16 +175,6 @@ class NetworkModuleBloc extends Bloc<ANetworkModuleEvent, NetworkModuleState> {
   }
 
   Future<void> _updateNetworkStatusModel({required NetworkUnknownModel networkUnknownModel}) async {
-    if (_ignoredNetworks.contains(networkUnknownModel.uri.host)) {
-      ANetworkStatusModel networkStatusModel = NetworkOfflineModel(
-        connectionStatusType: ConnectionStatusType.disconnected,
-        uri: networkUnknownModel.uri,
-        lastRefreshDateTime: DateTime.now(),
-        name: networkUnknownModel.name,
-      );
-      _networkListCubit.setNetworkStatusModel(networkStatusModel: networkStatusModel);
-      return;
-    }
     ANetworkStatusModel networkStatusModel = await _networkModuleService.getNetworkStatusModel(networkUnknownModel);
     _networkListCubit.setNetworkStatusModel(networkStatusModel: networkStatusModel);
   }

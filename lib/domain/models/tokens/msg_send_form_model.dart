@@ -55,6 +55,7 @@ class MsgSendFormModel extends AMsgFormModel {
 
   set recipientWalletAddress(AWalletAddress? recipientWalletAddress) {
     _recipientWalletAddress = recipientWalletAddress;
+    // TODO: which listener?
     notifyListeners();
   }
 

@@ -95,23 +95,24 @@ class _TxSendFormFooter extends State<TxSendFormFooter> {
       return;
     }
     try {
-      UnsignedTxModel unsignedTxModel = await txFormBuilderCubit.buildUnsignedTx();
-      if (metamaskCubit.isSupported && sessionCubit.state.kiraWallet!.ecPrivateKey == null) {
+      final model = widget.msgFormModel;
+      if (model is MsgSendFormModel && model.senderWalletAddress is EthereumWalletAddress) {
         // TODO(Mykyta): is there possibility that model can be not a MsgSendModel ? (`send-via-metamask` task)
         // ignore:unused_local_variable
-        int amount =
-            (unsignedTxModel.txLocalInfoModel.txMsgModel as MsgSendModel).tokenAmountModel
-                .getAmountInDefaultDenomination()
-                .toBigInt()
-                .toInt();
+        int amount = model.tokenAmountModel?.getAmountInDefaultDenomination().toBigInt().toInt() ?? 0;
+        if (amount == 0 || model.recipientWalletAddress == null) {
+          getIt<Logger>().e('Form is not valid');
+          return;
+        }
         // TODO(Mykyta): add error handling at `send-via-metamask` task
-        await metamaskCubit.pay(to: sessionCubit.state.kiraWallet!.address, amount: 0);
+        await metamaskCubit.pay(to: model.recipientWalletAddress!, amount: 0); // todo add amount
         return;
       }
+      UnsignedTxModel unsignedTxModel = await txFormBuilderCubit.buildUnsignedTx();
       SignedTxModel signedTxModel = await _signTransaction(unsignedTxModel);
       widget.onSubmit(signedTxModel);
     } catch (e) {
-      getIt<Logger>().e(e.toString());
+      getIt<Logger>().e('Metamask pay ${e.toString()}');
       return;
     }
   }

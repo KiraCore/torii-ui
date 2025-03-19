@@ -2,7 +2,7 @@
 class Assets {
   Assets._();
 
-  static const String assetsLogoLoading = 'assets/imageslogo_loading.gif';
+  static const String assetsLogoLoading = 'assets/images/logo_loading.gif';
   static const String assetsLogoSignet = 'assets/images/logo_signet.png';
   static const String fontsIconsFont = 'assets/fonts/IconsFont.ttf';
   static const String fontsIconsFontConfig = 'assets/fonts/icons_font_config.json';

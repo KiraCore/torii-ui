@@ -34,7 +34,8 @@ class TxDialogError<T extends AMsgFormModel> extends StatelessWidget {
             ),
           const SizedBox(height: 20),
           TextButton.icon(
-            onPressed: BlocProvider.of<TxProcessCubit<T>>(context).init,
+            // TODO: make refresh for eth too
+            onPressed: () => BlocProvider.of<TxProcessCubit<T>>(context).init(sendFromKira: true),
             icon: const Icon(AppIcons.refresh, size: 18),
             label: Text(S.of(context).txTryAgain, style: textTheme.titleSmall!.copyWith(color: DesignColors.white1)),
           ),

@@ -7,6 +7,10 @@ extension StringExtension on String {
   String toShortenedAddress() {
     return '${substring(0, 8)}...${substring(length - 6)}';
   }
+
+  String withoutHexPrefix() {
+    return replaceFirst('0x', '');
+  }
 }
 
 class StringRegExp {

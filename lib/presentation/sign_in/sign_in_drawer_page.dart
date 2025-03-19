@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:torii_client/presentation/widgets/buttons/kira_elevated_button.dart';
 import 'package:torii_client/presentation/widgets/drawer/drawer_subtitle.dart';
 import 'package:torii_client/utils/exports.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SignInDrawerPage extends StatelessWidget {
   const SignInDrawerPage({super.key});
@@ -49,10 +50,14 @@ class SignInDrawerPage extends StatelessWidget {
           },
         ),
         const SizedBox(height: 32),
-        Text(
-          'Do not have a wallet?\nCreate one using MIRO app.',
-          style: textTheme.bodyMedium!.copyWith(
-            color: disabledBool || loadingBool ? DesignColors.grey2 : DesignColors.white1,
+        InkWell(
+          onTap: () {
+            launchUrl(Uri.parse('https://github.com/KiraCore/miro/releases'));
+          },
+          child: Text(
+            'Do not have a wallet?\nCreate one using MIRO app.',
+            style: textTheme.bodyMedium!.copyWith(
+              color: DesignColors.hyperlink),
           ),
         ),
         const SizedBox(height: 32),

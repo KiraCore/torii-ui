@@ -4,7 +4,7 @@ import 'package:torii_client/presentation/widgets/dialog_menu/kira_dialog_menu_i
 import 'package:torii_client/presentation/widgets/mouse_state_listener.dart';
 import 'package:torii_client/utils/exports.dart';
 
-class KiraDialogMenu extends StatelessWidget {
+class KiraDialogMenu extends StatefulWidget {
   final bool disabled;
   final Color backgroundColor;
   final Widget button;
@@ -21,9 +21,22 @@ class KiraDialogMenu extends StatelessWidget {
   });
 
   @override
+  State<KiraDialogMenu> createState() => _KiraDialogMenuState();
+}
+
+class _KiraDialogMenuState extends State<KiraDialogMenu> {
+  late JustTheController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = JustTheController();
+  }
+    
+  @override
   Widget build(BuildContext context) {
-    final controller = JustTheController();
     return JustTheTooltip(
+      key: widget.key,
       isModal: true,
       controller: controller,
       triggerMode: TooltipTriggerMode.manual,
@@ -41,26 +54,26 @@ class KiraDialogMenu extends StatelessWidget {
         ),
         child: Container(
           padding: const EdgeInsets.all(3),
-          decoration: BoxDecoration(color: backgroundColor, borderRadius: BorderRadius.circular(8)),
-          width: popupWidth,
+          decoration: BoxDecoration(color: widget.backgroundColor, borderRadius: BorderRadius.circular(8)),
+          width: widget.popupWidth,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
-            children: popupItems,
+            children: widget.popupItems,
           ),
         ),
       ),
       child: MouseStateListener(
         onTap:
-            disabled
+            widget.disabled
                 ? null
                 : () async {
                   // NOTE: async is required due to the controller.showTooltip() call bug
-                  await Future.delayed(const Duration(milliseconds: 0));
+                  await Future.delayed(const Duration(milliseconds: 50));
                   return controller.showTooltip();
                 },
         childBuilder: (Set<WidgetState> states) {
-          return Padding(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), child: button);
+          return Padding(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), child: widget.button);
         },
       ),
     );

@@ -18,6 +18,7 @@ class TokenForm extends StatefulWidget {
   final TokenAmountModel feeTokenAmountModel;
   final AWalletAddress? walletAddress;
   final bool selectableBool;
+  final TokenAmountModel? balance;
   final TokenAmountModel? defaultTokenAmountModel;
   // final FilterOption<TokenAmountModel>? initialFilterOption;
   final TokenDenominationModel? defaultTokenDenominationModel;
@@ -30,6 +31,7 @@ class TokenForm extends StatefulWidget {
     required this.walletAddress,
     this.selectableBool = true,
     // this.initialFilterOption,
+    this.balance,
     this.defaultTokenAmountModel,
     this.defaultTokenDenominationModel,
     this.validateCallback,
@@ -46,9 +48,9 @@ class _TokenForm extends State<TokenForm> {
   @override
   void initState() {
     super.initState();
-    if (widget.defaultTokenAmountModel != null) {
+    if (widget.balance != null) {
       tokenFormCubit = TokenFormCubit.fromBalance(
-        balance: widget.defaultTokenAmountModel!,
+        balance: widget.balance!,
         feeTokenAmountModel: widget.feeTokenAmountModel,
         walletAddress: widget.walletAddress,
         tokenAmountModel: widget.defaultTokenAmountModel,
@@ -94,8 +96,9 @@ class _TokenForm extends State<TokenForm> {
                     children: [
                       if (tokenFormState.loadingBool) ...<Widget>[
                         Expanded(child: shimmerWidget),
-                        const SizedBox(width: 16),
-                        Expanded(child: shimmerWidget),
+                        // TODO: dropdown
+                        // const SizedBox(width: 16),
+                        // Expanded(child: shimmerWidget),
                       ] else ...<Widget>[
                         Expanded(
                           child: TokenAmountTextField(

@@ -16,7 +16,7 @@ abstract class ATxMsgModel extends Equatable {
   const ATxMsgModel({required this.txMsgType});
 
   static ATxMsgModel buildFromDto(ATxMsg msgDto) {
-    switch (msgDto.runtimeType) {
+    switch (msgDto) {
       case MsgClaim dto:
         return MsgClaimModel.fromMsgDto(dto);
       case MsgSend dto:

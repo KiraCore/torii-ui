@@ -101,16 +101,13 @@
       }
     }
   },
-  "networkConnectingTo": "Connecting to <{networkName}>{separator} Please wait... {parsedRemainingTime}",
+  "networkConnectingTo": "Connecting to <{networkName}>{separator} Please wait...",
   "@networkConnectingTo": {
     "placeholders": {
       "separator": {
         "type": "String"
       },
       "networkName": {
-        "type": "String"
-      },
-      "parsedRemainingTime": {
         "type": "String"
       }
     }
@@ -159,7 +156,6 @@
       }
     }
   },
-  "txCannotLoadBalancesTryAgain": "Cannot load balances, try again",
   "txTryAgain": "Try again",
   "txFetchingRemoteData": "Fetching remote data. Please wait...",
   "txSendTokens": "Send tokens",

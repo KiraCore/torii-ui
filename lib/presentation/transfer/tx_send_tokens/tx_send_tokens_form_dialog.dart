@@ -5,20 +5,21 @@ import 'package:torii_client/domain/models/transaction/signed_transaction_model.
 import 'package:torii_client/presentation/transfer/input/msg_send_form/msg_send_form.dart';
 import 'package:torii_client/presentation/transfer/send/tx_dialog.dart';
 import 'package:torii_client/presentation/transfer/send/tx_send_form_footer.dart';
-import 'package:torii_client/presentation/widgets/toggle_between_wallet_address_types.dart';
-import 'package:torii_client/utils/exports.dart';
+import 'package:torii_client/presentation/transfer/widgets/toggle_between_wallet_address_types.dart';
 
 class TxSendTokensFormDialog extends StatefulWidget {
   final MsgSendFormModel msgSendFormModel;
   final TokenAmountModel feeTokenAmountModel;
   final ValueChanged<SignedTxModel> onTxFormCompleted;
+  final bool sendFromKira;
 
   const TxSendTokensFormDialog({
     required this.msgSendFormModel,
     required this.feeTokenAmountModel,
     required this.onTxFormCompleted,
-    Key? key,
-  }) : super(key: key);
+    required this.sendFromKira,
+    super.key,
+  });
 
   @override
   State<StatefulWidget> createState() => _TxSendTokensFormDialog();
@@ -36,7 +37,7 @@ class _TxSendTokensFormDialog extends State<TxSendTokensFormDialog> {
   @override
   Widget build(BuildContext context) {
     return TxDialog(
-      title: S.of(context).txSendTokens,
+      title: widget.sendFromKira ? 'Send to Ethereum' : 'Send to KIRA',
       suffixWidget: const ToggleBetweenWalletAddressTypes(),
       child: Column(
         children: <Widget>[
