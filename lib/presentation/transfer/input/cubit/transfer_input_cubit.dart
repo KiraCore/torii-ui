@@ -22,8 +22,7 @@ class TransferInputCubit extends Cubit<TransferInputState> {
 
   Future<void> _initEthBalanceEmitWallet(Wallet fromWallet) async {
     if (fromWallet == _sessionCubit.state.ethereumWallet) {
-      // todo rev
-      final int? balance = 1;await _ethereumService.getBalance(_sessionCubit.state.ethereumWallet!.address.address);
+      final int? balance = await _ethereumService.getBalance(_sessionCubit.state.ethereumWallet!.address.address);
       if (balance != null) {
         emit(
           TransferInputState(
