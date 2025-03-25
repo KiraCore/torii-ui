@@ -6,7 +6,7 @@ import 'package:torii_client/presentation/transfer/send/tx_dialog_confirm_layout
 
 class TxSendTokensConfirmDialog extends StatelessWidget {
   final MsgSendFormModel msgSendFormModel;
-  final TxLocalInfoModel txLocalInfoModel;
+  final TxLocalInfoModel? txLocalInfoModel;
 
   const TxSendTokensConfirmDialog({required this.msgSendFormModel, required this.txLocalInfoModel, Key? key})
     : super(key: key);

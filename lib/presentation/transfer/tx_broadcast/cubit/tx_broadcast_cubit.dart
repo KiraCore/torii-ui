@@ -1,5 +1,9 @@
+import 'package:decimal/decimal.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_web3/flutter_web3.dart';
+import 'package:injectable/injectable.dart';
+import 'package:torii_client/domain/exports.dart';
 import 'package:torii_client/domain/models/network/error_explorer_model.dart';
 import 'package:torii_client/domain/models/transaction/broadcast_resp_model.dart';
 import 'package:torii_client/domain/models/transaction/signed_transaction_model.dart';
@@ -10,17 +14,66 @@ import 'package:torii_client/presentation/transfer/tx_broadcast/cubit/states/tx_
 import 'package:torii_client/presentation/transfer/tx_broadcast/cubit/states/tx_broadcast_loading_state.dart';
 import 'package:torii_client/utils/exports.dart';
 
+@injectable
 class TxBroadcastCubit extends Cubit<ATxBroadcastState> {
-  final BroadcastService broadcastService = getIt<BroadcastService>();
+  TxBroadcastCubit(this._broadcastService, this._ethereumService) : super(TxBroadcastLoadingState());
 
-  TxBroadcastCubit() : super(TxBroadcastLoadingState());
+  final BroadcastService _broadcastService;
+  final EthereumService _ethereumService;
 
-  Future<void> broadcast(SignedTxModel signedTxModel) async {
+  Future<void> broadcastFromEth({
+    required String passphrase,
+    required String kiraRecipient,
+    required Decimal amount,
+  }) async {
     emit(TxBroadcastLoadingState());
     try {
-      BroadcastRespModel broadcastRespModel = await broadcastService.broadcastTx(signedTxModel);
+      final TransactionResponse? tx = await _ethereumService.exportContractTokens(
+        passphrase: passphrase,
+        kiraAddress: kiraRecipient,
+        amountInEth: amount,
+      );
+      if (tx != null) {
+        final BroadcastRespModel broadcastRespModel = BroadcastRespModel(hash: tx.hash);
+        emit(TxBroadcastCompletedState(broadcastRespModel: broadcastRespModel));
+      } else {
+        emit(
+          TxBroadcastErrorState(
+            errorExplorerModel: ErrorExplorerModel(
+              code: 'error',
+              message: 'error',
+              uri: Uri.parse('error'),
+              method: 'error',
+              request: 'error',
+              response: 'error',
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      getIt<Logger>().e('Error broadcasting from Ethereum: $e');
+      emit(
+        TxBroadcastErrorState(
+          errorExplorerModel: ErrorExplorerModel(
+            code: 'error',
+            message: 'error',
+            uri: Uri.parse('error'),
+            method: 'error',
+            request: 'error',
+            response: 'error',
+          ),
+        ),
+      );
+    }
+  }
+
+  Future<void> broadcastFromKira({required SignedTxModel signedTxModel, required String passphrase}) async {
+    emit(TxBroadcastLoadingState());
+    try {
+      BroadcastRespModel broadcastRespModel = await _broadcastService.broadcastTx(signedTxModel);
       emit(TxBroadcastCompletedState(broadcastRespModel: broadcastRespModel));
     } on DioException catch (e) {
+      getIt<Logger>().e('Error broadcasting from Kira: $e');
       ErrorExplorerModel errorExplorerModel = ErrorExplorerModel.fromDioConnectException(e);
       emit(TxBroadcastErrorState(errorExplorerModel: errorExplorerModel));
     }

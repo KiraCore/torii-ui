@@ -10,12 +10,14 @@ part 'transfer_claim_state.dart';
 
 @injectable
 class TransferClaimCubit extends Cubit<TransferClaimState> {
-  TransferClaimCubit() : super(TransferClaimState(signedTx: null, msgSendFormModel: null));
+  TransferClaimCubit(this._ethereumService) : super(TransferClaimState(signedTx: null, msgSendFormModel: null));
+
+  final EthereumService _ethereumService;
 
   // TODO: temp way, add listener to the signedTx
   Timer? _timer;
 
-  void init({required SignedTxModel signedTx, required MsgSendFormModel msgSendFormModel}) {
+  void init({required SignedTxModel? signedTx, required MsgSendFormModel msgSendFormModel}) {
     emit(TransferClaimState(signedTx: signedTx, msgSendFormModel: msgSendFormModel));
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (state.isReadyToClaim || state.isClaiming) {
@@ -48,12 +50,19 @@ class TransferClaimCubit extends Cubit<TransferClaimState> {
     }
   }
 
-  Future<void> claim() async {
+  Future<void> claim({required String passphrase}) async {
     if (!state.isReadyToClaim || state.isClaiming || state.signedTx == null) {
       return;
     }
     emit(TransferClaimState(signedTx: state.signedTx, msgSendFormModel: state.msgSendFormModel, isClaiming: true));
-    await Future.delayed(const Duration(seconds: 1));
+    print('claiming amount:');
+    print(state.msgSendFormModel!.tokenAmountModel!.getAmountInBaseDenomination());
+    await _ethereumService.importContractTokens(passphrase: passphrase);
     emit(TransferClaimState(signedTx: state.signedTx, msgSendFormModel: state.msgSendFormModel, isClaimed: true));
+  }
+
+  void dispose() {
+    _timer?.cancel();
+    _timer = null;
   }
 }

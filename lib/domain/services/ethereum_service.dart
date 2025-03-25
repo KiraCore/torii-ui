@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'dart:math' show pow;
 import 'dart:typed_data';
 
 import 'package:codec_utils/codec_utils.dart';
 import 'package:crypto/crypto.dart';
+import 'package:decimal/decimal.dart';
 import 'package:eth_sig_util/eth_sig_util.dart';
 import 'package:eth_sig_util/model/ecdsa_signature.dart';
 import 'package:flutter_web3/flutter_web3.dart';
@@ -11,6 +13,13 @@ import 'package:pointycastle/digests/ripemd160.dart';
 import 'package:secp256k1/secp256k1.dart';
 import 'package:torii_client/domain/exports.dart';
 import 'package:torii_client/utils/exports.dart';
+// import 'package:webthree/browser.dart' as three;
+// import 'dart:convert';
+// import 'dart:html' as html;
+// import 'dart:typed_data';
+//
+// import 'package:webthree/webthree.dart';
+// import 'package:flutter_web3/flutter_web3.dart';
 
 class EthereumSignatureDecodeResult {
   final String compressedPublicKey;
@@ -38,9 +47,141 @@ class EthereumSignatureDecodeResult {
 
 @injectable
 class EthereumService {
-  const EthereumService();
+  EthereumService();
+  //
+  // three.Ethereum? get threeEthereum => html.window.ethereum;
+  //
+  // Future<void> metamaskThree() async {
+  //   if (threeEthereum == null) {
+  //     return;
+  //   }
+  //
+  //   final EthereumAddress ownAddress =
+  //   EthereumAddress.fromHex('0xCa27b75E10154814663b7Eb254317FA16c5F940A');
+  //   final EthereumAddress contractAddr =
+  //   EthereumAddress.fromHex('0xeE9312C22890e0Bd9a9bB37Fd17572180F4Fc68a');
+  //   final EthereumAddress receiver =
+  //   EthereumAddress.fromHex('0x6c87E1a114C3379BEc929f6356c5263d62542C13');
+  //
+  //   final client = Web3Client.custom(threeEthereum!.asRpcService());
+  //   final credentials = await threeEthereum!.requestAccounts();
+  //
+  //   print('Using ${credentials[0].address}');
+  //   print('Client is listening: ${await client.isListeningForNetwork()}');
+  //
+  //   final message = Uint8List.fromList(utf8.encode('Hello from webthree'));
+  //   final signature = await credentials[0].signPersonalMessage(message);
+  //   print('Signature: ${base64.encode(signature)}');
+  //
+  //   // read the contract abi and tell webthree where it's deployed (contractAddr)
+  //   final token = Token(address: contractAddr, client: client);
+  //
+  //   // listen for the Transfer event when it's emitted by the contract above
+  //   final subscription = token.transferEvents().take(1).listen((event) {
+  //     print('${event.from} sent ${event.value} MetaCoins to ${event.to}!');
+  //   });
+  //
+  //   // check our balance in MetaCoins by calling the appropriate function
+  //   final balance = await token.getBalance(ownAddress);
+  //   print('We have $balance MetaCoins');
+  //
+  //   // send all our MetaCoins to the other address by calling the sendCoin
+  //   // function
+  //   await token.sendCoin(receiver, balance, credentials: credentials);
+  //
+  //   await subscription.asFuture();
+  //   await subscription.cancel();
+  //
+  //   await client.dispose();
+  // }
 
   bool get isSupported => ethereum != null;
+
+  Contract? _contract;
+
+  Contract get contract =>
+      _contract ??= Contract(
+        '0x719CAe5e3d135364e5Ef5AAd386985D86A0E7813',
+        jsonEncode([
+          {
+            "inputs": [
+              {"internalType": "address", "name": "oracleAddress", "type": "address"},
+              {"internalType": "address", "name": "tokenAddress", "type": "address"},
+            ],
+            "stateMutability": "nonpayable",
+            "type": "constructor",
+          },
+          {
+            "anonymous": false,
+            "inputs": [
+              {"indexed": true, "internalType": "string", "name": "cyclAddres", "type": "string"},
+              {"indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256"},
+            ],
+            "name": "TokensExported",
+            "type": "event",
+          },
+          {
+            "anonymous": false,
+            "inputs": [
+              {"indexed": true, "internalType": "address", "name": "ethAddress", "type": "address"},
+              {"indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256"},
+            ],
+            "name": "TokensImported",
+            "type": "event",
+          },
+          {
+            "inputs": [
+              {"internalType": "string", "name": "passphrase", "type": "string"},
+              {"internalType": "address", "name": "sender", "type": "address"},
+            ],
+            "name": "computeHash",
+            "outputs": [
+              {"internalType": "string", "name": "", "type": "string"},
+            ],
+            "stateMutability": "pure",
+            "type": "function",
+          },
+          {
+            "inputs": [
+              {"internalType": "string", "name": "cyclAddress", "type": "string"},
+              {"internalType": "string", "name": "hash", "type": "string"},
+              {"internalType": "uint256", "name": "amount", "type": "uint256"},
+            ],
+            "name": "exportTokens",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function",
+          },
+          {
+            "inputs": [
+              {"internalType": "string", "name": "passphrase", "type": "string"},
+            ],
+            "name": "importTokens",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function",
+          },
+          {
+            "inputs": [],
+            "name": "oracle",
+            "outputs": [
+              {"internalType": "contract Oracle", "name": "", "type": "address"},
+            ],
+            "stateMutability": "view",
+            "type": "function",
+          },
+          {
+            "inputs": [],
+            "name": "token",
+            "outputs": [
+              {"internalType": "contract Token", "name": "", "type": "address"},
+            ],
+            "stateMutability": "view",
+            "type": "function",
+          },
+        ]),
+        provider!.getSigner(),
+      );
 
   void removeAllListeners() => ethereum?.removeAllListeners();
 
@@ -52,14 +193,57 @@ class EthereumService {
 
   Future<List<String>?> requestAccount() async => ethereum?.requestAccount();
 
+  Future<TransactionResponse?> exportContractTokens({
+    required String passphrase,
+    required String kiraAddress,
+    required Decimal amountInEth,
+  }) async {
+    if (!isSupported) {
+      getIt<Logger>().e('MetaMask is not connected');
+      return null;
+    }
+
+    try {
+      final tx = await contract.send('exportTokens', [
+        kiraAddress, //'kira143q8vxpvuykt9pq50e6hng9s38vmy844n8k9wx', //(await requestAccount())!.first,
+        Sha256.encrypt(passphrase), //'8a8620565a42cfb1acf8d6b9b84d6179fa18050c6fcb305af7dad777804fa047',
+        amountInEth.toBigInt() * BigInt.from(10).pow(18), // Amount in Wei
+      ]);
+      getIt<Logger>().d('Transaction hash: ${tx.hash}');
+      return tx;
+    } catch (e) {
+      getIt<Logger>().e('Error sending transaction: $e');
+      return null;
+    }
+  }
+
+  Future<TransactionResponse?> importContractTokens({required String passphrase}) async {
+    if (!isSupported) {
+      getIt<Logger>().e('MetaMask is not connected');
+      return null;
+    }
+
+    try {
+      final tx = await contract.send('importTokens', [
+        passphrase, //'kirakira11111',
+      ]);
+      getIt<Logger>().d('Transaction hash: ${tx.hash}');
+      return tx;
+    } catch (e) {
+      getIt<Logger>().e('Error sending transaction: $e');
+      return null;
+    }
+  }
+
   Future<int?> getChainId() async => ethereum?.getChainId();
 
-  Future<int?> getBalance(String address) async {
+  Future<Decimal?> getBalance(String address) async {
     final String? balance = await ethereum?.request('eth_getBalance', <String>[address, 'latest']);
     if (balance == null) {
       return null;
     }
-    return int.tryParse(balance.withoutHexPrefix(), radix: 16);
+    final v = int.tryParse(balance.withoutHexPrefix(), radix: 16);
+    return v == null ? null : Decimal.fromInt(v);
   }
 
   Future<String?> getPublicKey(String address) async =>

@@ -39,7 +39,7 @@ class AppConfig {
       loadingPageTimerDuration: const Duration(seconds: 4),
       supportedInterxVersions: <String>['v0.4.46', 'v0.4.48'],
       rpcBrowserUrlController: rpcBrowserUrlController,
-      refreshIntervalSeconds: 60,
+      refreshIntervalSeconds: 6000,
     );
   }
 
@@ -67,10 +67,19 @@ class AppConfig {
     return matchingNetworkUnknownModels.first;
   }
 
-NetworkUnknownModel getDefaultNetworkUnknownModel() {
+  NetworkUnknownModel? getDefaultNetworkUnknownModel() {
     NetworkUnknownModel? urlNetworkUnknownModel = _getNetworkUnknownModelFromUrl();
     if (urlNetworkUnknownModel == null) {
-      return networkList.first;
+      if (networkList.isNotEmpty) {
+        return networkList.first;
+      }
+      //  else if (rpcBrowserUrlController.getRpcAddress() != null) {
+      //   return NetworkUnknownModel(
+      //     uri: Uri.parse(rpcBrowserUrlController.getRpcAddress()),
+      //     connectionStatusType: ConnectionStatusType.disconnected,
+      //     lastRefreshDateTime: DateTime.now(),
+      //   );
+      // }
     }
     return urlNetworkUnknownModel;
   }

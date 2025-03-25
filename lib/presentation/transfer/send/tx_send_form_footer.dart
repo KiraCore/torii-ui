@@ -1,3 +1,4 @@
+import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/domain/exports.dart';
@@ -12,6 +13,7 @@ import 'package:torii_client/presentation/transfer/tx_form_builder_cubit/a_tx_fo
 import 'package:torii_client/presentation/transfer/tx_form_builder_cubit/states/tx_form_builder_downloading_state.dart';
 import 'package:torii_client/presentation/transfer/tx_form_builder_cubit/states/tx_form_builder_error_state.dart';
 import 'package:torii_client/presentation/transfer/tx_form_builder_cubit/tx_form_builder_cubit.dart';
+import 'package:torii_client/presentation/transfer/widgets/request_passphrase_dialog.dart';
 import 'package:torii_client/utils/exports.dart';
 import 'package:torii_client/domain/models/tokens/a_msg_form_model.dart';
 
@@ -94,26 +96,45 @@ class _TxSendFormFooter extends State<TxSendFormFooter> {
       getIt<Logger>().e('Form is not valid');
       return;
     }
-    try {
-      final model = widget.msgFormModel;
-      if (model is MsgSendFormModel && model.senderWalletAddress is EthereumWalletAddress) {
+    final model = widget.msgFormModel;
+    if (model is MsgSendFormModel && model.senderWalletAddress is EthereumWalletAddress) {
+      try {
         // TODO(Mykyta): is there possibility that model can be not a MsgSendModel ? (`send-via-metamask` task)
         // ignore:unused_local_variable
-        int amount = model.tokenAmountModel?.getAmountInDefaultDenomination().toBigInt().toInt() ?? 0;
-        if (amount == 0 || model.recipientWalletAddress == null) {
+        Decimal amount = model.tokenAmountModel?.getAmountInBaseDenomination() ?? Decimal.zero;
+        if (amount == Decimal.zero || model.recipientWalletAddress == null) {
           getIt<Logger>().e('Form is not valid');
           return;
         }
         // TODO(Mykyta): add error handling at `send-via-metamask` task
-        await metamaskCubit.pay(to: model.recipientWalletAddress!, amount: 0); // todo add amount
-        return;
+        print('metamask pay amount: ${model.tokenAmountModel!.getAmountInBaseDenomination()}');
+
+        RequestPassphraseDialog.show(
+          context,
+          onProceed: ({required String passphrase}) {
+            getIt<EthereumService>().exportContractTokens(
+              passphrase: passphrase,
+              kiraAddress: model.recipientWalletAddress!.address,
+              amountInEth: model.tokenAmountModel!.getAmountInBaseDenomination(),
+            );
+          },
+          initEnter: true,
+        );
+        // await metamaskCubit.pay(
+        //   to: model.recipientWalletAddress!,
+        //   amount: model.tokenAmountModel!.getAmountInBaseDenomination().toDouble().toInt(),
+        // );
+      } catch (e) {
+        getIt<Logger>().e('Metamask pay ${e.toString()}');
       }
-      UnsignedTxModel unsignedTxModel = await txFormBuilderCubit.buildUnsignedTx();
-      SignedTxModel signedTxModel = await _signTransaction(unsignedTxModel);
-      widget.onSubmit(signedTxModel);
-    } catch (e) {
-      getIt<Logger>().e('Metamask pay ${e.toString()}');
-      return;
+    } else {
+      try {
+        UnsignedTxModel unsignedTxModel = await txFormBuilderCubit.buildUnsignedTx();
+        SignedTxModel signedTxModel = await _signTransaction(unsignedTxModel);
+        widget.onSubmit(signedTxModel);
+      } catch (e) {
+        getIt<Logger>().e('Kira pay ${e.toString()}');
+      }
     }
   }
 

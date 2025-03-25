@@ -176,8 +176,8 @@ class _TokenForm extends State<TokenForm> {
     TokenAmountModel? selectedTokenAmountModel = tokenFormState.tokenAmountModel;
     TokenAmountModel? availableTokenAmountModel = tokenFormState.availableTokenAmountModel;
 
-    Decimal selectedTokenAmount = selectedTokenAmountModel?.getAmountInDefaultDenomination() ?? Decimal.zero;
-    Decimal availableTokenAmount = availableTokenAmountModel?.getAmountInDefaultDenomination() ?? Decimal.zero;
+    Decimal selectedTokenAmount = selectedTokenAmountModel?.getAmountInBaseDenomination() ?? Decimal.zero;
+    Decimal availableTokenAmount = availableTokenAmountModel?.getAmountInBaseDenomination() ?? Decimal.zero;
 
     if (selectedTokenAmount == Decimal.zero) {
       return null;

@@ -10,7 +10,7 @@ import 'package:torii_client/utils/exports.dart';
 class TransferClaimPage extends StatelessWidget {
   const TransferClaimPage({super.key, required this.signedTx, required this.msgSendFormModel});
 
-  final SignedTxModel signedTx;
+  final SignedTxModel? signedTx;
   final MsgSendFormModel msgSendFormModel;
 
   @override

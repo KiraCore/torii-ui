@@ -14,22 +14,36 @@ import 'package:torii_client/presentation/transfer/tx_broadcast/widgets/tx_broad
 import 'package:torii_client/utils/exports.dart';
 
 class TxBroadcastPage<T extends AMsgFormModel> extends StatefulWidget {
-  final SignedTxModel signedTxModel;
+  final SignedTxModel? signedTxModel;
   final MsgSendFormModel msgSendFormModel;
+  final String passphrase;
 
-  const TxBroadcastPage({required this.signedTxModel, required this.msgSendFormModel, Key? key}) : super(key: key);
+  const TxBroadcastPage({
+    required this.signedTxModel,
+    required this.msgSendFormModel,
+    required this.passphrase,
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _TxBroadcastPage<T>();
 }
 
 class _TxBroadcastPage<T extends AMsgFormModel> extends State<TxBroadcastPage<T>> {
-  final TxBroadcastCubit txBroadcastCubit = TxBroadcastCubit();
+  final TxBroadcastCubit txBroadcastCubit = getIt<TxBroadcastCubit>();
 
   @override
   void initState() {
     super.initState();
-    txBroadcastCubit.broadcast(widget.signedTxModel);
+    if (widget.signedTxModel == null) {
+      txBroadcastCubit.broadcastFromKira(signedTxModel: widget.signedTxModel!, passphrase: widget.passphrase);
+    } else {
+      txBroadcastCubit.broadcastFromEth(
+        passphrase: widget.passphrase,
+        kiraRecipient: widget.msgSendFormModel.recipientWalletAddress!.address,
+        amount: widget.msgSendFormModel.tokenAmountModel!.getAmountInBaseDenomination(),
+      );
+    }
   }
 
   @override
@@ -65,6 +79,9 @@ class _TxBroadcastPage<T extends AMsgFormModel> extends State<TxBroadcastPage<T>
       return TxBroadcastErrorBody<T>(
         errorExplorerModel: txBroadcastState.errorExplorerModel,
         signedTxModel: widget.signedTxModel,
+        passphrase: widget.passphrase,
+        kiraRecipient: widget.msgSendFormModel.recipientWalletAddress!.address,
+        amount: widget.msgSendFormModel.tokenAmountModel!.getAmountInBaseDenomination(),
       );
     } else if (txBroadcastState is TxBroadcastLoadingState || txBroadcastState is TxBroadcastCompletedState) {
       return TxBroadcastLoadingBody();

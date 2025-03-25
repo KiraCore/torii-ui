@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/presentation/transfer/claim/cubit/transfer_claim_cubit.dart';
 import 'package:torii_client/presentation/transfer/input/msg_send_form/msg_send_form_preview.dart';
 import 'package:torii_client/presentation/transfer/send/tx_dialog.dart';
+import 'package:torii_client/presentation/transfer/widgets/request_passphrase_dialog.dart';
 import 'package:torii_client/presentation/widgets/buttons/kira_elevated_button.dart';
 import 'package:torii_client/presentation/widgets/exports.dart';
 import 'package:torii_client/utils/exports.dart';
@@ -75,7 +76,13 @@ class ClaimProgressDialog extends StatelessWidget {
                   KiraElevatedButton(
                     width: 160,
                     disabled: !state.isReadyToClaim,
-                    onPressed: context.read<TransferClaimCubit>().claim,
+                    onPressed: () {
+                      RequestPassphraseDialog.show(
+                        context,
+                        onProceed: context.read<TransferClaimCubit>().claim,
+                        initEnter: false,
+                      );
+                    },
                     title: 'Claim',
                   ),
                   const Spacer(),

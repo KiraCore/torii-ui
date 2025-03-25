@@ -36,7 +36,7 @@ class TokenFormState extends Equatable {
       walletAddress: walletAddress,
       loadingBool: loadingBool,
       tokenAmountModel: tokenAmountModel ?? TokenAmountModel.zero(tokenAliasModel: tokenAliasModel),
-      tokenDenominationModel: tokenDenominationModel ?? tokenAliasModel.defaultTokenDenominationModel,
+      tokenDenominationModel: tokenDenominationModel ?? tokenAliasModel.baseTokenDenominationModel,
     );
   }
 

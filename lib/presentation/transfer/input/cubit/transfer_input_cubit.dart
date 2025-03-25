@@ -22,14 +22,13 @@ class TransferInputCubit extends Cubit<TransferInputState> {
 
   Future<void> _initEthBalanceEmitWallet(Wallet fromWallet) async {
     if (fromWallet == _sessionCubit.state.ethereumWallet) {
-      final int? balance = await _ethereumService.getBalance(_sessionCubit.state.ethereumWallet!.address.address);
+      final Decimal? balance = await _ethereumService.getBalance(_sessionCubit.state.ethereumWallet!.address.address);
       if (balance != null) {
         emit(
           TransferInputState(
             fromWallet: fromWallet,
             balance: TokenAmountModel(
-              defaultDenominationAmount: Decimal.fromInt(balance),
-              tokenAliasModel: TokenAliasModel.local('ETH'),
+              defaultDenominationAmount: balance, tokenAliasModel: TokenAliasModel.eth(),
             ),
           ),
         );

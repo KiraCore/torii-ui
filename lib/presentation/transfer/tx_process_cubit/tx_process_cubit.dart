@@ -64,23 +64,23 @@ class TxProcessCubit<T extends AMsgFormModel> extends Cubit<ATxProcessState> {
 
         SignedTxModel signedTxModel = await _buildSignedTransaction(feeTokenAmountModel);
         if (isClosed == false) {
-          emit(TxProcessConfirmState(txProcessLoadedState: txProcessLoadedState, signedTxModel: signedTxModel));
+          emit(TxProcessConfirmFromKiraState(txProcessLoadedState: txProcessLoadedState, signedTxModel: signedTxModel));
         }
       } else {
         emit(
           TxProcessLoadedState(
             feeTokenAmountModel: TokenAmountModel(
-              defaultDenominationAmount: Decimal.fromInt(0),
-              tokenAliasModel: TokenAliasModel.local('ETH'),
+              defaultDenominationAmount: Decimal.zero,
+              tokenAliasModel: TokenAliasModel.eth(),
             ),
             networkPropertiesModel: NetworkPropertiesModel(
               minTxFee: TokenAmountModel(
-                defaultDenominationAmount: Decimal.fromInt(0),
-                tokenAliasModel: TokenAliasModel.local('ETH'),
+                defaultDenominationAmount: Decimal.zero,
+                tokenAliasModel: TokenAliasModel.eth(),
               ),
               minIdentityApprovalTip: TokenAmountModel(
-                defaultDenominationAmount: Decimal.fromInt(0),
-                tokenAliasModel: TokenAliasModel.local('ETH'),
+                defaultDenominationAmount: Decimal.zero,
+                tokenAliasModel: TokenAliasModel.eth(),
               ),
             ),
           ),
@@ -94,23 +94,49 @@ class TxProcessCubit<T extends AMsgFormModel> extends Cubit<ATxProcessState> {
     }
   }
 
-  void submitTransactionForm(SignedTxModel signedTxModel) {
+  void submitTransactionForm(SignedTxModel? signedTxModel) {
     if (state is TxProcessLoadedState) {
-      emit(TxProcessConfirmState(txProcessLoadedState: state as TxProcessLoadedState, signedTxModel: signedTxModel));
+      if (signedTxModel == null) {
+        emit(
+          TxProcessConfirmFromEthState(
+            txProcessLoadedState: state as TxProcessLoadedState,
+            kiraRecipient: (msgFormModel as MsgSendFormModel).recipientWalletAddress!.address,
+            amountInEth: (msgFormModel as MsgSendFormModel).tokenAmountModel!.getAmountInBaseDenomination(),
+          ),
+        );
+      } else {
+        emit(
+          TxProcessConfirmFromKiraState(
+            txProcessLoadedState: state as TxProcessLoadedState,
+            signedTxModel: signedTxModel,
+          ),
+        );
+      }
     }
   }
 
-  Future<void> confirmTransactionForm() async {
+  Future<void> confirmTransactionForm({required String passphrase}) async {
     if (state is TxProcessConfirmState == false) {
       return;
     }
-    TxProcessConfirmState txProcessConfirmState = state as TxProcessConfirmState;
-    emit(
-      TxProcessBroadcastState(
-        txProcessLoadedState: txProcessConfirmState.txProcessLoadedState,
-        signedTxModel: txProcessConfirmState.signedTxModel,
-      ),
-    );
+    if (state is TxProcessConfirmFromKiraState) {
+      emit(
+        TxProcessBroadcastFromKiraState(
+          txProcessLoadedState: (state as TxProcessConfirmFromKiraState).txProcessLoadedState,
+          signedTxModel: (state as TxProcessConfirmFromKiraState).signedTxModel,
+          passphrase: passphrase,
+        ),
+      );
+    } else if (state is TxProcessConfirmFromEthState) {
+      emit(
+        TxProcessBroadcastFromEthState(
+          txProcessLoadedState: (state as TxProcessConfirmFromEthState).txProcessLoadedState,
+          passphrase: passphrase,
+          kiraRecipient: (state as TxProcessConfirmFromEthState).kiraRecipient,
+          amountInEth: (state as TxProcessConfirmFromEthState).amountInEth,
+        ),
+      );
+    }
   }
 
   Future<void> editTransactionForm() async {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/domain/models/tokens/a_msg_form_model.dart';
 import 'package:torii_client/domain/models/tokens/msg_send_form_model.dart';
+import 'package:torii_client/domain/models/transaction/signed_transaction_model.dart';
 import 'package:torii_client/presentation/transfer/send/tx_dialog_error.dart';
 import 'package:torii_client/presentation/transfer/send/tx_dialog_loading.dart';
 import 'package:torii_client/presentation/transfer/tx_broadcast/tx_broadcast_page.dart';
@@ -56,8 +57,11 @@ class _TxProcessWrapper<T extends AMsgFormModel> extends State<TxProcessWrapper<
           } else if (txProcessState is TxProcessConfirmState) {
             dialogWidget = widget.txFormPreviewWidgetBuilder(txProcessState);
           } else if (txProcessState is TxProcessBroadcastState) {
+            final SignedTxModel? signedTxModel =
+                txProcessState is TxProcessBroadcastFromKiraState ? txProcessState.signedTxModel : null;
             dialogWidget = TxBroadcastPage<T>(
-              signedTxModel: txProcessState.signedTxModel,
+              signedTxModel: signedTxModel,
+              passphrase: txProcessState.passphrase,
               // TODO: refactor
               msgSendFormModel: widget.txProcessCubit.msgFormModel as MsgSendFormModel,
             );

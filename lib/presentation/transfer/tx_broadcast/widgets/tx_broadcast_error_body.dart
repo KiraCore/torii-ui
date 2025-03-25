@@ -1,3 +1,4 @@
+import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/domain/models/network/error_explorer_model.dart';
@@ -12,10 +13,19 @@ import 'package:torii_client/utils/exports.dart';
 
 class TxBroadcastErrorBody<T extends AMsgFormModel> extends StatelessWidget {
   final ErrorExplorerModel errorExplorerModel;
-  final SignedTxModel signedTxModel;
+  final SignedTxModel? signedTxModel;
+  final String passphrase;
+  final String kiraRecipient;
+  final Decimal amount;
 
-  const TxBroadcastErrorBody({required this.errorExplorerModel, required this.signedTxModel, Key? key})
-    : super(key: key);
+  const TxBroadcastErrorBody({
+    required this.errorExplorerModel,
+    required this.signedTxModel,
+    required this.passphrase,
+    required this.kiraRecipient,
+    required this.amount,
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +96,15 @@ class TxBroadcastErrorBody<T extends AMsgFormModel> extends StatelessWidget {
   }
 
   void _pressTryAgainButton(BuildContext context) {
-    BlocProvider.of<TxBroadcastCubit>(context).broadcast(signedTxModel);
+    if (signedTxModel == null) {
+      context.read<TxBroadcastCubit>().broadcastFromKira(signedTxModel: signedTxModel!, passphrase: passphrase);
+    } else {
+      context.read<TxBroadcastCubit>().broadcastFromEth(
+        passphrase: passphrase,
+        kiraRecipient: kiraRecipient,
+        amount: amount,
+      );
+    }
   }
 
   void _pressEditTransactionButton(BuildContext context) {

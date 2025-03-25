@@ -37,10 +37,6 @@ class TokenAmountModel {
     return _defaultDenominationAmount;
   }
 
-  // Decimal getAmountInNetworkDenomination() {
-  //   return getAmountInDenomination(tokenAliasModel.networkTokenDenominationModel);
-  // }
-
   Decimal getAmountInDenomination(TokenDenominationModel tokenDenominationModel) {
     bool defaultTokenDenominationBool = tokenDenominationModel == tokenAliasModel.defaultTokenDenominationModel;
     if (defaultTokenDenominationBool) {
@@ -49,6 +45,10 @@ class TokenAmountModel {
     int decimalsDifference = tokenAliasModel.defaultTokenDenominationModel.decimals - tokenDenominationModel.decimals;
     Decimal calculatedAmount = _defaultDenominationAmount.shift(decimalsDifference);
     return calculatedAmount;
+  }
+
+  Decimal getAmountInBaseDenomination() {
+    return getAmountInDenomination(tokenAliasModel.baseTokenDenominationModel);
   }
 
   void setAmount(Decimal amount, {TokenDenominationModel? tokenDenominationModel}) {
@@ -99,6 +99,6 @@ class TokenAmountModel {
 
   @override
   String toString() {
-    return '$_defaultDenominationAmount ${tokenAliasModel.defaultTokenDenominationModel.name}';
+    return '${getAmountInBaseDenomination()} ${tokenAliasModel.baseTokenDenominationModel.name}';
   }
 }

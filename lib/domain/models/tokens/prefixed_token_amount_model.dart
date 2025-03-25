@@ -8,11 +8,11 @@ class PrefixedTokenAmountModel extends Equatable {
   const PrefixedTokenAmountModel({required this.tokenAmountModel, required this.tokenAmountPrefixType});
 
   String getAmountAsString() {
-    return '${getPrefix()}${tokenAmountModel.getAmountInDefaultDenomination()}';
+    return '${getPrefix()}${tokenAmountModel.getAmountInBaseDenomination()}';
   }
 
   String getDenominationName() {
-    return tokenAmountModel.tokenAliasModel.defaultTokenDenominationModel.name;
+    return tokenAmountModel.tokenAliasModel.baseTokenDenominationModel.name;
   }
 
   String getPrefix() {

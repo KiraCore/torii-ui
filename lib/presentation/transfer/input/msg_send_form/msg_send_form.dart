@@ -64,6 +64,7 @@ class _MsgSendForm extends State<MsgSendForm> {
           ValueListenableBuilder<AWalletAddress?>(
             valueListenable: walletAddressNotifier,
             builder: (_, AWalletAddress? walletAddress, __) {
+              getIt<Logger>().i('updated balance: ${widget.msgSendFormModel.balance}');
               return TokenForm(
                 label: S.of(context).balancesAmount,
                 feeTokenAmountModel: widget.feeTokenAmountModel,

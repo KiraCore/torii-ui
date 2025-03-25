@@ -121,33 +121,35 @@ class MetamaskCubit extends Cubit<MetamaskState> {
     emit(const MetamaskState());
   }
 
-  // TODO(Mykyta): to be implemented in future task for MetaMask Pay feature with Cosmos signing
-  Future<void> pay({required AWalletAddress to, required int amount}) async {
-    if (isSupported == false || state.hasData == false) {
-      return;
-    }
-    await _switchNetworkToKira();
-    String address;
-    switch (to) {
-      case EthereumWalletAddress _:
-        address = to.address;
-      case CosmosWalletAddress _:
-        // address = to.toEthereumAddress();
-        throw UnimplementedError();
-      default:
-        throw UnimplementedError();
-    }
-    try {
-      // TODO(Mykyta): remove signer and direct usage of ethereum (`send-via-metamask` task)
-      await Web3Provider.fromEthereum(
-        ethereum!,
-      ).getSigner().sendTransaction(TransactionRequest(from: state.address!, to: address, value: BigInt.from(amount)));
-    } catch (e) {
-      getIt<Logger>().e('Error on metamask pay: $e');
-    }
-  }
+  // // TODO(Mykyta): to be implemented in future task for MetaMask Pay feature with Cosmos signing
+  // Future<void> pay({required AWalletAddress to, required int amount}) async {
+  //   if (isSupported == false || state.hasData == false) {
+  //     return;
+  //   }
+  //   await _switchNetworkToKira();
+  //   String address;
+  //   switch (to) {
+  //     case EthereumWalletAddress _:
+  //       address = to.address;
+  //     case CosmosWalletAddress _:
+  //       // address = to.toEthereumAddress();
+  //       throw UnimplementedError();
+  //     default:
+  //       throw UnimplementedError();
+  //   }
+  //   try {
+  //     // TODO(Mykyta): remove signer and direct usage of ethereum (`send-via-metamask` task)
+  //     await Web3Provider.fromEthereum(
+  //       ethereum!,
+  //     ).getSigner().sendTransaction(TransactionRequest(from: state.address!, to: address, value: BigInt.from(amount)));
+  //   } catch (e) {
+  //     getIt<Logger>().e('Error on metamask pay: $e');
+  //   }
+  // }
 
   Future<void> _switchNetworkToKira() async {
+    // TODO: switch network
+    return;
     if (isSupported == false) {
       return;
     }

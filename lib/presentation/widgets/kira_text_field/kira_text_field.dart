@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gpassword/gpassword.dart';
 
 import 'package:torii_client/utils/exports.dart';
 
@@ -17,6 +18,7 @@ class KiraTextField extends StatefulWidget {
 
   /// [errorText] is dedicated for external error text. It'll be reset after value change.
   final String? errorText;
+  final bool canGeneratePassword;
 
   const KiraTextField({
     this.controller,
@@ -30,6 +32,7 @@ class KiraTextField extends StatefulWidget {
     this.onChanged,
     this.validator,
     this.errorText,
+    this.canGeneratePassword = false,
     super.key,
   });
 
@@ -40,12 +43,14 @@ class KiraTextField extends StatefulWidget {
 class _KiraTextField extends State<KiraTextField> {
   String? errorText;
   late bool obscureText;
-  
+  late TextEditingController controller;
+
   @override
   void initState() {
     super.initState();
     obscureText = widget.obscureText;
     errorText = widget.errorText;
+    controller = widget.controller ?? TextEditingController();
   }
 
   @override
@@ -79,13 +84,14 @@ class _KiraTextField extends State<KiraTextField> {
           const SizedBox(height: 8),
         ],
         TextField(
+          keyboardType: obscureText == true ? TextInputType.visiblePassword : null,
           focusNode: widget.focusNode,
-          controller: widget.controller,
+          controller: controller,
           onChanged: (String value) {
             widget.onChanged?.call(value);
             _handleValidateTextField();
           },
-          obscureText: widget.obscureText,
+          obscureText: obscureText,
           readOnly: widget.readOnly,
           inputFormatters: widget.inputFormatters,
           style: textTheme.bodyLarge!.copyWith(color: DesignColors.white1),
@@ -139,20 +145,39 @@ class _KiraTextField extends State<KiraTextField> {
   }
 
   Widget? _getSuffixIcon() {
-    Widget? iconWidget;
+    Widget iconWidget = const SizedBox.shrink();
     if (widget.suffixIcon != null) {
-      iconWidget = widget.suffixIcon;
-    }
-     else {
+      iconWidget = widget.suffixIcon!;
+    } else {
       if (widget.obscureText) {
-      iconWidget = IconButton(
-          onPressed: () => setState(() => obscureText = false),
-        icon: const Icon(AppIcons.eye_hidden, size: 16, color: DesignColors.accent),
-      );
-      } else {
-      iconWidget = IconButton(
-          onPressed: () => setState(() => obscureText = true),
-        icon: const Icon(AppIcons.eye_visible, size: 16, color: DesignColors.accent),
+        if (obscureText) {
+          iconWidget = IconButton(
+            onPressed: () => setState(() => obscureText = false),
+            icon: const Icon(AppIcons.eye_hidden, size: 16, color: DesignColors.accent),
+          );
+        } else {
+          iconWidget = IconButton(
+            onPressed: () => setState(() => obscureText = true),
+            icon: const Icon(AppIcons.eye_visible, size: 16, color: DesignColors.accent),
+          );
+        }
+      }
+      if (widget.canGeneratePassword) {
+        iconWidget = Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            iconWidget,
+            IconButton(
+              onPressed: () {
+                controller.text = GPassword().generate(passwordLength: 8);
+                widget.onChanged?.call(controller.text);
+                obscureText = false;
+                setState(() {});
+              },
+              icon: const Icon(AppIcons.refresh, size: 16, color: DesignColors.accent),
+            ),
+          ],
         );
       }
     }

@@ -91,7 +91,7 @@ class TokenFormCubit extends Cubit<TokenFormState> {
         loadingBool: false,
         errorBool: false,
         balance: balance,
-        tokenDenominationModel: tokenAliasModel.defaultTokenDenominationModel,
+        tokenDenominationModel: tokenAliasModel.baseTokenDenominationModel,
         tokenAmountModel: TokenAmountModel.zero(tokenAliasModel: tokenAliasModel),
       ),
     );
