@@ -30,7 +30,7 @@ class ClaimProgressDialog extends StatelessWidget {
               previous.signedTx != current.signedTx ||
               previous.isClaimed != current.isClaimed,
       builder: (context, state) {
-        if (state.msgSendFormModel == null || state.signedTx == null) {
+        if (state.msgSendFormModel == null) {
           return const SizedBox.shrink();
         }
         return TxDialog(
@@ -46,7 +46,7 @@ class ClaimProgressDialog extends StatelessWidget {
             children: <Widget>[
               MsgSendFormPreview(
                 msgSendFormModel: state.msgSendFormModel!,
-                txLocalInfoModel: state.signedTx!.txLocalInfoModel,
+                txLocalInfoModel: state.signedTx?.txLocalInfoModel,
               ),
               const SizedBox(height: 30),
               if (state.isReadyToClaim || state.isClaiming)
@@ -73,6 +73,7 @@ class ClaimProgressDialog extends StatelessWidget {
               const SizedBox(height: 20),
               Row(
                 children: [
+                  if (state.shouldBeManuallyClaimed)
                   KiraElevatedButton(
                     width: 160,
                     disabled: !state.isReadyToClaim,
@@ -80,7 +81,7 @@ class ClaimProgressDialog extends StatelessWidget {
                       RequestPassphraseDialog.show(
                         context,
                         onProceed: context.read<TransferClaimCubit>().claim,
-                        initEnter: false,
+                        needToConfirm: false,
                       );
                     },
                     title: 'Claim',

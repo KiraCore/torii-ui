@@ -43,7 +43,11 @@ class TxDialogConfirmLayout<T extends AMsgFormModel> extends StatelessWidget {
           KiraElevatedButton(
             width: 160,
             onPressed: () {
-              RequestPassphraseDialog.show(context, onProceed: txProcessCubit.confirmTransactionForm, initEnter: true);
+              RequestPassphraseDialog.show(
+                context,
+                onProceed: txProcessCubit.confirmTransactionForm,
+                needToConfirm: true,
+              );
             },
             title: S.of(context).txButtonConfirmSend,
           ),

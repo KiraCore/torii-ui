@@ -65,6 +65,18 @@ class _TokenForm extends State<TokenForm> {
   }
 
   @override
+  void didUpdateWidget(covariant TokenForm oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.defaultTokenDenominationModel != widget.defaultTokenDenominationModel &&
+        widget.defaultTokenDenominationModel != null) {
+      tokenFormCubit.updateTokenDenomination(widget.defaultTokenDenominationModel!);
+    }
+    if (oldWidget.defaultTokenAmountModel != widget.defaultTokenAmountModel && widget.defaultTokenAmountModel != null) {
+      tokenFormCubit.updateTokenAmount(widget.defaultTokenAmountModel!);
+    }
+  }
+
+  @override
   void dispose() {
     tokenFormCubit.close();
     super.dispose();
@@ -178,7 +190,8 @@ class _TokenForm extends State<TokenForm> {
 
     Decimal selectedTokenAmount = selectedTokenAmountModel?.getAmountInBaseDenomination() ?? Decimal.zero;
     Decimal availableTokenAmount = availableTokenAmountModel?.getAmountInBaseDenomination() ?? Decimal.zero;
-
+    print('selectedTokenAmount: $selectedTokenAmount');
+    print('availableTokenAmount: $availableTokenAmount');
     if (selectedTokenAmount == Decimal.zero) {
       return null;
     } else if (availableTokenAmount < selectedTokenAmount) {

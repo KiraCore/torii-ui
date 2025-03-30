@@ -5,11 +5,21 @@ class TokenAmountModel {
   final TokenAliasModel tokenAliasModel;
   late Decimal _defaultDenominationAmount;
 
-  TokenAmountModel({required Decimal defaultDenominationAmount, required this.tokenAliasModel}) {
-    if (defaultDenominationAmount < Decimal.zero) {
-      _defaultDenominationAmount = Decimal.fromInt(-1);
-    } else {
+  TokenAmountModel({
+    Decimal? defaultDenominationAmount,
+    Decimal? baseDenominationAmount,
+    required this.tokenAliasModel,
+  }) {
+    assert(defaultDenominationAmount != null || baseDenominationAmount != null);
+    if (defaultDenominationAmount != null) {
       _defaultDenominationAmount = defaultDenominationAmount;
+    } else {
+      _defaultDenominationAmount =
+          baseDenominationAmount! *
+          Decimal.fromInt(10).pow(tokenAliasModel.baseTokenDenominationModel.decimals).toDecimal();
+    }
+    if (_defaultDenominationAmount < Decimal.zero) {
+      _defaultDenominationAmount = Decimal.fromInt(-1);
     }
   }
 

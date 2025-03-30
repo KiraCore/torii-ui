@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/domain/exports.dart';
-import 'package:torii_client/presentation/transfer/widgets/token_form/cubit/token_form_cubit.dart';
 import 'package:torii_client/presentation/transfer/widgets/token_form/token_amount_text_field/token_amount_text_input_formatter.dart';
 import 'package:torii_client/presentation/transfer/widgets/tx_text_field.dart';
 import 'package:torii_client/utils/extensions/tx_utils.dart';
@@ -14,6 +12,7 @@ class TokenAmountTextFieldContent extends StatefulWidget {
   final TokenDenominationModel? tokenDenominationModel;
   final FocusNode focusNode;
   final bool errorExistsBool;
+  final void Function(String text) onChanged;
 
   const TokenAmountTextFieldContent({
     required this.disabledBool,
@@ -21,6 +20,7 @@ class TokenAmountTextFieldContent extends StatefulWidget {
     required this.textEditingController,
     required this.tokenDenominationModel,
     required this.focusNode,
+    required this.onChanged,
     this.errorExistsBool = false,
     super.key,
   });
@@ -33,13 +33,11 @@ class _TokenAmountTextFieldContentState extends State<TokenAmountTextFieldConten
   @override
   void initState() {
     super.initState();
-    widget.textEditingController.addListener(_handleTextFieldChanged);
     widget.focusNode.addListener(_handleFocusChanged);
   }
 
   @override
   void dispose() {
-    widget.textEditingController.removeListener(_handleTextFieldChanged);
     widget.focusNode.removeListener(_handleFocusChanged);
     super.dispose();
   }
@@ -55,15 +53,10 @@ class _TokenAmountTextFieldContentState extends State<TokenAmountTextFieldConten
       inputFormatters: <TextInputFormatter>[
         TokenAmountTextInputFormatter(tokenDenominationModel: widget.tokenDenominationModel),
       ],
-      onChanged: (_) => _handleTextFieldChanged(),
+      onChanged: widget.onChanged,
     );
   }
-
-  void _handleTextFieldChanged() {
-    String text = widget.textEditingController.text;
-    BlocProvider.of<TokenFormCubit>(context).notifyTokenAmountTextChanged(text);
-  }
-
+  
   void _handleFocusChanged() {
     bool focusedBool = widget.focusNode.hasFocus;
     String text = widget.textEditingController.text;

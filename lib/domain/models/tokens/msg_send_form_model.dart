@@ -8,20 +8,25 @@ class MsgSendFormModel extends AMsgFormModel {
   AWalletAddress? _recipientWalletAddress;
   AWalletAddress? _senderWalletAddress;
   TokenAmountModel? _tokenAmountModel;
+  TokenAmountModel? _recipientRelativeAmount;
 
   // Values required to be saved to allow editing transaction
   TokenAmountModel? balance;
   TokenDenominationModel? tokenDenominationModel;
+  TokenDenominationModel? recipientTokenDenomination;
 
   MsgSendFormModel({
     AWalletAddress? recipientWalletAddress,
     AWalletAddress? senderWalletAddress,
     TokenAmountModel? tokenAmountModel,
+    TokenAmountModel? recipientRelativeAmount,
     this.balance,
     this.tokenDenominationModel,
+    this.recipientTokenDenomination,
   }) : _senderWalletAddress = senderWalletAddress,
        _recipientWalletAddress = recipientWalletAddress,
-       _tokenAmountModel = tokenAmountModel;
+       _tokenAmountModel = tokenAmountModel,
+       _recipientRelativeAmount = recipientRelativeAmount;
 
   /// Method [buildTxMsgModel] throws [Exception] if at least one of the fields:
   /// [_senderWalletAddress], [_recipientWalletAddress] or [_tokenAmountModel]
@@ -56,6 +61,13 @@ class MsgSendFormModel extends AMsgFormModel {
   set recipientWalletAddress(AWalletAddress? recipientWalletAddress) {
     _recipientWalletAddress = recipientWalletAddress;
     // TODO: which listener?
+    notifyListeners();
+  }
+
+  TokenAmountModel? get recipientRelativeAmount => _recipientRelativeAmount;
+
+  set recipientRelativeAmount(TokenAmountModel? recipientRelativeAmount) {
+    _recipientRelativeAmount = recipientRelativeAmount;
     notifyListeners();
   }
 

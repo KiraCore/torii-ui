@@ -6,6 +6,9 @@ class TransferClaimState extends Equatable {
   final bool isReadyToClaim;
   final bool isClaiming;
   final bool isClaimed;
+
+  /// Need to be claimed manually only when Ethereum is a recipient (Kira is a sender)
+  final bool shouldBeManuallyClaimed;
   final int passedSeconds;
 
   const TransferClaimState({
@@ -15,8 +18,8 @@ class TransferClaimState extends Equatable {
     this.isClaiming = false,
     this.isClaimed = false,
     this.passedSeconds = 0,
-  });
+  }) : shouldBeManuallyClaimed = signedTx != null;
 
   @override
-  List<Object?> get props => [signedTx, msgSendFormModel, isReadyToClaim, isClaiming, isClaimed, passedSeconds];
+  List<Object?> get props => [signedTx, msgSendFormModel, isReadyToClaim, isClaiming, isClaimed, passedSeconds, shouldBeManuallyClaimed];
 }

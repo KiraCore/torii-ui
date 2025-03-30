@@ -37,27 +37,29 @@ class TransferClaimCubit extends Cubit<TransferClaimState> {
 
   void refreshIsReadyToClaim() {
     if (state.passedSeconds > 10) {
-      if (state.signedTx != null) {
-        emit(
-          TransferClaimState(
-            signedTx: state.signedTx,
-            msgSendFormModel: state.msgSendFormModel,
-            isReadyToClaim: true,
-            passedSeconds: state.passedSeconds,
-          ),
-        );
-      }
+      emit(
+        TransferClaimState(
+          signedTx: state.signedTx,
+          msgSendFormModel: state.msgSendFormModel,
+          isReadyToClaim: true,
+          passedSeconds: state.passedSeconds,
+        ),
+      );
     }
   }
 
   Future<void> claim({required String passphrase}) async {
-    if (!state.isReadyToClaim || state.isClaiming || state.signedTx == null) {
+    if (!state.isReadyToClaim || state.isClaiming) {
       return;
     }
     emit(TransferClaimState(signedTx: state.signedTx, msgSendFormModel: state.msgSendFormModel, isClaiming: true));
     print('claiming amount:');
     print(state.msgSendFormModel!.tokenAmountModel!.getAmountInBaseDenomination());
-    await _ethereumService.importContractTokens(passphrase: passphrase);
+    if (state.signedTx == null) {
+      // TODO: call interx for status, but it'll be claimed automatically
+    } else {
+      await _ethereumService.importContractTokens(passphrase: passphrase);
+    }
     emit(TransferClaimState(signedTx: state.signedTx, msgSendFormModel: state.msgSendFormModel, isClaimed: true));
   }
 

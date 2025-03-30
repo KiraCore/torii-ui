@@ -8,7 +8,6 @@ import 'package:torii_client/presentation/transfer/tx_broadcast/cubit/states/tx_
 import 'package:torii_client/presentation/transfer/tx_broadcast/cubit/states/tx_broadcast_error_state.dart';
 import 'package:torii_client/presentation/transfer/tx_broadcast/cubit/states/tx_broadcast_loading_state.dart';
 import 'package:torii_client/presentation/transfer/tx_broadcast/cubit/tx_broadcast_cubit.dart';
-import 'package:torii_client/presentation/transfer/tx_broadcast/widgets/tx_broadcast_complete_body.dart';
 import 'package:torii_client/presentation/transfer/tx_broadcast/widgets/tx_broadcast_error_body.dart';
 import 'package:torii_client/presentation/transfer/tx_broadcast/widgets/tx_broadcast_loading_body.dart';
 import 'package:torii_client/utils/exports.dart';
@@ -22,8 +21,8 @@ class TxBroadcastPage<T extends AMsgFormModel> extends StatefulWidget {
     required this.signedTxModel,
     required this.msgSendFormModel,
     required this.passphrase,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<StatefulWidget> createState() => _TxBroadcastPage<T>();
@@ -36,13 +35,13 @@ class _TxBroadcastPage<T extends AMsgFormModel> extends State<TxBroadcastPage<T>
   void initState() {
     super.initState();
     if (widget.signedTxModel == null) {
-      txBroadcastCubit.broadcastFromKira(signedTxModel: widget.signedTxModel!, passphrase: widget.passphrase);
-    } else {
       txBroadcastCubit.broadcastFromEth(
         passphrase: widget.passphrase,
         kiraRecipient: widget.msgSendFormModel.recipientWalletAddress!.address,
         amount: widget.msgSendFormModel.tokenAmountModel!.getAmountInBaseDenomination(),
       );
+    } else {
+      txBroadcastCubit.broadcastFromKira(signedTxModel: widget.signedTxModel!, passphrase: widget.passphrase);
     }
   }
 
@@ -65,9 +64,12 @@ class _TxBroadcastPage<T extends AMsgFormModel> extends State<TxBroadcastPage<T>
           }
         },
         builder: (BuildContext context, ATxBroadcastState txBroadcastState) {
-          return AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
-            child: _buildTxStatusWidget(txBroadcastState),
+          return Padding(
+            padding: const EdgeInsets.only(top: 48),
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              child: _buildTxStatusWidget(txBroadcastState),
+            ),
           );
         },
       ),

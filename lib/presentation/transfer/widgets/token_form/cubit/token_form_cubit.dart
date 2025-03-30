@@ -103,6 +103,11 @@ class TokenFormCubit extends Cubit<TokenFormState> {
     _updateTextFieldValue();
   }
 
+  void updateTokenAmount(TokenAmountModel tokenAmountModel) {
+    emit(state.copyWith(loadingBool: false, tokenAmountModel: tokenAmountModel));
+    _updateTextFieldValue();
+  }
+
   Future<void> _initWithFirstBalance() async {
     try {
       PageData<TokenAmountModel> balanceData = await queryBalanceService.getTokenAmountModelList(

@@ -69,6 +69,17 @@ class TokenAliasModel extends Equatable {
     );
   }
 
+  TokenAliasModel toOpposite() {
+    final lowerName = name.toLowerCase();
+    if (lowerName == 'wei' || lowerName == 'eth') {
+      return TokenAliasModel.kex();
+    } else if (lowerName == 'ukex' || lowerName == 'kex') {
+      return TokenAliasModel.eth();
+    } else {
+      return this;
+    }
+  }
+
   List<TokenDenominationModel> get tokenDenominations {
     Set<TokenDenominationModel> availableTokenDenominationModelSet = <TokenDenominationModel>{
       baseTokenDenominationModel,

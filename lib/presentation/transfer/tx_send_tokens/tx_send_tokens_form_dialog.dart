@@ -10,7 +10,7 @@ import 'package:torii_client/presentation/transfer/widgets/toggle_between_wallet
 class TxSendTokensFormDialog extends StatefulWidget {
   final MsgSendFormModel msgSendFormModel;
   final TokenAmountModel feeTokenAmountModel;
-  final ValueChanged<SignedTxModel> onTxFormCompleted;
+  final ValueChanged<SignedTxModel?> onTxFormCompleted;
   final bool sendFromKira;
 
   const TxSendTokensFormDialog({
@@ -37,7 +37,7 @@ class _TxSendTokensFormDialog extends State<TxSendTokensFormDialog> {
   @override
   Widget build(BuildContext context) {
     return TxDialog(
-      title: widget.sendFromKira ? 'Send to Ethereum' : 'Send to KIRA',
+      title: 'Cross-chain Transfer',
       suffixWidget: const ToggleBetweenWalletAddressTypes(),
       child: Column(
         children: <Widget>[

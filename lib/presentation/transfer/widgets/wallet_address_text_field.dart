@@ -13,9 +13,13 @@ class WalletAddressTextField extends StatefulWidget {
   final bool disabledBool;
   final AWalletAddress? defaultWalletAddress;
 
+  /// Eth or Kira
+  final bool needKiraAddress;
+
   const WalletAddressTextField({
     required this.label,
     required this.onChanged,
+    required this.needKiraAddress,
     this.disabledBool = false,
     this.defaultWalletAddress,
     super.key,
@@ -148,9 +152,13 @@ class _WalletAddressTextField extends State<WalletAddressTextField> {
   String? _validateAddress() {
     String addressText = textEditingController.text;
     AWalletAddress? walletAddress = _tryCreateWalletAddress(addressText);
-    if (walletAddress == null) {
-      return 'S.of(context).txErrorEnterValidAddress';
+    if (walletAddress == null ||
+        (walletAddress is EthereumWalletAddress && widget.needKiraAddress) ||
+        (walletAddress is CosmosWalletAddress && !widget.needKiraAddress)) {
+      print('walletAddress errr: $walletAddress');
+      return S.of(context).txErrorEnterValidAddress;
     }
+    print('walletAddress not err: $walletAddress');
     return null;
   }
 

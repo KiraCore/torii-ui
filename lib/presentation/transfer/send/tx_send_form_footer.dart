@@ -21,7 +21,7 @@ class TxSendFormFooter extends StatefulWidget {
   final TokenAmountModel feeTokenAmountModel;
   final GlobalKey<FormState> formKey;
   final AMsgFormModel msgFormModel;
-  final ValueChanged<SignedTxModel> onSubmit;
+  final ValueChanged<SignedTxModel?> onSubmit;
 
   const TxSendFormFooter({
     required this.feeTokenAmountModel,
@@ -106,20 +106,22 @@ class _TxSendFormFooter extends State<TxSendFormFooter> {
           getIt<Logger>().e('Form is not valid');
           return;
         }
+        // TODO: refactor this
+        widget.onSubmit(null);
         // TODO(Mykyta): add error handling at `send-via-metamask` task
         print('metamask pay amount: ${model.tokenAmountModel!.getAmountInBaseDenomination()}');
 
-        RequestPassphraseDialog.show(
-          context,
-          onProceed: ({required String passphrase}) {
-            getIt<EthereumService>().exportContractTokens(
-              passphrase: passphrase,
-              kiraAddress: model.recipientWalletAddress!.address,
-              amountInEth: model.tokenAmountModel!.getAmountInBaseDenomination(),
-            );
-          },
-          initEnter: true,
-        );
+        // RequestPassphraseDialog.show(
+        //   context,
+        //   onProceed: ({required String passphrase}) {
+        //     getIt<EthereumService>().exportContractTokens(
+        //       passphrase: passphrase,
+        //       kiraAddress: model.recipientWalletAddress!.address,
+        //       amountInEth: model.tokenAmountModel!.getAmountInBaseDenomination(),
+        //     );
+        //   },
+        //   needToConfirm: true,
+        // );
         // await metamaskCubit.pay(
         //   to: model.recipientWalletAddress!,
         //   amount: model.tokenAmountModel!.getAmountInBaseDenomination().toDouble().toInt(),

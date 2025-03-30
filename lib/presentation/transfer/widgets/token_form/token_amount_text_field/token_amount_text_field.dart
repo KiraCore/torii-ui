@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/domain/models/tokens/token_denomination_model.dart';
+import 'package:torii_client/presentation/transfer/widgets/token_form/cubit/token_form_cubit.dart';
 import 'package:torii_client/presentation/transfer/widgets/token_form/token_amount_text_field/token_amount_text_field_actions.dart';
 import 'package:torii_client/presentation/transfer/widgets/token_form/token_amount_text_field/token_amount_text_field_content.dart';
 import 'package:torii_client/presentation/transfer/widgets/token_form/tx_input_static_label.dart';
@@ -45,6 +47,8 @@ class TokenAmountTextField extends StatelessWidget {
                       tokenDenominationModel: tokenDenominationModel,
                       focusNode: focusNode,
                       errorExistsBool: errorExistsBool,
+                      onChanged:
+                          (String text) => BlocProvider.of<TokenFormCubit>(context).notifyTokenAmountTextChanged(text),
                     ),
                   ),
                 ),
