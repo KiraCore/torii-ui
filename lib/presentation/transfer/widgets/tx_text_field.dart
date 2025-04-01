@@ -16,6 +16,7 @@ class TxTextField extends StatefulWidget {
   final List<TextInputFormatter>? inputFormatters;
   final TextInputType? keyboardType;
   final FormFieldValidator<String>? validator;
+  final Widget? suffix;
 
   const TxTextField({
     required this.onChanged,
@@ -32,6 +33,7 @@ class TxTextField extends StatefulWidget {
     this.inputFormatters,
     this.keyboardType,
     this.validator,
+    this.suffix,
     super.key,
   });
 
@@ -59,6 +61,7 @@ class _TxTextField extends State<TxTextField> {
       validator: widget.validator,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       decoration: InputDecoration(
+        suffix: widget.suffix,
         contentPadding: EdgeInsets.zero,
         label: widget.label != null ? Text(widget.label!) : null,
         // labelStyle: textStyle?.copyWith(

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/domain/exports.dart';
 import 'package:torii_client/presentation/transfer/input/cubit/transfer_input_cubit.dart';
 import 'package:torii_client/presentation/transfer/input/memo_text_field/memo_text_field.dart';
+import 'package:torii_client/presentation/transfer/widgets/toggle_between_wallet_address_types.dart';
 import 'package:torii_client/presentation/transfer/widgets/token_form/cubit/token_form_state.dart';
 import 'package:torii_client/presentation/transfer/widgets/token_form/token_amount_text_field/token_amount_text_field.dart';
 import 'package:torii_client/presentation/transfer/widgets/token_form/token_amount_text_field/token_amount_text_field_content.dart';
@@ -95,7 +96,9 @@ class _MsgSendForm extends State<MsgSendForm> {
               );
             },
           ),
-          const SizedBox(height: 19),
+          const SizedBox(height: 16),
+          Center(child: const ToggleBetweenWalletAddressTypes()),
+          const SizedBox(height: 16),
           WalletAddressTextField(
             label: S.of(context).txHintSendTo,
             onChanged: _handleRecipientAddressChanged,
@@ -105,9 +108,6 @@ class _MsgSendForm extends State<MsgSendForm> {
           const SizedBox(height: 14),
           BlocBuilder<TransferInputCubit, TransferInputState>(
             buildWhen: (previous, current) {
-              print(
-                'cccc: ${(previous.recipientAmount != current.recipientAmount && current.changedBySender) || previous.recipientWalletAddress != current.recipientWalletAddress}',
-              );
               return (previous.recipientAmount != current.recipientAmount && current.changedBySender) ||
                   previous.recipientWalletAddress != current.recipientWalletAddress;
             },
@@ -127,11 +127,13 @@ class _MsgSendForm extends State<MsgSendForm> {
                             disabledBool: state.recipientWalletAddress == null,
                             label: 'Relative amount',
                             textEditingController: recipientAmountController,
-                            tokenDenominationModel:
+                            selectedTokenDenomination:
                                 // TODO: pass baseTokenDenominationModel before
                                 recipientTokenDenomination,
+                            tokenDenominations: [recipientTokenDenomination],
                             errorExistsBool: false,
                             onChanged: _handleRecipientAmountChanged,
+                            onChangedDenomination: (_) {},
                             focusNode: focusNode,
                           ),
                         ),
@@ -139,22 +141,6 @@ class _MsgSendForm extends State<MsgSendForm> {
                     ),
               );
             },
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: <Widget>[
-              Text(
-                S.of(context).balancesDenomination,
-                style: Theme.of(context).textTheme.bodySmall!.copyWith(color: DesignColors.white2),
-              ),
-              const SizedBox(width: 10),
-              KiraChipButton(
-                label: recipientTokenDenomination.name,
-                margin: const EdgeInsets.only(right: 8),
-                selected: true,
-                onTap: () {},
-              ),
-            ],
           ),
           const SizedBox(height: 24),
           MemoTextField(
@@ -206,8 +192,6 @@ class _MsgSendForm extends State<MsgSendForm> {
   }
 
   void _handleRecipientAmountChanged(String text) {
-    print('recipientRelativeAmount: ${widget.msgSendFormModel.recipientRelativeAmount}');
-    print('tokenAmountModel: ${widget.msgSendFormModel.tokenAmountModel}');
     widget.msgSendFormModel.tokenAmountModel = TokenAmountModel(
       baseDenominationAmount: ((Decimal.tryParse(text) ?? Decimal.zero) / Decimal.fromInt(2)).toDecimal(),
       tokenAliasModel:
@@ -216,8 +200,6 @@ class _MsgSendForm extends State<MsgSendForm> {
               ? TokenAliasModel.eth()
               : TokenAliasModel.kex()),
     );
-    print('recipientRelativeAmount: ${widget.msgSendFormModel.recipientRelativeAmount}');
-    print('tokenAmountModel: ${widget.msgSendFormModel.tokenAmountModel}');
     widget.msgSendFormModel.recipientRelativeAmount = TokenAmountModel(
       baseDenominationAmount: Decimal.tryParse(text) ?? Decimal.zero,
       tokenAliasModel:
@@ -225,8 +207,6 @@ class _MsgSendForm extends State<MsgSendForm> {
           widget.msgSendFormModel.tokenAmountModel!.tokenAliasModel.toOpposite(),
     );
     widget.msgSendFormModel.recipientTokenDenomination = widget.msgSendFormModel.tokenDenominationModel;
-    print('recipientRelativeAmount: ${widget.msgSendFormModel.recipientRelativeAmount}');
-    print('tokenAmountModel: ${widget.msgSendFormModel.tokenAmountModel}');
     context.read<TransferInputCubit>().updateAmount(
       senderAmount: widget.msgSendFormModel.tokenAmountModel!,
       recipientAmount: widget.msgSendFormModel.recipientRelativeAmount!,

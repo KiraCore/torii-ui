@@ -38,7 +38,6 @@ class _TxSendTokensFormDialog extends State<TxSendTokensFormDialog> {
   Widget build(BuildContext context) {
     return TxDialog(
       title: 'Cross-chain Transfer',
-      suffixWidget: const ToggleBetweenWalletAddressTypes(),
       child: Column(
         children: <Widget>[
           MsgSendForm(

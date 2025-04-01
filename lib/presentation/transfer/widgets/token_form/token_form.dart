@@ -118,7 +118,11 @@ class _TokenForm extends State<TokenForm> {
                             errorExistsBool: formFieldState.hasError,
                             disabledBool: widget.walletAddress == null,
                             textEditingController: tokenFormCubit.amountTextEditingController,
-                            tokenDenominationModel: tokenFormState.tokenDenominationModel,
+                            selectedTokenDenomination: tokenFormState.tokenDenominationModel,
+                            tokenDenominations:
+                                tokenFormState.tokenAmountModel?.tokenAliasModel.tokenDenominations ??
+                                <TokenDenominationModel>[],
+                            tokenFormState: tokenFormState,
                           ),
                         ),
                         // TODO: dropdown
@@ -143,17 +147,17 @@ class _TokenForm extends State<TokenForm> {
                       ),
                     ),
                   ],
-                  TokenAvailableAmount(
-                    formFieldState: formFieldState,
-                    balance: tokenFormState.balance,
-                    feeTokenAmountModel: tokenFormState.feeTokenAmountModel,
-                    tokenDenominationModel: tokenFormState.tokenDenominationModel,
-                  ),
-                  TokenDenominationList(
-                    tokenAliasModel: tokenFormState.balance?.tokenAliasModel,
-                    defaultTokenDenominationModel: tokenFormState.tokenDenominationModel,
-                    onChanged: tokenFormCubit.updateTokenDenomination,
-                  ),
+                  // TokenAvailableAmount(
+                  //   formFieldState: formFieldState,
+                  //   balance: tokenFormState.balance,
+                  //   feeTokenAmountModel: tokenFormState.feeTokenAmountModel,
+                  //   tokenDenominationModel: tokenFormState.tokenDenominationModel,
+                  // ),
+                  // TokenDenominationList(
+                  //   tokenAliasModel: tokenFormState.balance?.tokenAliasModel,
+                  //   defaultTokenDenominationModel: tokenFormState.tokenDenominationModel,
+                  //   onChanged: tokenFormCubit.updateTokenDenomination,
+                  // ),
                 ],
               );
             },
@@ -190,8 +194,6 @@ class _TokenForm extends State<TokenForm> {
 
     Decimal selectedTokenAmount = selectedTokenAmountModel?.getAmountInBaseDenomination() ?? Decimal.zero;
     Decimal availableTokenAmount = availableTokenAmountModel?.getAmountInBaseDenomination() ?? Decimal.zero;
-    print('selectedTokenAmount: $selectedTokenAmount');
-    print('availableTokenAmount: $availableTokenAmount');
     if (selectedTokenAmount == Decimal.zero) {
       return null;
     } else if (availableTokenAmount < selectedTokenAmount) {

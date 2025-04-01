@@ -155,10 +155,8 @@ class _WalletAddressTextField extends State<WalletAddressTextField> {
     if (walletAddress == null ||
         (walletAddress is EthereumWalletAddress && widget.needKiraAddress) ||
         (walletAddress is CosmosWalletAddress && !widget.needKiraAddress)) {
-      print('walletAddress errr: $walletAddress');
       return S.of(context).txErrorEnterValidAddress;
     }
-    print('walletAddress not err: $walletAddress');
     return null;
   }
 
