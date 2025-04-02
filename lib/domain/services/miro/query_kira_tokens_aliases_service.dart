@@ -83,6 +83,7 @@ class QueryKiraTokensAliasesService {
       bech32AddressPrefix: queryKiraTokensAliasesResp.bech32Prefix,
       defaultTokenAliasModel: await _getAliasByTokenName(queryKiraTokensAliasesResp.defaultDenom),
     );
+    // TODO: refactor
     // TokenDefaultDenomModel initialTokenDefaultDenomModel = await _getTokenDefaultDenom(
     //   networkUri,
     //   forceRequestBool: forceRequestBool,

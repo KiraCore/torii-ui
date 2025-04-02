@@ -11,7 +11,7 @@ class TxDialog extends StatelessWidget {
   const TxDialog({
     required this.child,
     required this.title,
-    this.maxWidth = 612,
+    this.maxWidth = 616,
     this.subtitle,
     this.suffixWidget,
     Key? key,

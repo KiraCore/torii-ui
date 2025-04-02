@@ -34,7 +34,7 @@ class MsgSendForm extends StatefulWidget {
 
 class _MsgSendForm extends State<MsgSendForm> {
   final TextEditingController memoTextEditingController = TextEditingController();
-  final TextEditingController recipientAmountController = TextEditingController();
+  final TextEditingController recipientAmountController = TextEditingController(text: '0');
   final FocusNode recipientAmountFocusNode = FocusNode();
   final ValueNotifier<AWalletAddress?> walletAddressNotifier = ValueNotifier<AWalletAddress?>(null);
 
