@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:torii_client/data/api/http_client_manager.dart';
@@ -35,6 +37,22 @@ class RemoteApiRepository implements IApiRepository {
 
   @override
   Future<Response<T>> fetchQueryInterxStatus<T>(ApiRequestModel<void> apiRequestModel) async {
+    // try {
+    //   print('apiRequestModel.networkUri: ${apiRequestModel.networkUri}');
+    //   print('dio: ${Dio().options.headers}');
+    //   final Response<T> response = await Dio().post(
+    //     'http://89.128.117.28:13000',
+    //     options: Options(headers: {'Content-Type': 'application/json'}),
+    //     data: jsonEncode({
+    //       "method": "cosmos",
+    //       "data": {"method": "GET", "path": "/cosmos/bank/v1beta1/supply", "payload": {}},
+    //     }),
+    //   );
+    //   print('responseee: $response');
+    // } on DioException catch (dioException) {
+    //   getIt<Logger>().e('cosmos error: ${apiRequestModel.networkUri}: ${dioException.message}');
+    // }
+  
     try {
       final Response<T> response = await _httpClientManager.get<T>(
         networkUri: apiRequestModel.networkUri,

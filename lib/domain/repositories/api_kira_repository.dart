@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:torii_client/data/api/http_client_manager.dart';
@@ -32,11 +34,30 @@ class RemoteApiKiraRepository implements IApiKiraRepository {
   @override
   Future<Response<T>> broadcast<T>(ApiRequestModel<BroadcastReq> apiRequestModel) async {
     try {
+      print('broadcast json: ${apiRequestModel.requestData.tx.toProtoJson()}');
+      print('broadcast bytes: ${apiRequestModel.requestData.tx.toProtoBytes()}');
+      print('broadcast base64: ${base64Encode(apiRequestModel.requestData.tx.toProtoBytes())}');
       final Response<T> response = await _httpClientManager.post<T>(
-        body: apiRequestModel.requestData.toJson(),
-        networkUri: apiRequestModel.networkUri,
-        path: '/api/kira/txs',
+        networkUri: Uri.parse('http://89.128.117.28:13000'),
+        path: '', // TODO: remove this, refactor the manager for proxy
+        options: Options(headers: {'Content-Type': 'application/json'}),
+        body: {
+          "method": "cosmos",
+          "data": {
+            "method": "POST",
+            "path": "/cosmos/tx/v1beta1/txs",
+            "payload": {
+              "tx_bytes": base64Encode(apiRequestModel.requestData.tx.toProtoBytes()),
+              "mode": "BROADCAST_MODE_SYNC",
+            },
+          },
+        },
       );
+      // final Response<T> response = await _httpClientManager.post<T>(
+      //   body: apiRequestModel.requestData.toJson(),
+      //   networkUri: apiRequestModel.networkUri,
+      //   path: '/api/kira/txs',
+      // );
       return response;
     } on DioException catch (dioException) {
       getIt<Logger>().e('Cannot fetch broadcast() for URI ${apiRequestModel.networkUri}: ${dioException.message}');

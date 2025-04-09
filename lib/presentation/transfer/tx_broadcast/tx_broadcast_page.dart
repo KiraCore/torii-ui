@@ -10,16 +10,15 @@ import 'package:torii_client/presentation/transfer/tx_broadcast/cubit/states/tx_
 import 'package:torii_client/presentation/transfer/tx_broadcast/cubit/tx_broadcast_cubit.dart';
 import 'package:torii_client/presentation/transfer/tx_broadcast/widgets/tx_broadcast_error_body.dart';
 import 'package:torii_client/presentation/transfer/tx_broadcast/widgets/tx_broadcast_loading_body.dart';
+import 'package:torii_client/presentation/transfer/tx_process_cubit/tx_process_cubit.dart';
 import 'package:torii_client/utils/exports.dart';
 
 class TxBroadcastPage<T extends AMsgFormModel> extends StatefulWidget {
   final SignedTxModel? signedTxModel;
-  final MsgSendFormModel msgSendFormModel;
   final String passphrase;
 
   const TxBroadcastPage({
     required this.signedTxModel,
-    required this.msgSendFormModel,
     required this.passphrase,
     super.key,
   });
@@ -30,6 +29,7 @@ class TxBroadcastPage<T extends AMsgFormModel> extends StatefulWidget {
 
 class _TxBroadcastPage<T extends AMsgFormModel> extends State<TxBroadcastPage<T>> {
   final TxBroadcastCubit txBroadcastCubit = getIt<TxBroadcastCubit>();
+  TxProcessCubit<MsgSendFormModel> get txProcessCubit => context.read<TxProcessCubit<MsgSendFormModel>>();
 
   @override
   void initState() {
@@ -37,8 +37,8 @@ class _TxBroadcastPage<T extends AMsgFormModel> extends State<TxBroadcastPage<T>
     if (widget.signedTxModel == null) {
       txBroadcastCubit.broadcastFromEth(
         passphrase: widget.passphrase,
-        kiraRecipient: widget.msgSendFormModel.recipientWalletAddress!.address,
-        amount: widget.msgSendFormModel.tokenAmountModel!.getAmountInBaseDenomination(),
+        kiraRecipient: txProcessCubit.msgFormModel.recipientWalletAddress!.address,
+        ukexAmount: txProcessCubit.msgFormModel.tokenAmountModel!.getAmountInDefaultDenomination(),
       );
     } else {
       txBroadcastCubit.broadcastFromKira(signedTxModel: widget.signedTxModel!, passphrase: widget.passphrase);
@@ -59,7 +59,7 @@ class _TxBroadcastPage<T extends AMsgFormModel> extends State<TxBroadcastPage<T>
         listener: (BuildContext context, ATxBroadcastState txBroadcastState) {
           if (txBroadcastState is TxBroadcastCompletedState) {
             ClaimProgressRoute(
-              ClaimProgressRouteExtra(signedTx: widget.signedTxModel, msgSendFormModel: widget.msgSendFormModel),
+              ClaimProgressRouteExtra(signedTx: widget.signedTxModel, msgSendFormModel: txProcessCubit.msgFormModel),
             ).replace(context);
           }
         },
@@ -82,8 +82,8 @@ class _TxBroadcastPage<T extends AMsgFormModel> extends State<TxBroadcastPage<T>
         errorExplorerModel: txBroadcastState.errorExplorerModel,
         signedTxModel: widget.signedTxModel,
         passphrase: widget.passphrase,
-        kiraRecipient: widget.msgSendFormModel.recipientWalletAddress!.address,
-        amount: widget.msgSendFormModel.tokenAmountModel!.getAmountInBaseDenomination(),
+        kiraRecipient: txProcessCubit.msgFormModel.recipientWalletAddress!.address,
+        ukexAmount: txProcessCubit.msgFormModel.tokenAmountModel!.getAmountInDefaultDenomination(),
       );
     } else if (txBroadcastState is TxBroadcastLoadingState || txBroadcastState is TxBroadcastCompletedState) {
       return TxBroadcastLoadingBody();

@@ -30,7 +30,8 @@ class TxProcessCubit<T extends AMsgFormModel> extends Cubit<ATxProcessState> {
   final TxMsgType txMsgType;
   final T msgFormModel;
 
-  TxProcessCubit({required this.txMsgType, required this.msgFormModel}) : super(const TxProcessLoadingState());
+  TxProcessCubit({required this.txMsgType, required this.msgFormModel})
+    : super(const TxProcessLoadingState());
 
   Future<void> init({required bool sendFromKira, bool formEnabledBool = true}) async {
     emit(const TxProcessLoadingState());
@@ -71,16 +72,16 @@ class TxProcessCubit<T extends AMsgFormModel> extends Cubit<ATxProcessState> {
           TxProcessLoadedState(
             feeTokenAmountModel: TokenAmountModel(
               defaultDenominationAmount: Decimal.zero,
-              tokenAliasModel: TokenAliasModel.eth(),
+              tokenAliasModel: TokenAliasModel.wkex(),
             ),
             networkPropertiesModel: NetworkPropertiesModel(
               minTxFee: TokenAmountModel(
                 defaultDenominationAmount: Decimal.zero,
-                tokenAliasModel: TokenAliasModel.eth(),
+                tokenAliasModel: TokenAliasModel.wkex(),
               ),
               minIdentityApprovalTip: TokenAmountModel(
                 defaultDenominationAmount: Decimal.zero,
-                tokenAliasModel: TokenAliasModel.eth(),
+                tokenAliasModel: TokenAliasModel.wkex(),
               ),
             ),
           ),
@@ -101,7 +102,7 @@ class TxProcessCubit<T extends AMsgFormModel> extends Cubit<ATxProcessState> {
           TxProcessConfirmFromEthState(
             txProcessLoadedState: state as TxProcessLoadedState,
             kiraRecipient: (msgFormModel as MsgSendFormModel).recipientWalletAddress!.address,
-            amountInEth: (msgFormModel as MsgSendFormModel).tokenAmountModel!.getAmountInBaseDenomination(),
+            ukexAmount: (msgFormModel as MsgSendFormModel).tokenAmountModel!.getAmountInDefaultDenomination(),
           ),
         );
       } else {
@@ -133,7 +134,7 @@ class TxProcessCubit<T extends AMsgFormModel> extends Cubit<ATxProcessState> {
           txProcessLoadedState: (state as TxProcessConfirmFromEthState).txProcessLoadedState,
           passphrase: passphrase,
           kiraRecipient: (state as TxProcessConfirmFromEthState).kiraRecipient,
-          amountInEth: (state as TxProcessConfirmFromEthState).amountInEth,
+          ukexAmount: (state as TxProcessConfirmFromEthState).ukexAmount,
         ),
       );
     }

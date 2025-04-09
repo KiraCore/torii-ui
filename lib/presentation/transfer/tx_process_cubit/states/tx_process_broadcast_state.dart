@@ -31,12 +31,12 @@ class TxProcessBroadcastFromEthState extends TxProcessBroadcastState {
     required super.txProcessLoadedState,
     required super.passphrase,
     required this.kiraRecipient,
-    required this.amountInEth,
+    required this.ukexAmount,
   });
 
   final String kiraRecipient;
-  final Decimal amountInEth;
+  final Decimal ukexAmount;
 
   @override
-  List<Object?> get props => <Object?>[kiraRecipient, amountInEth, ...super.props];
+  List<Object?> get props => <Object?>[kiraRecipient, ukexAmount, ...super.props];
 }

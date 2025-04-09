@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:torii_client/domain/models/tokens/msg_send_form_model.dart';
+import 'package:torii_client/domain/models/wallet/address/cosmos_wallet_address.dart';
 import 'package:torii_client/presentation/transfer/tx_broadcast/cubit/states/tx_broadcast_completed_state.dart';
 import 'package:torii_client/presentation/transfer/tx_broadcast/widgets/tx_broadcast_status_icon.dart';
+import 'package:torii_client/presentation/transfer/tx_process_cubit/tx_process_cubit.dart';
 import 'package:torii_client/presentation/widgets/buttons/kira_outlined_button.dart';
 import 'package:torii_client/utils/exports.dart';
 
@@ -40,13 +44,19 @@ class TxBroadcastCompleteBody extends StatelessWidget {
           height: 51,
           width: 163,
           onPressed: () => _handleBackPressed(context),
-          title: S.of(context).txButtonBackToAccount,
+          title: 'Back to input',
         ),
       ],
     );
   }
 
   void _handleBackPressed(BuildContext context) {
-    router.go(const IntroRoute().location);
+    // TODO: refactor
+    context.read<TxProcessCubit<MsgSendFormModel>>().init(
+      formEnabledBool: true,
+      sendFromKira:
+          context.read<TxProcessCubit<MsgSendFormModel>>().msgFormModel.senderWalletAddress is CosmosWalletAddress,
+    );
+    router.go(const TransferInputRoute().location);
   }
 }

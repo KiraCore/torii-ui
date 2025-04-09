@@ -15,11 +15,11 @@ class TokenAliasModel extends Equatable {
     this.icon,
   });
 
-  factory TokenAliasModel.eth() {
+  factory TokenAliasModel.wkex() {
     return TokenAliasModel(
-      name: 'wei',
-      defaultTokenDenominationModel: TokenDenominationModel(name: 'wei', decimals: 0),
-      baseTokenDenominationModel: TokenDenominationModel(name: 'ETH', decimals: 18),
+      name: 'wKEX',
+      defaultTokenDenominationModel: TokenDenominationModel(name: 'ukex', decimals: 0),
+      baseTokenDenominationModel: TokenDenominationModel(name: 'wKEX', decimals: 9),
     );
   }
 
@@ -27,13 +27,13 @@ class TokenAliasModel extends Equatable {
     return TokenAliasModel(
       name: 'ukex',
       defaultTokenDenominationModel: TokenDenominationModel(name: 'ukex', decimals: 0),
-      baseTokenDenominationModel: TokenDenominationModel(name: 'KEX', decimals: 8),
+      baseTokenDenominationModel: TokenDenominationModel(name: 'KEX', decimals: 9),
     );
   }
 
   factory TokenAliasModel.local(String name) {
-    if (name.toLowerCase() == 'wei') {
-      return TokenAliasModel.eth();
+    if (name.toLowerCase() == 'wkex') {
+      return TokenAliasModel.wkex();
     } else if (name.toLowerCase() == 'ukex') {
       return TokenAliasModel.kex();
     } else {
@@ -55,10 +55,10 @@ class TokenAliasModel extends Equatable {
             ? TokenDenominationModel(name: tokenAlias.denoms.first, decimals: 0)
             : networkTokenDenominationModel;
     TokenDenominationModel baseTokenDenominationModel = networkTokenDenominationModel;
-    if (tokenAlias.name.toLowerCase() == 'wei') {
-      baseTokenDenominationModel = TokenDenominationModel(name: 'ETH', decimals: 18);
+    if (tokenAlias.name.toLowerCase() == 'wkex') {
+      baseTokenDenominationModel = TokenDenominationModel(name: 'wKEX', decimals: 9);
     } else if (tokenAlias.name.toLowerCase() == 'ukex') {
-      baseTokenDenominationModel = TokenDenominationModel(name: 'KEX', decimals: 8);
+      baseTokenDenominationModel = TokenDenominationModel(name: 'KEX', decimals: 9);
     }
 
     return TokenAliasModel(
@@ -71,10 +71,10 @@ class TokenAliasModel extends Equatable {
 
   TokenAliasModel toOpposite() {
     final lowerName = name.toLowerCase();
-    if (lowerName == 'wei' || lowerName == 'eth') {
+    if (lowerName == 'wkex') {
       return TokenAliasModel.kex();
     } else if (lowerName == 'ukex' || lowerName == 'kex') {
-      return TokenAliasModel.eth();
+      return TokenAliasModel.wkex();
     } else {
       return this;
     }

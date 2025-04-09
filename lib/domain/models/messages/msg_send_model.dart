@@ -36,8 +36,8 @@ class MsgSendModel extends ATxMsgModel {
       toAddress: toWalletAddress.address,
       amount: <CosmosCoin>[
         CosmosCoin(
-          denom: tokenAmountModel.tokenAliasModel.baseTokenDenominationModel.name,
-          amount: tokenAmountModel.getAmountInBaseDenomination().toBigInt(),
+          denom: tokenAmountModel.tokenAliasModel.defaultTokenDenominationModel.name,
+          amount: tokenAmountModel.getAmountInDefaultDenomination().toBigInt(),
         ),
       ],
     );

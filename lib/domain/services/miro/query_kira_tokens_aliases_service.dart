@@ -20,17 +20,18 @@ class QueryKiraTokensAliasesService {
   static const QueryKiraTokensAliasesResp _defaultAliases = QueryKiraTokensAliasesResp(
     tokenAliases: <TokenAlias>[
       TokenAlias(
-        decimals: 0,
+        decimals: 9,
         denoms: <String>['KEX'],
         name: 'KEX',
         symbol: 'KEX',
         // TODO(Mykyta): make nullable
         icon: '',
         // TODO(Mykyta): make int, and get from api, but in another model
+        // TODO: !!! supply from proxy
         amount: '0',
       ),
       TokenAlias(
-        decimals: 6,
+        decimals: 0,
         denoms: <String>['ukex'],
         name: 'ukex',
         symbol: 'ukex',
@@ -40,7 +41,7 @@ class QueryKiraTokensAliasesService {
         amount: '0',
       ),
       TokenAlias(
-        decimals: 6,
+        decimals: 0,
         denoms: <String>['v1/ukex'],
         name: 'v1/ukex',
         symbol: 'v1/ukex',
@@ -50,7 +51,7 @@ class QueryKiraTokensAliasesService {
         amount: '0',
       ),
     ],
-    defaultDenom: 'KEX',
+    defaultDenom: 'ukex',
     bech32Prefix: 'kira',
   );
 

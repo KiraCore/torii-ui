@@ -45,6 +45,14 @@ class _WalletAddressTextField extends State<WalletAddressTextField> {
   }
 
   @override
+  void didUpdateWidget(WalletAddressTextField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.defaultWalletAddress != widget.defaultWalletAddress) {
+      _assignDefaultValues();
+    }
+  }
+
+  @override
   void dispose() {
     formFieldKey.currentState?.dispose();
     textEditingController.dispose();

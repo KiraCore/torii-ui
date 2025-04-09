@@ -5,16 +5,15 @@ import 'package:torii_client/presentation/transfer/input/msg_send_form/msg_send_
 import 'package:torii_client/presentation/transfer/send/tx_dialog_confirm_layout.dart';
 
 class TxSendTokensConfirmDialog extends StatelessWidget {
-  final MsgSendFormModel msgSendFormModel;
   final TxLocalInfoModel? txLocalInfoModel;
 
-  const TxSendTokensConfirmDialog({required this.msgSendFormModel, required this.txLocalInfoModel, Key? key})
+  const TxSendTokensConfirmDialog({required this.txLocalInfoModel, Key? key})
     : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return TxDialogConfirmLayout<MsgSendFormModel>(
-      formPreviewWidget: MsgSendFormPreview(msgSendFormModel: msgSendFormModel, txLocalInfoModel: txLocalInfoModel),
+      formPreviewWidget: MsgSendFormPreview(txLocalInfoModel: txLocalInfoModel),
     );
   }
 }

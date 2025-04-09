@@ -6,6 +6,8 @@ class TransferInputState extends Equatable {
   final TokenAmountModel? senderAmount;
   final AWalletAddress? recipientWalletAddress;
   final TokenAmountModel? recipientAmount;
+  final String? recipientAmountText;
+  final TokenDenominationModel? recipientTokenDenomination;
   final bool changedBySender;
 
   const TransferInputState({
@@ -13,7 +15,9 @@ class TransferInputState extends Equatable {
     this.balance,
     this.senderAmount,
     this.recipientAmount,
+    this.recipientAmountText,
     this.recipientWalletAddress,
+    this.recipientTokenDenomination,
     this.changedBySender = false,
   });
 
@@ -23,7 +27,9 @@ class TransferInputState extends Equatable {
     balance,
     senderAmount,
     recipientAmount,
+    recipientAmountText,
     recipientWalletAddress,
+    recipientTokenDenomination,
     changedBySender,
   ];
 }

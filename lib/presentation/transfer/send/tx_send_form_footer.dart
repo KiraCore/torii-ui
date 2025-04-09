@@ -13,6 +13,7 @@ import 'package:torii_client/presentation/transfer/tx_form_builder_cubit/a_tx_fo
 import 'package:torii_client/presentation/transfer/tx_form_builder_cubit/states/tx_form_builder_downloading_state.dart';
 import 'package:torii_client/presentation/transfer/tx_form_builder_cubit/states/tx_form_builder_error_state.dart';
 import 'package:torii_client/presentation/transfer/tx_form_builder_cubit/tx_form_builder_cubit.dart';
+import 'package:torii_client/presentation/transfer/tx_process_cubit/tx_process_cubit.dart';
 import 'package:torii_client/presentation/transfer/widgets/request_passphrase_dialog.dart';
 import 'package:torii_client/utils/exports.dart';
 import 'package:torii_client/domain/models/tokens/a_msg_form_model.dart';
@@ -20,13 +21,11 @@ import 'package:torii_client/domain/models/tokens/a_msg_form_model.dart';
 class TxSendFormFooter extends StatefulWidget {
   final TokenAmountModel feeTokenAmountModel;
   final GlobalKey<FormState> formKey;
-  final AMsgFormModel msgFormModel;
   final ValueChanged<SignedTxModel?> onSubmit;
-
+  
   const TxSendFormFooter({
     required this.feeTokenAmountModel,
     required this.formKey,
-    required this.msgFormModel,
     required this.onSubmit,
     Key? key,
   }) : super(key: key);
@@ -38,23 +37,12 @@ class TxSendFormFooter extends StatefulWidget {
 class _TxSendFormFooter extends State<TxSendFormFooter> {
   final SessionCubit sessionCubit = getIt<SessionCubit>();
   final MetamaskCubit metamaskCubit = getIt<MetamaskCubit>();
-  late final TxFormBuilderCubit txFormBuilderCubit = TxFormBuilderCubit(
-    feeTokenAmountModel: widget.feeTokenAmountModel,
-    msgFormModel: widget.msgFormModel,
-  );
-
-  @override
-  void dispose() {
-    txFormBuilderCubit.close();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
 
     return BlocBuilder<TxFormBuilderCubit, ATxFormBuilderState>(
-      bloc: txFormBuilderCubit,
       builder: (BuildContext context, ATxFormBuilderState txFormBuilderState) {
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -64,9 +52,10 @@ class _TxSendFormFooter extends State<TxSendFormFooter> {
               const TxSendFormCompletingIndicator()
             else
               AnimatedBuilder(
-                animation: widget.msgFormModel,
+                animation: context.read<TxProcessCubit<MsgSendFormModel>>().msgFormModel,
                 builder: (BuildContext context, Widget? _) {
-                  bool formFilledBool = widget.msgFormModel.canBuildTxMsg();
+                  bool formFilledBool = context.read<TxProcessCubit<MsgSendFormModel>>().msgFormModel.canBuildTxMsg();
+
                   return TxSendFormNextButton(
                     errorExistsBool: txFormBuilderState is TxFormBuilderErrorState,
                     disabledBool: formFilledBool == false,
@@ -96,8 +85,8 @@ class _TxSendFormFooter extends State<TxSendFormFooter> {
       getIt<Logger>().e('Form is not valid');
       return;
     }
-    final model = widget.msgFormModel;
-    if (model is MsgSendFormModel && model.senderWalletAddress is EthereumWalletAddress) {
+    final model = context.read<TxProcessCubit<MsgSendFormModel>>().msgFormModel;
+    if (model.senderWalletAddress is EthereumWalletAddress) {
       try {
         // TODO(Mykyta): is there possibility that model can be not a MsgSendModel ? (`send-via-metamask` task)
         // ignore:unused_local_variable
@@ -131,7 +120,7 @@ class _TxSendFormFooter extends State<TxSendFormFooter> {
       }
     } else {
       try {
-        UnsignedTxModel unsignedTxModel = await txFormBuilderCubit.buildUnsignedTx();
+        UnsignedTxModel unsignedTxModel = await context.read<TxFormBuilderCubit>().buildUnsignedTx();
         SignedTxModel signedTxModel = await _signTransaction(unsignedTxModel);
         widget.onSubmit(signedTxModel);
       } catch (e) {

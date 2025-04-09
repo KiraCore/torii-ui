@@ -1,8 +1,10 @@
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:torii_client/domain/exports.dart';
 import 'package:torii_client/domain/models/network/error_explorer_model.dart';
 import 'package:torii_client/domain/models/tokens/a_msg_form_model.dart';
+import 'package:torii_client/domain/models/tokens/msg_send_form_model.dart';
 import 'package:torii_client/domain/models/transaction/signed_transaction_model.dart';
 import 'package:torii_client/presentation/transfer/error_explorer_dialog/error_explorer_dialog.dart';
 import 'package:torii_client/presentation/transfer/tx_broadcast/cubit/tx_broadcast_cubit.dart';
@@ -16,14 +18,14 @@ class TxBroadcastErrorBody<T extends AMsgFormModel> extends StatelessWidget {
   final SignedTxModel? signedTxModel;
   final String passphrase;
   final String kiraRecipient;
-  final Decimal amount;
+  final Decimal ukexAmount;
 
   const TxBroadcastErrorBody({
     required this.errorExplorerModel,
     required this.signedTxModel,
     required this.passphrase,
     required this.kiraRecipient,
-    required this.amount,
+    required this.ukexAmount,
     Key? key,
   }) : super(key: key);
 
@@ -64,13 +66,6 @@ class TxBroadcastErrorBody<T extends AMsgFormModel> extends StatelessWidget {
             KiraOutlinedButton(
               height: 51,
               width: 163,
-              onPressed: () => _pressBackButton(context),
-              title: S.of(context).txButtonBackToAccount,
-            ),
-            const SizedBox(height: 8),
-            KiraOutlinedButton(
-              height: 51,
-              width: 163,
               onPressed: () => _pressEditTransactionButton(context),
               title: S.of(context).txButtonEditTransaction,
             ),
@@ -91,10 +86,6 @@ class TxBroadcastErrorBody<T extends AMsgFormModel> extends StatelessWidget {
     showDialog<void>(context: context, builder: (_) => ErrorExplorerDialog(errorExplorerModel: errorExplorerModel));
   }
 
-  void _pressBackButton(BuildContext context) {
-    router.go(const IntroRoute().location);
-  }
-
   void _pressTryAgainButton(BuildContext context) {
     if (signedTxModel == null) {
       context.read<TxBroadcastCubit>().broadcastFromKira(signedTxModel: signedTxModel!, passphrase: passphrase);
@@ -102,7 +93,7 @@ class TxBroadcastErrorBody<T extends AMsgFormModel> extends StatelessWidget {
       context.read<TxBroadcastCubit>().broadcastFromEth(
         passphrase: passphrase,
         kiraRecipient: kiraRecipient,
-        amount: amount,
+        ukexAmount: ukexAmount,
       );
     }
   }

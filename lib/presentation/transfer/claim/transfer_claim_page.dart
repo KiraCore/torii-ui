@@ -11,7 +11,7 @@ class TransferClaimPage extends StatelessWidget {
   const TransferClaimPage({super.key, required this.signedTx, required this.msgSendFormModel});
 
   final SignedTxModel? signedTx;
-  final MsgSendFormModel msgSendFormModel;
+  final MsgSendFormModel? msgSendFormModel;
 
   @override
   Widget build(BuildContext context) {

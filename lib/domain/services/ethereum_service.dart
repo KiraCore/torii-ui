@@ -196,7 +196,7 @@ class EthereumService {
   Future<TransactionResponse?> exportContractTokens({
     required String passphrase,
     required String kiraAddress,
-    required Decimal amountInEth,
+    required Decimal ukexAmount,
   }) async {
     if (!isSupported) {
       getIt<Logger>().e('MetaMask is not connected');
@@ -207,7 +207,7 @@ class EthereumService {
       final tx = await contract.send('exportTokens', [
         kiraAddress, //'kira143q8vxpvuykt9pq50e6hng9s38vmy844n8k9wx', //(await requestAccount())!.first,
         Sha256.encrypt(passphrase), //'8a8620565a42cfb1acf8d6b9b84d6179fa18050c6fcb305af7dad777804fa047',
-        amountInEth.toBigInt() * BigInt.from(10).pow(18), // Amount in Wei
+        ukexAmount.toBigInt(), // Amount in Wei
       ]);
       getIt<Logger>().d('Transaction hash: ${tx.hash}');
       return tx;
@@ -238,12 +238,11 @@ class EthereumService {
   Future<int?> getChainId() async => ethereum?.getChainId();
 
   Future<Decimal?> getBalance(String address) async {
-    final String? balance = await ethereum?.request('eth_getBalance', <String>[address, 'latest']);
-    if (balance == null) {
-      return null;
-    }
-    final v = int.tryParse(balance.withoutHexPrefix(), radix: 16);
-    return v == null ? null : Decimal.fromInt(v);
+    return Decimal.fromInt(1000000000);
+    // await Future.delayed(const Duration(seconds: 5));
+    final balance = await contract.call<dynamic>('balanceOf', [address]);
+    getIt<Logger>().d('Balance: $balance');
+    return balance == null ? null : Decimal.fromBigInt(BigInt.parse(balance, radix: 16));
   }
 
   Future<String?> getPublicKey(String address) async =>
@@ -304,6 +303,13 @@ class EthereumService {
 
     return Bech32.encode(humanReadablePart, ripemd160Hash);
   }
+
+  Future<void> watchWkexAsset() async => ethereum?.walletWatchAssets(
+    address: '0x719CAe5e3d135364e5Ef5AAd386985D86A0E7813',
+    symbol: 'wKEX',
+    decimals: 9,
+    // image: 'https://kira.network/images/kira-logo.png',
+  );
 
   Future<void> switchWalletChain(int chainId) async => ethereum?.walletSwitchChain(chainId);
   Future<void> addWalletChain({

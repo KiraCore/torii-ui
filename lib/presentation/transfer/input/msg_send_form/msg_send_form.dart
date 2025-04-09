@@ -4,6 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/domain/exports.dart';
 import 'package:torii_client/presentation/transfer/input/cubit/transfer_input_cubit.dart';
 import 'package:torii_client/presentation/transfer/input/memo_text_field/memo_text_field.dart';
+import 'package:torii_client/presentation/transfer/send/tx_send_form_footer.dart';
+import 'package:torii_client/presentation/transfer/tx_form_builder_cubit/tx_form_builder_cubit.dart';
+import 'package:torii_client/presentation/transfer/tx_process_cubit/tx_process_cubit.dart';
 import 'package:torii_client/presentation/transfer/widgets/toggle_between_wallet_address_types.dart';
 import 'package:torii_client/presentation/transfer/widgets/token_form/cubit/token_form_state.dart';
 import 'package:torii_client/presentation/transfer/widgets/token_form/token_amount_text_field/token_amount_text_field.dart';
@@ -15,15 +18,14 @@ import 'package:torii_client/presentation/transfer/widgets/tx_input_wrapper.dart
 import 'package:torii_client/presentation/transfer/widgets/wallet_address_text_field.dart';
 import 'package:torii_client/presentation/widgets/buttons/kira_chip_button.dart';
 import 'package:torii_client/utils/exports.dart';
+import 'package:torii_client/utils/extensions/tx_utils.dart';
 
 class MsgSendForm extends StatefulWidget {
   final GlobalKey<FormState> formKey;
-  final MsgSendFormModel msgSendFormModel;
   final TokenAmountModel feeTokenAmountModel;
 
   const MsgSendForm({
     required this.formKey,
-    required this.msgSendFormModel,
     required this.feeTokenAmountModel,
     super.key,
   });
@@ -34,14 +36,17 @@ class MsgSendForm extends StatefulWidget {
 
 class _MsgSendForm extends State<MsgSendForm> {
   final TextEditingController memoTextEditingController = TextEditingController();
-  final TextEditingController recipientAmountController = TextEditingController(text: '0');
+  final TextEditingController recipientAmountController = TextEditingController();
   final FocusNode recipientAmountFocusNode = FocusNode();
   final ValueNotifier<AWalletAddress?> walletAddressNotifier = ValueNotifier<AWalletAddress?>(null);
+  TxProcessCubit<MsgSendFormModel> get txProcessCubit => context.read<TxProcessCubit<MsgSendFormModel>>();
 
   @override
   void initState() {
     super.initState();
-    _assignDefaultValues();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _assignDefaultValues();
+    });
   }
 
   @override
@@ -53,31 +58,34 @@ class _MsgSendForm extends State<MsgSendForm> {
 
   @override
   Widget build(BuildContext context) {
-    final recipientTokenDenomination =
-        widget.msgSendFormModel.recipientTokenDenomination ??
-        (widget.msgSendFormModel.recipientWalletAddress is EthereumWalletAddress
-            ? TokenAliasModel.eth().baseTokenDenominationModel
-            : TokenAliasModel.kex().baseTokenDenominationModel);
-    return Form(
-      key: widget.formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          WalletAddressTextField(
-            label: S.of(context).txHintSendFrom,
-            disabledBool: true,
-            onChanged: _handleSenderAddressChanged,
-            defaultWalletAddress: widget.msgSendFormModel.senderWalletAddress,
-            needKiraAddress: widget.msgSendFormModel.senderWalletAddress is CosmosWalletAddress,
-          ),
-          const SizedBox(height: 14),
-          ValueListenableBuilder<AWalletAddress?>(
-            valueListenable: walletAddressNotifier,
-            builder: (_, AWalletAddress? walletAddress, __) {
-              getIt<Logger>().i('updated balance: ${widget.msgSendFormModel.balance}');
-              return BlocBuilder<TransferInputCubit, TransferInputState>(
+    final recipientTokenAlias =
+        txProcessCubit.msgFormModel.senderWalletAddress is EthereumWalletAddress
+            ? TokenAliasModel.kex()
+            : TokenAliasModel.wkex();
+
+    return Column(
+      children: [
+        Form(
+          key: widget.formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              WalletAddressTextField(
+                label: S.of(context).txHintSendFrom,
+                disabledBool: true,
+                onChanged: (_) {},
+                defaultWalletAddress: txProcessCubit.msgFormModel.senderWalletAddress,
+                needKiraAddress: txProcessCubit.msgFormModel.senderWalletAddress is CosmosWalletAddress,
+              ),
+              const SizedBox(height: 14),
+              // ValueListenableBuilder<AWalletAddress?>(
+              //   valueListenable: walletAddressNotifier,
+              //   builder: (_, AWalletAddress? walletAddress, __) {
+              //     getIt<Logger>().i('updated balance: ${txProcessCubit.msgFormModel.balance}');
+              //     return
+              BlocBuilder<TransferInputCubit, TransferInputState>(
                 buildWhen: (previous, current) {
                   return previous.balance != current.balance ||
                       (previous.senderAmount != current.senderAmount && !current.changedBySender);
@@ -88,128 +96,160 @@ class _MsgSendForm extends State<MsgSendForm> {
                     feeTokenAmountModel: widget.feeTokenAmountModel,
                     balance: state.balance,
                     defaultTokenAmountModel: state.senderAmount,
-                    defaultTokenDenominationModel: widget.msgSendFormModel.tokenDenominationModel,
+                    defaultTokenDenominationModel: txProcessCubit.msgFormModel.tokenDenominationModel,
                     onChanged: _handleTokenAmountChanged,
-                    walletAddress: walletAddress,
+                    walletAddress: txProcessCubit.msgFormModel.senderWalletAddress,
                   );
                 },
-              );
-            },
-          ),
-          const SizedBox(height: 16),
-          Center(child: const ToggleBetweenWalletAddressTypes()),
-          const SizedBox(height: 16),
-          WalletAddressTextField(
-            label: S.of(context).txHintSendTo,
-            onChanged: _handleRecipientAddressChanged,
-            defaultWalletAddress: widget.msgSendFormModel.recipientWalletAddress,
-            needKiraAddress: widget.msgSendFormModel.senderWalletAddress is EthereumWalletAddress,
-          ),
-          const SizedBox(height: 14),
-          BlocBuilder<TransferInputCubit, TransferInputState>(
-            buildWhen: (previous, current) {
-              return (previous.recipientAmount != current.recipientAmount && current.changedBySender) ||
-                  previous.recipientWalletAddress != current.recipientWalletAddress;
-            },
-            builder: (context, state) {
-              return TxInputWrapper(
-                disabled: state.recipientWalletAddress == null,
-                height: 80,
-                hasErrors: false,
-                builderWithFocus:
-                    (FocusNode focusNode) => SizedBox(
-                      height: double.infinity,
-                      child: Center(
-                        child: TxInputStaticLabel(
-                          label: 'Relative amount',
-                          contentPadding: const EdgeInsets.only(top: 8, bottom: 4),
-                          child: TokenAmountTextFieldContent(
-                            disabledBool: state.recipientWalletAddress == null,
-                            label: 'Relative amount',
-                            textEditingController: recipientAmountController,
-                            selectedTokenDenomination:
-                                // TODO: pass baseTokenDenominationModel before
-                                recipientTokenDenomination,
-                            tokenDenominations: [recipientTokenDenomination],
-                            errorExistsBool: false,
-                            onChanged: _handleRecipientAmountChanged,
-                            onChangedDenomination: (_) {},
-                            focusNode: focusNode,
+                // );
+                // },
+              ),
+              const SizedBox(height: 16),
+              Center(child: const ToggleBetweenWalletAddressTypes()),
+              const SizedBox(height: 16),
+              BlocBuilder<TransferInputCubit, TransferInputState>(
+                buildWhen: (previous, current) {
+                  return previous.recipientWalletAddress != current.recipientWalletAddress ||
+                      previous.fromWallet != current.fromWallet;
+                },
+                builder: (context, state) {
+                  return WalletAddressTextField(
+                    label: S.of(context).txHintSendTo,
+                    onChanged: _handleRecipientAddressChanged,
+                    defaultWalletAddress: state.recipientWalletAddress,
+                    needKiraAddress: state.fromWallet.address is EthereumWalletAddress,
+                  );
+                },
+              ),
+              const SizedBox(height: 14),
+              BlocConsumer<TransferInputCubit, TransferInputState>(
+                listenWhen: (previous, current) {
+                  return previous.recipientTokenDenomination != current.recipientTokenDenomination;
+                },
+                listener: (context, state) {
+                  txProcessCubit.msgFormModel.recipientTokenDenomination = state.recipientTokenDenomination;
+                },
+                buildWhen: (previous, current) {
+                  return (previous.recipientAmount != current.recipientAmount && current.changedBySender) ||
+                      previous.recipientWalletAddress != current.recipientWalletAddress ||
+                      previous.recipientTokenDenomination != current.recipientTokenDenomination;
+                },
+                builder: (context, state) {
+                  if (recipientAmountController.text.isEmpty) {
+                    // NOTE: initial value
+                    recipientAmountController.text = TxUtils.buildAmountString(
+                      // TODO: fix '0' initial value, refactor
+                      state.recipientAmount?.getAmountInDenomination(state.recipientTokenDenomination!).toString() ??
+                          '0',
+                      state.recipientTokenDenomination,
+                    );
+                  }
+                  return TxInputWrapper(
+                    disabled: state.recipientWalletAddress == null,
+                    height: 80,
+                    hasErrors: false,
+                    builderWithFocus:
+                        (FocusNode focusNode) => SizedBox(
+                          height: double.infinity,
+                          child: Center(
+                            child: TxInputStaticLabel(
+                              label: 'Amount',
+                              contentPadding: const EdgeInsets.only(top: 8, bottom: 4),
+                              child: TokenAmountTextFieldContent(
+                                disabledBool: state.recipientWalletAddress == null,
+                                label: 'Amount',
+                                textEditingController: recipientAmountController,
+                                selectedTokenDenomination:
+                                    state.recipientTokenDenomination,
+                                tokenDenominations: recipientTokenAlias.tokenDenominations,
+                                errorExistsBool: false,
+                                onChanged: _handleRecipientAmountChanged,
+                                onChangedDenomination: (denomination) {
+                                  context.read<TransferInputCubit>().updateRecipientTokenDenomination(
+                                    denomination,
+                                    recipientAmountController,
+                                  );
+                                },
+                                focusNode: focusNode,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-              );
-            },
+                  );
+                },
+              ),
+              const SizedBox(height: 24),
+              MemoTextField(
+                label: S.of(context).txHintMemo,
+                onChanged: _handleMemoChanged,
+                memoTextEditingController: memoTextEditingController,
+              ),
+            ],
           ),
-          const SizedBox(height: 24),
-          MemoTextField(
-            label: S.of(context).txHintMemo,
-            onChanged: _handleMemoChanged,
-            memoTextEditingController: memoTextEditingController,
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   void _assignDefaultValues() {
-    memoTextEditingController.text = widget.msgSendFormModel.memo;
-    walletAddressNotifier.value = widget.msgSendFormModel.senderWalletAddress;
-  }
-
-  void _handleSenderAddressChanged(AWalletAddress? walletAddress) {
-    walletAddressNotifier.value = walletAddress;
-    widget.msgSendFormModel.senderWalletAddress = walletAddress;
+    memoTextEditingController.text = txProcessCubit.msgFormModel.memo;
+    walletAddressNotifier.value = txProcessCubit.msgFormModel.senderWalletAddress;
   }
 
   void _handleRecipientAddressChanged(AWalletAddress? walletAddress) {
-    widget.msgSendFormModel.recipientWalletAddress = walletAddress;
+    txProcessCubit.msgFormModel.recipientWalletAddress = walletAddress;
     context.read<TransferInputCubit>().updateRecipientWalletAddress(walletAddress);
   }
 
   void _handleTokenAmountChanged(TokenFormState tokenFormState) {
-    widget.msgSendFormModel.balance = tokenFormState.balance;
-    widget.msgSendFormModel.tokenAmountModel = tokenFormState.tokenAmountModel;
-    widget.msgSendFormModel.tokenDenominationModel = tokenFormState.tokenDenominationModel;
-    widget.msgSendFormModel.recipientRelativeAmount =
+    txProcessCubit.msgFormModel.balance = tokenFormState.balance;
+    txProcessCubit.msgFormModel.tokenAmountModel = tokenFormState.tokenAmountModel;
+    txProcessCubit.msgFormModel.tokenDenominationModel = tokenFormState.tokenDenominationModel;
+    txProcessCubit.msgFormModel.recipientRelativeAmount =
         tokenFormState.tokenAmountModel == null
             ? null
             : TokenAmountModel(
-              baseDenominationAmount:
-                  (tokenFormState.tokenAmountModel!.getAmountInBaseDenomination() * Decimal.fromInt(2)),
+              baseDenominationAmount: tokenFormState.tokenAmountModel!.getAmountInBaseDenomination(),
               tokenAliasModel:
-                  widget.msgSendFormModel.recipientRelativeAmount?.tokenAliasModel ??
-                  widget.msgSendFormModel.tokenAmountModel!.tokenAliasModel.toOpposite(),
+                  txProcessCubit.msgFormModel.recipientRelativeAmount?.tokenAliasModel ??
+                  txProcessCubit.msgFormModel.tokenAmountModel!.tokenAliasModel.toOpposite(),
             );
     recipientAmountController.text =
-        widget.msgSendFormModel.recipientRelativeAmount?.getAmountInBaseDenomination().toString() ?? '';
-    context.read<TransferInputCubit>().updateAmount(
-      senderAmount: widget.msgSendFormModel.tokenAmountModel!,
-      recipientAmount: widget.msgSendFormModel.recipientRelativeAmount!,
-      changedBySender: true,
-    );
+        txProcessCubit.msgFormModel.recipientRelativeAmount?.getAmountInBaseDenomination().toString() ?? '';
+    // // TODO: refactor
+    // txProcessCubit.msgFormModel.recipientTokenDenomination = TokenAliasModel.wkex().baseTokenDenominationModel;
+
+    if (txProcessCubit.msgFormModel.recipientRelativeAmount != null &&
+        txProcessCubit.msgFormModel.tokenAmountModel != null) {
+      context.read<TransferInputCubit>().updateAmount(
+        senderAmount: txProcessCubit.msgFormModel.tokenAmountModel!,
+        recipientAmount: txProcessCubit.msgFormModel.recipientRelativeAmount!,
+        changedBySender: true,
+      );
+    }
   }
 
   void _handleRecipientAmountChanged(String text) {
-    widget.msgSendFormModel.tokenAmountModel = TokenAmountModel(
-      baseDenominationAmount: ((Decimal.tryParse(text) ?? Decimal.zero) / Decimal.fromInt(2)).toDecimal(),
-      tokenAliasModel:
-          widget.msgSendFormModel.tokenAmountModel?.tokenAliasModel ??
-          (widget.msgSendFormModel.senderWalletAddress is EthereumWalletAddress
-              ? TokenAliasModel.eth()
-              : TokenAliasModel.kex()),
-    );
-    widget.msgSendFormModel.recipientRelativeAmount = TokenAmountModel(
+    txProcessCubit.msgFormModel.tokenAmountModel = TokenAmountModel(
       baseDenominationAmount: Decimal.tryParse(text) ?? Decimal.zero,
       tokenAliasModel:
-          widget.msgSendFormModel.recipientRelativeAmount?.tokenAliasModel ??
-          widget.msgSendFormModel.tokenAmountModel!.tokenAliasModel.toOpposite(),
+          txProcessCubit.msgFormModel.tokenAmountModel?.tokenAliasModel ??
+          (txProcessCubit.msgFormModel.senderWalletAddress is EthereumWalletAddress
+              ? TokenAliasModel.wkex()
+              : TokenAliasModel.kex()),
     );
-    widget.msgSendFormModel.recipientTokenDenomination = widget.msgSendFormModel.tokenDenominationModel;
+    txProcessCubit.msgFormModel.recipientRelativeAmount = TokenAmountModel(
+      baseDenominationAmount: Decimal.tryParse(text) ?? Decimal.zero,
+      tokenAliasModel:
+          txProcessCubit.msgFormModel.recipientRelativeAmount?.tokenAliasModel ??
+          txProcessCubit.msgFormModel.tokenAmountModel!.tokenAliasModel.toOpposite(),
+    );
+    // // TODO: refactor
+    // txProcessCubit.msgFormModel.recipientTokenDenomination = TokenAliasModel.wkex().baseTokenDenominationModel;
+
     context.read<TransferInputCubit>().updateAmount(
-      senderAmount: widget.msgSendFormModel.tokenAmountModel!,
-      recipientAmount: widget.msgSendFormModel.recipientRelativeAmount!,
+      senderAmount: txProcessCubit.msgFormModel.tokenAmountModel!,
+      recipientAmount: txProcessCubit.msgFormModel.recipientRelativeAmount!,
       changedBySender: false,
     );
   }
@@ -228,6 +268,6 @@ class _MsgSendForm extends State<MsgSendForm> {
   // }
 
   void _handleMemoChanged(String memo) {
-    widget.msgSendFormModel.memo = memo;
+    txProcessCubit.msgFormModel.memo = memo;
   }
 }

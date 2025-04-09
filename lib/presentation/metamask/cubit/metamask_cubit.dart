@@ -78,7 +78,7 @@ class MetamaskCubit extends Cubit<MetamaskState> {
     if (accounts?.isEmpty != false || chainId == null) {
       return;
     }
-    await _switchNetworkToKira();
+    await _addKiraToken();
 
     if (!_useCacheKiraFromEth || _keyValueRepository.readEthSignatureResult(accounts!.first) != null) {
       _signIn(address: accounts!.first, chainId: chainId);
@@ -126,7 +126,7 @@ class MetamaskCubit extends Cubit<MetamaskState> {
   //   if (isSupported == false || state.hasData == false) {
   //     return;
   //   }
-  //   await _switchNetworkToKira();
+  //   await _addKiraToken();
   //   String address;
   //   switch (to) {
   //     case EthereumWalletAddress _:
@@ -147,25 +147,15 @@ class MetamaskCubit extends Cubit<MetamaskState> {
   //   }
   // }
 
-  Future<void> _switchNetworkToKira() async {
-    // TODO: switch network
-    return;
+  Future<void> _addKiraToken() async {
     if (isSupported == false) {
       return;
     }
     try {
-      await _ethereumService.switchWalletChain(_kiraChainId);
-    } on EthereumException catch (e) {
-      getIt<Logger>().e('Error on metamask switch network: $e');
-
-      switch (e.code) {
-        case 4902:
-          // chain doesn't exist
-          await _addKiraNetwork();
-          break;
-      }
+      await _ethereumService.watchWkexAsset();
     } catch (e) {
-      getIt<Logger>().e('Error on metamask switch network: $e');
+      getIt<Logger>().e('Error on metamask watch wkex asset: $e');
+      // TODO(Mykyta): add error handling
     }
   }
 

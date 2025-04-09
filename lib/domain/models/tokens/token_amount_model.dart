@@ -109,6 +109,6 @@ class TokenAmountModel {
 
   @override
   String toString() {
-    return '${getAmountInBaseDenomination()} ${tokenAliasModel.baseTokenDenominationModel.name}';
+    return '${getAmountInDefaultDenomination()} ${tokenAliasModel.defaultTokenDenominationModel.name}';
   }
 }

@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 /// Contains name and assigned decimals for specified token
 /// Example:
 /// TokenDenomination(name: 'uKEX', decimals: 0)
-/// TokenDenomination(name: 'KEX', decimals: 8)
+/// TokenDenomination(name: 'KEX', decimals: 9)
 class TokenDenominationModel extends Equatable {
   /// Contains name of denomination
   /// Example KEX, uKEX

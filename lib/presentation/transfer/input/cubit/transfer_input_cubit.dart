@@ -1,9 +1,11 @@
 import 'package:decimal/decimal.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:torii_client/domain/exports.dart';
 import 'package:torii_client/presentation/session/cubit/session_cubit.dart';
+import 'package:torii_client/utils/extensions/tx_utils.dart';
 
 part 'transfer_input_state.dart';
 
@@ -24,14 +26,30 @@ class TransferInputCubit extends Cubit<TransferInputState> {
         emit(
           TransferInputState(
             fromWallet: fromWallet,
+            recipientWalletAddress: _sessionCubit.state.kiraWallet?.address,
             balance: TokenAmountModel(
-              defaultDenominationAmount: balance, tokenAliasModel: TokenAliasModel.eth(),
+              defaultDenominationAmount: balance, tokenAliasModel: TokenAliasModel.wkex(),
             ),
+            recipientTokenDenomination: TokenAliasModel.kex().baseTokenDenominationModel,
           ),
         );
       } else {
-        emit(TransferInputState(fromWallet: fromWallet));
+        emit(
+          TransferInputState(
+            fromWallet: fromWallet,
+            recipientWalletAddress: _sessionCubit.state.kiraWallet?.address,
+            recipientTokenDenomination: TokenAliasModel.kex().baseTokenDenominationModel,
+          ),
+        );
       }
+    } else {
+      emit(
+        TransferInputState(
+          fromWallet: fromWallet,
+          recipientWalletAddress: _sessionCubit.state.ethereumWallet?.address,
+          recipientTokenDenomination: TokenAliasModel.wkex().baseTokenDenominationModel,
+        ),
+      );
     }
   }
 
@@ -39,7 +57,13 @@ class TransferInputCubit extends Cubit<TransferInputState> {
     if (state.fromWallet == _sessionCubit.state.kiraWallet && _sessionCubit.state.ethereumWallet != null) {
       _initEthBalanceEmitWallet(_sessionCubit.state.ethereumWallet!);
     } else if (state.fromWallet == _sessionCubit.state.ethereumWallet && _sessionCubit.state.kiraWallet != null) {
-      emit(TransferInputState(fromWallet: _sessionCubit.state.kiraWallet!));
+      emit(
+        TransferInputState(
+          fromWallet: _sessionCubit.state.kiraWallet!,
+          recipientWalletAddress: state.fromWallet.address,
+          recipientTokenDenomination: TokenAliasModel.wkex().baseTokenDenominationModel,
+        ),
+      );
     }
   }
 
@@ -51,6 +75,37 @@ class TransferInputCubit extends Cubit<TransferInputState> {
         senderAmount: state.senderAmount,
         recipientAmount: state.recipientAmount,
         recipientWalletAddress: walletAddress,
+        recipientTokenDenomination: state.recipientTokenDenomination,
+      ),
+    );
+  }
+
+  // TODO: remove text controller
+  void updateRecipientTokenDenomination(
+    TokenDenominationModel tokenDenomination,
+    TextEditingController recipientAmountController,
+  ) {
+    if (state.recipientAmount != null) {
+      recipientAmountController.text = TxUtils.buildAmountString(
+        state.recipientAmount!.getAmountInDenomination(tokenDenomination).toString(),
+        tokenDenomination,
+      );
+    }
+    emit(
+      TransferInputState(
+        fromWallet: state.fromWallet,
+        balance: state.balance,
+        senderAmount: state.senderAmount,
+        recipientAmount: state.recipientAmount,
+        recipientAmountText:
+            state.recipientAmount != null
+                ? TxUtils.buildAmountString(
+                  state.recipientAmount!.getAmountInDenomination(tokenDenomination).toString(),
+                  tokenDenomination,
+                )
+                : null,
+        recipientWalletAddress: state.recipientWalletAddress,
+        recipientTokenDenomination: tokenDenomination,
       ),
     );
   }
@@ -67,6 +122,7 @@ class TransferInputCubit extends Cubit<TransferInputState> {
         senderAmount: senderAmount,
         recipientAmount: recipientAmount,
         recipientWalletAddress: state.recipientWalletAddress,
+        recipientTokenDenomination: state.recipientTokenDenomination,
         changedBySender: changedBySender,
       ),
     );

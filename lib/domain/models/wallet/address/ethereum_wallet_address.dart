@@ -44,7 +44,8 @@ class EthereumWalletAddress extends AWalletAddress {
 
   /// Returns the associated [address] as a Hash string.
   @override
-  String get address => _toChecksumAddress(HexCodec.encode(addressBytes, includePrefixBool: true));
+  // TODO: MAKE CHECKSUMMING AGAIN!!
+  String get address => HexCodec.encode(addressBytes, includePrefixBool: true); //_toChecksumAddress(HexCodec.encode(addressBytes, includePrefixBool: true));
 
   @override
   WalletAddressType get type => WalletAddressType.ethereum;

@@ -62,7 +62,7 @@ class ToggleBetweenWalletAddressTypes extends StatelessWidget {
                   color:
                       !sessionState.isEthereumLoggedIn || !sessionState.isKiraLoggedIn
                           ? DesignColors.greenStatus2
-                          : DesignColors.greenStatus1.withOpacity(0.6),
+                          : DesignColors.greenStatus1,
                   size: 36,
                 ),
                 //     ),

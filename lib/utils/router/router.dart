@@ -110,7 +110,7 @@ class ClaimProgressRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) =>
-      TransferClaimPage(signedTx: $extra!.signedTx, msgSendFormModel: $extra!.msgSendFormModel);
+      TransferClaimPage(signedTx: $extra?.signedTx, msgSendFormModel: $extra?.msgSendFormModel);
 }
 
 @TypedGoRoute<NetworkListRoute>(path: '/network')

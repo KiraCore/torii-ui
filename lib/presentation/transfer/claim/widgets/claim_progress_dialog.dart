@@ -18,7 +18,7 @@ class ClaimProgressDialog extends StatelessWidget {
     final theme = Theme.of(context).textTheme;
     return BlocConsumer<TransferClaimCubit, TransferClaimState>(
       listener: (context, state) {
-        if (state.isClaimed) {
+        if (state.navigateToInput) {
           router.replace(const TransferInputRoute().location);
         }
       },
@@ -28,7 +28,7 @@ class ClaimProgressDialog extends StatelessWidget {
               previous.isClaiming != current.isClaiming ||
               previous.msgSendFormModel != current.msgSendFormModel ||
               previous.signedTx != current.signedTx ||
-              previous.isClaimed != current.isClaimed,
+              previous.navigateToInput != current.navigateToInput,
       builder: (context, state) {
         if (state.msgSendFormModel == null) {
           return const SizedBox.shrink();
@@ -45,7 +45,6 @@ class ClaimProgressDialog extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               MsgSendFormPreview(
-                msgSendFormModel: state.msgSendFormModel!,
                 txLocalInfoModel: state.signedTx?.txLocalInfoModel,
               ),
               const SizedBox(height: 30),

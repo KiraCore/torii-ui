@@ -42,10 +42,9 @@ class TxProcessWrapper<T extends AMsgFormModel> extends StatefulWidget {
 class _TxProcessWrapper<T extends AMsgFormModel> extends State<TxProcessWrapper<T>> {
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<TxProcessCubit<T>>.value(
-      value: widget.txProcessCubit,
+    return BlocProvider<TxProcessCubit<T>>(
+      create: (BuildContext context) => widget.txProcessCubit,
       child: BlocBuilder<TxProcessCubit<T>, ATxProcessState>(
-        bloc: widget.txProcessCubit,
         builder: (BuildContext context, ATxProcessState txProcessState) {
           late Widget dialogWidget;
 
@@ -62,8 +61,6 @@ class _TxProcessWrapper<T extends AMsgFormModel> extends State<TxProcessWrapper<
             dialogWidget = TxBroadcastPage<T>(
               signedTxModel: signedTxModel,
               passphrase: txProcessState.passphrase,
-              // TODO: refactor
-              msgSendFormModel: widget.txProcessCubit.msgFormModel as MsgSendFormModel,
             );
           } else if (txProcessState is TxProcessErrorState) {
             dialogWidget = TxDialogError<T>(accountErrorBool: txProcessState.accountErrorBool);

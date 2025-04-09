@@ -1,11 +1,13 @@
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/domain/models/messages/msg_send_model.dart';
 import 'package:torii_client/domain/models/tokens/msg_send_form_model.dart';
 import 'package:torii_client/domain/models/tokens/token_alias_model.dart';
 import 'package:torii_client/domain/models/tokens/token_amount_model.dart';
 import 'package:torii_client/domain/models/tokens/token_denomination_model.dart';
 import 'package:torii_client/domain/models/transaction/tx_local_info_model.dart';
+import 'package:torii_client/presentation/transfer/tx_process_cubit/tx_process_cubit.dart';
 import 'package:torii_client/presentation/transfer/widgets/token_form/token_denomination_list.dart';
 import 'package:torii_client/presentation/transfer/widgets/tx_input_preview.dart';
 import 'package:torii_client/presentation/widgets/avatar/kira_identity_avatar.dart';
@@ -14,10 +16,9 @@ import 'package:torii_client/utils/exports.dart';
 import 'package:torii_client/utils/extensions/tx_utils.dart';
 
 class MsgSendFormPreview extends StatefulWidget {
-  final MsgSendFormModel msgSendFormModel;
   final TxLocalInfoModel? txLocalInfoModel;
 
-  MsgSendFormPreview({required this.msgSendFormModel, required this.txLocalInfoModel, Key? key})
+  MsgSendFormPreview({required this.txLocalInfoModel, Key? key})
     : assert(txLocalInfoModel?.txMsgModel is MsgSendModel?, 'ITxMsgModel must be an instance of MsgSendModel'),
       super(key: key);
 
@@ -26,10 +27,13 @@ class MsgSendFormPreview extends StatefulWidget {
 }
 
 class _MsgSendFormPreview extends State<MsgSendFormPreview> {
-  late TokenDenominationModel selectedTokenDenominationModel = widget.msgSendFormModel.tokenDenominationModel!;
+  late TokenDenominationModel selectedTokenDenominationModel;
+
+  MsgSendFormModel get msgSendFormModel => context.read<TxProcessCubit<MsgSendFormModel>>().msgFormModel;
 
   @override
   Widget build(BuildContext context) {
+    selectedTokenDenominationModel = msgSendFormModel.tokenDenominationModel!;
     final TextTheme textTheme = Theme.of(context).textTheme;
 
     return Column(
@@ -38,14 +42,14 @@ class _MsgSendFormPreview extends State<MsgSendFormPreview> {
       children: <Widget>[
         TxInputPreview(
           label: S.of(context).txHintSendFrom,
-          value: widget.msgSendFormModel.senderWalletAddress!.address,
-          icon: KiraIdentityAvatar(address: widget.msgSendFormModel.senderWalletAddress!.address, size: 45),
+          value: msgSendFormModel.senderWalletAddress!.address,
+          icon: KiraIdentityAvatar(address: msgSendFormModel.senderWalletAddress!.address, size: 45),
         ),
         const SizedBox(height: 28),
         TxInputPreview(
           label: S.of(context).txHintSendTo,
-          value: widget.msgSendFormModel.recipientWalletAddress!.address,
-          icon: KiraIdentityAvatar(address: widget.msgSendFormModel.recipientWalletAddress!.address, size: 45),
+          value: msgSendFormModel.recipientWalletAddress!.address,
+          icon: KiraIdentityAvatar(address: msgSendFormModel.recipientWalletAddress!.address, size: 45),
         ),
         const SizedBox(height: 28),
         TxInputPreview(
@@ -64,28 +68,28 @@ class _MsgSendFormPreview extends State<MsgSendFormPreview> {
         ),
         const SizedBox(height: 15),
         TokenDenominationList(
-          tokenAliasModel: widget.msgSendFormModel.tokenAmountModel!.tokenAliasModel,
+          tokenAliasModel: msgSendFormModel.tokenAmountModel!.tokenAliasModel,
           defaultTokenDenominationModel: selectedTokenDenominationModel,
           onChanged: _handleTokenDenominationChanged,
         ),
         const SizedBox(height: 15),
-        TxInputPreview(label: S.of(context).txHintMemo, value: widget.msgSendFormModel.memo),
+        TxInputPreview(label: S.of(context).txHintMemo, value: msgSendFormModel.memo),
       ],
     );
   }
 
   String get _totalAmountText {
     TokenAmountModel totalTokenAmountModel =
-        widget.msgSendFormModel.tokenAmountModel! +
+        msgSendFormModel.tokenAmountModel! +
         (widget.txLocalInfoModel?.feeTokenAmountModel ??
-            TokenAmountModel.zero(tokenAliasModel: widget.msgSendFormModel.tokenAmountModel!.tokenAliasModel));
+            TokenAmountModel.zero(tokenAliasModel: msgSendFormModel.tokenAmountModel!.tokenAliasModel));
     Decimal totalAmount = totalTokenAmountModel.getAmountInDenomination(selectedTokenDenominationModel);
     String denominationText = selectedTokenDenominationModel.name;
     return '$totalAmount $denominationText';
   }
 
   String get _netAmountText {
-    TokenAmountModel netTokenAmountModel = widget.msgSendFormModel.tokenAmountModel!;
+    TokenAmountModel netTokenAmountModel = msgSendFormModel.tokenAmountModel!;
     Decimal netAmount = netTokenAmountModel.getAmountInDenomination(selectedTokenDenominationModel);
     String denominationText = selectedTokenDenominationModel.name;
 
@@ -94,7 +98,7 @@ class _MsgSendFormPreview extends State<MsgSendFormPreview> {
   }
 
   String? get _iconUrl {
-    TokenAmountModel netTokenAmountModel = widget.msgSendFormModel.tokenAmountModel!;
+    TokenAmountModel netTokenAmountModel = msgSendFormModel.tokenAmountModel!;
     return netTokenAmountModel.tokenAliasModel.icon;
   }
 
@@ -103,7 +107,7 @@ class _MsgSendFormPreview extends State<MsgSendFormPreview> {
   }
 
   void _handleTokenDenominationChanged(TokenDenominationModel tokenDenominationModel) {
-    widget.msgSendFormModel.tokenDenominationModel = tokenDenominationModel;
+    msgSendFormModel.tokenDenominationModel = tokenDenominationModel;
     selectedTokenDenominationModel = tokenDenominationModel;
     setState(() {});
   }

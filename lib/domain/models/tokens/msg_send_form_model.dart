@@ -47,7 +47,10 @@ class MsgSendFormModel extends AMsgFormModel {
   @override
   bool canBuildTxMsg() {
     bool fieldsFilledBool =
-        _senderWalletAddress != null && _recipientWalletAddress != null && _tokenAmountModel != null;
+        _senderWalletAddress != null &&
+        _recipientWalletAddress != null &&
+        _tokenAmountModel != null &&
+        _recipientRelativeAmount != null;
     bool tokenAmountNotEmptyBool = _tokenAmountModel?.getAmountInDefaultDenomination() != Decimal.zero;
     if (fieldsFilledBool && tokenAmountNotEmptyBool) {
       return true;

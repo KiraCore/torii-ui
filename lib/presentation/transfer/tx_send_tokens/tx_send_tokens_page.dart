@@ -17,7 +17,7 @@ class TxSendTokensPage extends StatelessWidget {
 
   TxSendTokensPage({this.balance, required this.fromWallet})
     : super(key: ValueKey(fromWallet.address.address + balance.toString()));
-
+    
   @override
   Widget build(BuildContext context) {
     final TxProcessCubit<MsgSendFormModel> txProcessCubit = TxProcessCubit<MsgSendFormModel>(
@@ -30,19 +30,16 @@ class TxSendTokensPage extends StatelessWidget {
       txFormWidgetBuilder: (TxProcessLoadedState txProcessLoadedState) {
         return TxSendTokensFormDialog(
           feeTokenAmountModel: txProcessLoadedState.feeTokenAmountModel,
-          onTxFormCompleted: txProcessCubit.submitTransactionForm,
-          msgSendFormModel: txProcessCubit.msgFormModel,
           sendFromKira: fromWallet.isKira,
         );
       },
       txFormPreviewWidgetBuilder: (TxProcessConfirmState txProcessConfirmState) {
         if (txProcessConfirmState is TxProcessConfirmFromKiraState) {
           return TxSendTokensConfirmDialog(
-            msgSendFormModel: txProcessCubit.msgFormModel,
             txLocalInfoModel: txProcessConfirmState.signedTxModel.txLocalInfoModel,
           );
         } else {
-          return TxSendTokensConfirmDialog(msgSendFormModel: txProcessCubit.msgFormModel, txLocalInfoModel: null);
+          return TxSendTokensConfirmDialog(txLocalInfoModel: null);
         }
       },
     );

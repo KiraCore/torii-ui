@@ -10,7 +10,7 @@ class MsgSend extends ATxMsg {
   final List<CosmosCoin> amount;
 
   MsgSend({required this.fromAddress, required this.toAddress, required this.amount})
-    : super(typeUrl: '/cosmos.bank.v1beta1.MsgSend');
+    : super(typeUrl: '/kira.bridge.MsgChangeCosmosEthereum');
 
   factory MsgSend.fromData(Map<String, dynamic> data) {
     return MsgSend(

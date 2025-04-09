@@ -5,9 +5,9 @@ import 'package:torii_client/data/exports.dart';
 
 @injectable
 class KeyValueRepository {
-  final ShardsDao _shardsDao;
-
   const KeyValueRepository(this._shardsDao);
+
+  final ShardsDao _shardsDao;
 
   EthereumSignatureDecodeResult? readEthSignatureResult(String ethereumAddress) {
     try {

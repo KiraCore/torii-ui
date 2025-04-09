@@ -48,3 +48,6 @@ app.*.map.json
 locator.config.dart
 *.g.dart
 **/l10n/generated/
+
+# Environment variables
+.env

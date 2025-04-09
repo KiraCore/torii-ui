@@ -23,14 +23,14 @@ class TxProcessConfirmFromKiraState extends TxProcessConfirmState {
 
 class TxProcessConfirmFromEthState extends TxProcessConfirmState {
   final String kiraRecipient;
-  final Decimal amountInEth;
+  final Decimal ukexAmount;
 
   const TxProcessConfirmFromEthState({
     required super.txProcessLoadedState,
     required this.kiraRecipient,
-    required this.amountInEth,
+    required this.ukexAmount,
   });
 
   @override
-  List<Object?> get props => <Object?>[kiraRecipient, amountInEth, ...super.props];
+  List<Object?> get props => <Object?>[kiraRecipient, ukexAmount, ...super.props];
 }

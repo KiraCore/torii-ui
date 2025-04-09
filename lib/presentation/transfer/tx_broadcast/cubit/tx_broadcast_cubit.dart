@@ -24,14 +24,14 @@ class TxBroadcastCubit extends Cubit<ATxBroadcastState> {
   Future<void> broadcastFromEth({
     required String passphrase,
     required String kiraRecipient,
-    required Decimal amount,
+    required Decimal ukexAmount,
   }) async {
     emit(TxBroadcastLoadingState());
     try {
       final TransactionResponse? tx = await _ethereumService.exportContractTokens(
         passphrase: passphrase,
         kiraAddress: kiraRecipient,
-        amountInEth: amount,
+        ukexAmount: ukexAmount,
       );
       if (tx != null) {
         final BroadcastRespModel broadcastRespModel = BroadcastRespModel(hash: tx.hash);
