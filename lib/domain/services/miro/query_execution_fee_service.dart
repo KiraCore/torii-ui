@@ -18,8 +18,10 @@ class QueryExecutionFeeService {
   QueryExecutionFeeService(this._apiKiraRepository, this._queryNetworkPropertiesService);
 
   Future<TokenAmountModel> getExecutionFeeForMessage(String messageName) async {
-    Uri networkUri = getIt<NetworkModuleBloc>().state.networkUri;
-
+    Uri? networkUri = getIt<NetworkModuleBloc>().state.networkUri;
+    if (networkUri == null) {
+      throw Exception('Network URI is null');
+    }
     try {
       Response<dynamic> response = await _apiKiraRepository.fetchQueryExecutionFee<dynamic>(
         ApiRequestModel<QueryExecutionFeeRequest>(

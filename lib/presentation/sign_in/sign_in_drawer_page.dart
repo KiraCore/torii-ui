@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:torii_client/presentation/widgets/buttons/kira_elevated_button.dart';
 import 'package:torii_client/presentation/widgets/drawer/drawer_subtitle.dart';
@@ -50,14 +51,21 @@ class SignInDrawerPage extends StatelessWidget {
           },
         ),
         const SizedBox(height: 32),
-        InkWell(
-          onTap: () {
-            launchUrl(Uri.parse('https://github.com/KiraCore/miro/releases'));
-          },
-          child: Text(
-            'Do not have a wallet?\nCreate one using MIRO app.',
-            style: textTheme.bodyMedium!.copyWith(
-              color: DesignColors.hyperlink),
+        Text('Do not have a wallet?', style: textTheme.bodyMedium),
+        RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(text: 'Create one using ', style: textTheme.bodyMedium),
+              TextSpan(
+                text: 'MIRO app',
+                style: textTheme.bodyMedium!.copyWith(color: DesignColors.hyperlink),
+                recognizer:
+                    TapGestureRecognizer()
+                      ..onTap = () {
+                        launchUrl(Uri.parse('https://github.com/KiraCore/miro/releases'));
+                      },
+              ),
+            ],
           ),
         ),
         const SizedBox(height: 32),

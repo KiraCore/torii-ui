@@ -16,7 +16,10 @@ class BroadcastService {
   BroadcastService(this._apiKiraRepository);
 
   Future<BroadcastRespModel> broadcastTx(SignedTxModel signedTransactionModel) async {
-    Uri networkUri = getIt<NetworkModuleBloc>().state.networkUri;
+    Uri? networkUri = getIt<NetworkModuleBloc>().state.networkUri;
+    if (networkUri == null) {
+      throw Exception('Network URI is null');
+    }
     Response<dynamic> response = await _apiKiraRepository.broadcast<dynamic>(
       ApiRequestModel<BroadcastReq>(
         networkUri: networkUri,

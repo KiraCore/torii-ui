@@ -22,7 +22,10 @@ class ToriiLogService {
   ToriiLogService(this._repository, this._networkModuleBloc);
 
   Future<PageData<TxListItemModel>> fetchTransactionsPerAccount(String accountAddress) async {
-    Uri networkUri = _networkModuleBloc.state.networkUri;
+    Uri? networkUri = _networkModuleBloc.state.networkUri;
+    if (networkUri == null) {
+      throw Exception('Network URI is null');
+    }
     final queryTransactionsReq = QueryTransactionsReq(address: accountAddress, limit: 20, offset: 0, pageSize: 20);
     try {
       Response<dynamic> response = await _repository.fetchTransactionsPerAccount<dynamic>(

@@ -31,6 +31,13 @@ class ShardsDao {
     await _shards.setBool('intro_shown', true);
   }
 
+  bool wasWkexAssetAdded() {
+    return _shards.getBool('wkex_asset_added') ?? false;
+  }
+
+  Future<void> setWkexAssetAdded() async {
+    await _shards.setBool('wkex_asset_added', true);
+  }
   Future<bool> dropData() async {
     return await _shards.clear();
   }

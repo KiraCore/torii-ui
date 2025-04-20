@@ -5,7 +5,7 @@ import 'package:torii_client/utils/network/app_config.dart';
 abstract class ANetworkStatusModel extends Equatable {
   final Color _statusColor;
   final ConnectionStatusType connectionStatusType;
-  final Uri uri;
+  final Uri? uri;
   final DateTime? lastRefreshDateTime;
   final String? _name;
 
@@ -19,7 +19,7 @@ abstract class ANetworkStatusModel extends Equatable {
        _name = name;
 
   String get name {
-    return _name ?? uri.host;
+    return _name ?? uri?.host ?? 'Not connected';
   }
 
   Color get statusColor {

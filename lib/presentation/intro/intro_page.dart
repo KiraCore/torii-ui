@@ -108,7 +108,7 @@ class IntroPage extends StatelessWidget {
           KiraOutlinedButton(
             width: width * 2 + 20, // Width of two buttons plus spacing
             onPressed: () {
-              router.go(NetworkListRoute().location);
+              router.push(const NetworkDrawerRoute().location);
             },
             title: 'Network Settings',
           ),

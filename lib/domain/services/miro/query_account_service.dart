@@ -16,7 +16,10 @@ class QueryAccountService {
   QueryAccountService(this._apiKiraRepository);
 
   Future<TxRemoteInfoModel> getTxRemoteInfo(String accountAddress) async {
-    Uri networkUri = getIt<NetworkModuleBloc>().state.networkUri;
+    Uri? networkUri = getIt<NetworkModuleBloc>().state.networkUri;
+    if (networkUri == null) {
+      throw Exception('Network URI is null');
+    }
     Response<dynamic> response = await _apiKiraRepository.fetchQueryAccount<dynamic>(
       ApiRequestModel<QueryAccountReq>(networkUri: networkUri, requestData: QueryAccountReq(address: accountAddress)),
     );
@@ -38,7 +41,10 @@ class QueryAccountService {
   }
 
   Future<bool> isAccountRegistered(String accountAddress) async {
-    Uri networkUri = getIt<NetworkModuleBloc>().state.networkUri;
+    Uri? networkUri = getIt<NetworkModuleBloc>().state.networkUri;
+    if (networkUri == null) {
+      throw Exception('Network URI is null');
+    }
     Response<dynamic> response = await _apiKiraRepository.fetchQueryAccount<dynamic>(
       ApiRequestModel<QueryAccountReq>(networkUri: networkUri, requestData: QueryAccountReq(address: accountAddress)),
     );

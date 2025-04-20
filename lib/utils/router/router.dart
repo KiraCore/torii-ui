@@ -10,7 +10,6 @@ import 'package:torii_client/domain/models/transaction/signed_transaction_model.
 import 'package:torii_client/presentation/intro/intro_page.dart';
 import 'package:torii_client/presentation/loading/loading_page.dart';
 import 'package:torii_client/presentation/network/network_drawer_page/network_drawer_page.dart';
-import 'package:torii_client/presentation/network/network_list_page.dart';
 import 'package:torii_client/presentation/session/cubit/session_cubit.dart';
 import 'package:torii_client/presentation/sign_in/keyfile_dropzone/sign_in_keyfile_drawer_page.dart';
 import 'package:torii_client/presentation/sign_in/mnemonic/sign_in_mnemonic_drawer_page.dart';
@@ -111,18 +110,6 @@ class ClaimProgressRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) =>
       TransferClaimPage(signedTx: $extra?.signedTx, msgSendFormModel: $extra?.msgSendFormModel);
-}
-
-@TypedGoRoute<NetworkListRoute>(path: '/network')
-class NetworkListRoute extends GoRouteData {
-  final ConnectionErrorType? connectionErrorType;
-
-  const NetworkListRoute({this.connectionErrorType});
-
-  @override
-  Widget build(BuildContext context, GoRouterState state) {
-    return NetworkListPage(connectionErrorType: connectionErrorType ?? ConnectionErrorType.canceledByUser);
-  }
 }
 
 // ---- Dialogs ----

@@ -43,15 +43,15 @@ class NetworkUnknownModel extends ANetworkStatusModel {
     return NetworkUnknownModel(
       connectionStatusType: connectionStatusType,
       lastRefreshDateTime: lastRefreshDateTime,
-      uri: uri.replace(scheme: 'http'),
+      uri: uri?.replace(scheme: 'http'),
       name: name,
     );
   }
 
   bool isHttps() {
-    return uri.isScheme('https');
+    return uri?.isScheme('https') ?? false;
   }
 
   @override
-  List<Object?> get props => <Object?>[runtimeType, connectionStatusType, uri.hashCode, name];
+  List<Object?> get props => <Object?>[runtimeType, connectionStatusType, uri, name];
 }

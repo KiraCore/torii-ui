@@ -20,7 +20,10 @@ class QueryNetworkPropertiesService {
   }
 
   Future<NetworkPropertiesModel> getNetworkProperties() async {
-    Uri networkUri = getIt<NetworkModuleBloc>().state.networkUri;
+    Uri? networkUri = getIt<NetworkModuleBloc>().state.networkUri;
+    if (networkUri == null) {
+      throw Exception('Network URI is null');
+    }
     Response<dynamic> response = await _apiKiraRepository.fetchQueryNetworkProperties<dynamic>(
       ApiRequestModel<void>(networkUri: networkUri, requestData: null),
     );

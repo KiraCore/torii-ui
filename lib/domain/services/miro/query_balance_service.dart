@@ -33,7 +33,10 @@ class QueryBalanceService {
     QueryBalanceReq queryBalanceReq, {
     bool forceRequestBool = false,
   }) async {
-    Uri networkUri = getIt<NetworkModuleBloc>().state.networkUri;
+    Uri? networkUri = getIt<NetworkModuleBloc>().state.networkUri;
+    if (networkUri == null) {
+      throw Exception('Network URI is null');
+    }
 
     Response<dynamic> response = await _apiKiraRepository.fetchQueryBalance<dynamic>(
       ApiRequestModel<QueryBalanceReq>(

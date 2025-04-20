@@ -75,7 +75,9 @@ class _MsgSendForm extends State<MsgSendForm> {
               WalletAddressTextField(
                 label: S.of(context).txHintSendFrom,
                 disabledBool: true,
-                onChanged: (_) {},
+                onChanged: (_) {
+                  // NOTE: it cannot be changed
+                },
                 defaultWalletAddress: txProcessCubit.msgFormModel.senderWalletAddress,
                 needKiraAddress: txProcessCubit.msgFormModel.senderWalletAddress is CosmosWalletAddress,
               ),
@@ -126,10 +128,13 @@ class _MsgSendForm extends State<MsgSendForm> {
                 listenWhen: (previous, current) {
                   return previous.recipientTokenDenomination != current.recipientTokenDenomination;
                 },
-                listener: (context, state) {
+                listener: (context, state) async {
                   txProcessCubit.msgFormModel.recipientTokenDenomination = state.recipientTokenDenomination;
                 },
                 buildWhen: (previous, current) {
+                  // TODO: refactor, it's here because it should be updated on INIT
+                  txProcessCubit.msgFormModel.recipientWalletAddress = current.recipientWalletAddress;
+                  
                   return (previous.recipientAmount != current.recipientAmount && current.changedBySender) ||
                       previous.recipientWalletAddress != current.recipientWalletAddress ||
                       previous.recipientTokenDenomination != current.recipientTokenDenomination;

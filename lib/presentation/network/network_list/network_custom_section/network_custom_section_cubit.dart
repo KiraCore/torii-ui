@@ -10,14 +10,14 @@ import 'package:torii_client/utils/network/status/a_network_status_model.dart';
 import 'package:torii_client/utils/network/status/network_unknown_model.dart';
 import 'package:uuid/uuid.dart';
 
-@injectable
+@singleton
 class NetworkCustomSectionCubit extends Cubit<NetworkCustomSectionState> {
-  final AppConfig _appConfig = getIt<AppConfig>();
-  final NetworkModuleService _networkModuleService = getIt<NetworkModuleService>();
+  final AppConfig _appConfig;
+  final NetworkModuleService _networkModuleService;
 
   String _activeStateId = Uuid().v4();
 
-  NetworkCustomSectionCubit() : super(NetworkCustomSectionState());
+  NetworkCustomSectionCubit(this._appConfig, this._networkModuleService) : super(NetworkCustomSectionState());
 
   Future<void> checkConnection(Uri uri) async {
     NetworkUnknownModel networkUnknownModel = NetworkUnknownModel(

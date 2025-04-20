@@ -31,7 +31,7 @@ class NetworkModuleState extends Equatable {
 
   bool get isRefreshing => networkStatusModel.connectionStatusType == ConnectionStatusType.refreshing;
 
-  Uri get networkUri => networkStatusModel.uri;
+  Uri? get networkUri => networkStatusModel.uri;
 
   @override
   List<Object?> get props => <Object?>[networkStatusModel];

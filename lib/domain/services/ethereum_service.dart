@@ -238,11 +238,38 @@ class EthereumService {
   Future<int?> getChainId() async => ethereum?.getChainId();
 
   Future<Decimal?> getBalance(String address) async {
-    return Decimal.fromInt(1000000000);
-    // await Future.delayed(const Duration(seconds: 5));
-    final balance = await contract.call<dynamic>('balanceOf', [address]);
-    getIt<Logger>().d('Balance: $balance');
-    return balance == null ? null : Decimal.fromBigInt(BigInt.parse(balance, radix: 16));
+    try {
+      // First, get the token contract address
+      final tokenAddress = await contract.call<String>('token', []);
+
+      // Create a new contract for the token
+      final tokenContract = Contract(
+        tokenAddress,
+        // Standard ERC20 ABI for balanceOf function
+        jsonEncode([
+          {
+            "constant": true,
+            "inputs": [
+              {"name": "_owner", "type": "address"},
+            ],
+            "name": "balanceOf",
+            "outputs": [
+              {"name": "balance", "type": "uint256"},
+            ],
+            "type": "function",
+          },
+        ]),
+        provider!,
+      );
+
+      // Now call balanceOf on the token contract
+      final balance = await tokenContract.call<dynamic>('balanceOf', [address]);
+      getIt<Logger>().d('Balance: $balance');
+      return balance == null ? null : Decimal.fromBigInt(BigInt.parse(balance.toString()));
+    } catch (e) {
+      getIt<Logger>().e('Error getting balance: $e');
+      return null;
+    }
   }
 
   Future<String?> getPublicKey(String address) async =>
@@ -305,7 +332,7 @@ class EthereumService {
   }
 
   Future<void> watchWkexAsset() async => ethereum?.walletWatchAssets(
-    address: '0x719CAe5e3d135364e5Ef5AAd386985D86A0E7813',
+    address: contract.address,
     symbol: 'wKEX',
     decimals: 9,
     // image: 'https://kira.network/images/kira-logo.png',

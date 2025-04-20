@@ -36,4 +36,12 @@ class KeyValueRepository {
   Future<void> setIntroShown() async {
     await _shardsDao.setIntroShown();
   }
+
+  bool wasWkexAssetAdded() {
+    return _shardsDao.wasWkexAssetAdded();
+  }
+
+  Future<void> setWkexAssetAdded() async {
+    await _shardsDao.setWkexAssetAdded();
+  }
 }

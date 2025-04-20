@@ -5,6 +5,7 @@ import 'package:torii_client/data/dto/api_kira/query_balance/request/query_balan
 import 'package:torii_client/domain/exports.dart';
 import 'package:torii_client/domain/models/page_data.dart';
 import 'package:torii_client/domain/services/miro/query_balance_service.dart';
+import 'package:torii_client/presentation/transfer/input/cubit/transfer_input_cubit.dart';
 import 'package:torii_client/utils/exports.dart';
 import 'package:torii_client/utils/extensions/tx_utils.dart';
 
@@ -14,6 +15,7 @@ class TokenFormCubit extends Cubit<TokenFormState> {
   final GlobalKey<FormFieldState<TokenAmountModel>> formFieldKey = GlobalKey<FormFieldState<TokenAmountModel>>();
   final QueryBalanceService queryBalanceService = getIt<QueryBalanceService>();
   final TextEditingController amountTextEditingController = TextEditingController(text: '0');
+  final TransferInputCubit _transferInputCubit;
 
   TokenFormCubit.fromBalance({
     required TokenAmountModel feeTokenAmountModel,
@@ -21,7 +23,8 @@ class TokenFormCubit extends Cubit<TokenFormState> {
     required AWalletAddress? walletAddress,
     TokenAmountModel? tokenAmountModel,
     TokenDenominationModel? tokenDenominationModel,
-  }) : super(
+  }) : _transferInputCubit = getIt<TransferInputCubit>(),
+       super(
          TokenFormState.fromBalance(
            balance: balance,
            feeTokenAmountModel: feeTokenAmountModel,
@@ -36,7 +39,8 @@ class TokenFormCubit extends Cubit<TokenFormState> {
   TokenFormCubit.fromFirstBalance({
     required TokenAmountModel feeTokenAmountModel,
     required AWalletAddress? walletAddress,
-  }) : super(
+  }) : _transferInputCubit = getIt<TransferInputCubit>(),
+       super(
          TokenFormState.fromFirstBalance(
            feeTokenAmountModel: feeTokenAmountModel,
            walletAddress: walletAddress,
@@ -50,6 +54,9 @@ class TokenFormCubit extends Cubit<TokenFormState> {
     bool balanceExistsBool = state.balance != null;
     if (balanceExistsBool) {
       _updateTextFieldValue();
+    } else if (_transferInputCubit.state.fromWallet.address is EthereumWalletAddress) {
+      // TODO: refactor, make only 1 entry point for reloading / storing balances
+      _transferInputCubit.init();
     } else {
       _initWithFirstBalance();
     }

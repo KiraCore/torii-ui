@@ -16,6 +16,10 @@ class TransferInputCubit extends Cubit<TransferInputState> {
 
   TransferInputCubit(this._sessionCubit, this._ethereumService)
     : super(TransferInputState(fromWallet: _sessionCubit.state.kiraWallet ?? _sessionCubit.state.ethereumWallet!)) {
+    init();
+  }
+
+  Future<void> init() async {
     _initEthBalanceEmitWallet(state.fromWallet);
   }
 

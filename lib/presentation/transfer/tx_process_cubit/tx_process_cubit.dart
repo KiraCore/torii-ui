@@ -4,8 +4,6 @@ import 'package:torii_client/domain/exports.dart';
 import 'package:torii_client/domain/models/messages/interx_msg_types.dart';
 import 'package:torii_client/domain/models/messages/tx_msg_type.dart';
 import 'package:torii_client/domain/models/network/network_properties_model.dart';
-import 'package:torii_client/domain/models/tokens/a_msg_form_model.dart';
-import 'package:torii_client/domain/models/tokens/token_amount_model.dart';
 import 'package:torii_client/domain/models/transaction/signed_transaction_model.dart';
 import 'package:torii_client/domain/models/transaction/unsigned_tx_model.dart';
 import 'package:torii_client/domain/services/miro/query_account_service.dart';

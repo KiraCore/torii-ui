@@ -78,7 +78,11 @@ class MetamaskCubit extends Cubit<MetamaskState> {
     if (accounts?.isEmpty != false || chainId == null) {
       return;
     }
-    await _addKiraToken();
+    // TODO: search for more native way to ask Metamask whether wKEX asset was added
+    // TODO: add wKEX asset before broadcast ??
+    if (!_keyValueRepository.wasWkexAssetAdded()) {
+      await _addKiraToken();
+    }
 
     if (!_useCacheKiraFromEth || _keyValueRepository.readEthSignatureResult(accounts!.first) != null) {
       _signIn(address: accounts!.first, chainId: chainId);
@@ -153,6 +157,7 @@ class MetamaskCubit extends Cubit<MetamaskState> {
     }
     try {
       await _ethereumService.watchWkexAsset();
+      await _keyValueRepository.setWkexAssetAdded();
     } catch (e) {
       getIt<Logger>().e('Error on metamask watch wkex asset: $e');
       // TODO(Mykyta): add error handling

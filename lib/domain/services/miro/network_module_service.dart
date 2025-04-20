@@ -22,11 +22,14 @@ class NetworkModuleService {
     NetworkUnknownModel networkUnknownModel, {
     NetworkUnknownModel? previousNetworkUnknownModel,
   }) async {
+    if (networkUnknownModel.uri == null) {
+      throw Exception('Network URI is null');
+    }
     DateTime lastRefreshDateTime = networkUnknownModel.lastRefreshDateTime ?? DateTime.now();
     try {
       NetworkInfoModel networkInfoModel = await _getNetworkInfoModel(networkUnknownModel);
       TokenDefaultDenomModel tokenDefaultDenomModel = await _queryKiraTokensAliasesService.getTokenDefaultDenomModel(
-        networkUnknownModel.uri,
+        networkUnknownModel.uri!,
         forceRequestBool: true,
       );
       return ANetworkOnlineModel.build(
@@ -34,7 +37,7 @@ class NetworkModuleService {
         networkInfoModel: networkInfoModel,
         tokenDefaultDenomModel: tokenDefaultDenomModel,
         connectionStatusType: ConnectionStatusType.disconnected,
-        uri: networkUnknownModel.uri,
+        uri: networkUnknownModel.uri!,
         name: networkUnknownModel.name,
       );
     } catch (e) {
@@ -57,8 +60,11 @@ class NetworkModuleService {
   }
 
   Future<NetworkInfoModel> _getNetworkInfoModel(NetworkUnknownModel networkUnknownModel) async {
+    if (networkUnknownModel.uri == null) {
+      throw Exception('Network URI is null');
+    }
     QueryInterxStatusResp queryInterxStatusResp = await _queryInterxStatusService.getQueryInterxStatusResp(
-      networkUnknownModel.uri,
+      networkUnknownModel.uri!,
       forceRequestBool: true,
     );
     return NetworkInfoModel.fromDto(queryInterxStatusResp);
