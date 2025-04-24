@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/presentation/loading/cubit/loading_page_cubit.dart';
 import 'package:torii_client/presentation/widgets/exports.dart';
+import 'package:torii_client/presentation/widgets/torii_scaffold.dart';
 import 'package:torii_client/utils/assets.dart';
 import 'package:torii_client/utils/exports.dart';
 
@@ -12,8 +13,8 @@ class LoadingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
 
-    return Scaffold(
-      body: BlocProvider<LoadingPageCubit>(
+    return ToriiScaffold(
+      child: BlocProvider<LoadingPageCubit>(
         create: (BuildContext context) => getIt<LoadingPageCubit>(),
         child: BlocConsumer<LoadingPageCubit, LoadingPageState>(
           listener: _handleLoadingPageStateChanged,

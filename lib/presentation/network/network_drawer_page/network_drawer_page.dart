@@ -24,8 +24,8 @@ class NetworkDrawerPage extends StatelessWidget {
               DrawerTitle(
                 title:
                     networkModuleState.networkStatusModel.connectionStatusType == ConnectionStatusType.connected
-                        ? 'Connected'
-                        : 'Connect to a network',
+                        ? 'Connected to INTERX'
+                        : 'Connect to INTERX',
               ),
               const SizedBox(height: 16),
               NetworkList(arrowEnabledBool: false, moduleState: networkModuleState),
@@ -50,7 +50,7 @@ class NetworkDrawerPage extends StatelessWidget {
               const SizedBox(height: 10),
               Text('your custom https proxy:', style: textTheme.bodySmall!.copyWith(color: DesignColors.grey1)),
               SelectableText(
-                'https://custom-proxy.com/123.45.67.89:11000/',
+                'https://your-proxy.com/http://123.45.67.89:11000/',
                 style: textTheme.bodyMedium!.copyWith(color: DesignColors.white2),
               ),
               const SizedBox(height: 150),

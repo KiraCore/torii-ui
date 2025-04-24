@@ -21,6 +21,7 @@ class TxBroadcastCubit extends Cubit<ATxBroadcastState> {
   final BroadcastService _broadcastService;
   final EthereumService _ethereumService;
 
+  // TODO: test error explorer
   Future<void> broadcastFromEth({
     required String passphrase,
     required String kiraRecipient,
@@ -39,13 +40,11 @@ class TxBroadcastCubit extends Cubit<ATxBroadcastState> {
       } else {
         emit(
           TxBroadcastErrorState(
-            errorExplorerModel: ErrorExplorerModel(
-              code: 'error',
-              message: 'error',
-              uri: Uri.parse('error'),
-              method: 'error',
-              request: 'error',
-              response: 'error',
+            errorExplorerModel: ErrorExplorerModel.fromEthereumException(
+              uri: Uri.parse('exportContractTokens'),
+              method: 'POST',
+              request: kiraRecipient,
+              response: 'Connection error',
             ),
           ),
         );
@@ -54,13 +53,11 @@ class TxBroadcastCubit extends Cubit<ATxBroadcastState> {
       getIt<Logger>().e('Error broadcasting from Ethereum: $e');
       emit(
         TxBroadcastErrorState(
-          errorExplorerModel: ErrorExplorerModel(
-            code: 'error',
-            message: 'error',
-            uri: Uri.parse('error'),
-            method: 'error',
-            request: 'error',
-            response: 'error',
+          errorExplorerModel: ErrorExplorerModel.fromEthereumException(
+            uri: Uri.parse('exportContractTokens'),
+            method: 'POST',
+            request: kiraRecipient,
+            response: e.toString(),
           ),
         ),
       );

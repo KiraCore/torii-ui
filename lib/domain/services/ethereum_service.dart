@@ -213,7 +213,7 @@ class EthereumService {
       return tx;
     } catch (e) {
       getIt<Logger>().e('Error sending transaction: $e');
-      return null;
+      rethrow;
     }
   }
 

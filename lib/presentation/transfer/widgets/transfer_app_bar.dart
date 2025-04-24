@@ -25,7 +25,7 @@ class TransferAppBar extends StatelessWidget {
               crossAxisAlignment: WrapCrossAlignment.center,
               runSpacing: 8,
               children: [
-                CurrentNetworkButton(size: const Size(200, 40)),
+                CurrentNetworkButton(),
                 const SizedBox(width: 24),
                 Text(
                   'Signed in with:',

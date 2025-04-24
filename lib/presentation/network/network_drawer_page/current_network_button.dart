@@ -12,7 +12,7 @@ class CurrentNetworkButton extends StatelessWidget {
   final NetworkCustomSectionCubit _networkCustomSectionCubit = getIt<NetworkCustomSectionCubit>();
   final Size size;
 
-  CurrentNetworkButton({required this.size, super.key});
+  CurrentNetworkButton({this.size = const Size(200, 40), super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -199,5 +199,11 @@
         "type": "String"
       }
     }
-  }
+  },
+
+  "errorPreviewNotAvailable": "Preview not available",
+
+  "copy": "Copy",
+  "paste": "Paste",
+  "toastSuccessfullyCopied": "Successfully copied"
 }

@@ -28,7 +28,7 @@ class TxDialogError<T extends AMsgFormModel> extends StatelessWidget {
             )
           else
             Text(
-              S.of(context).txErrorCannotFetchDetails,
+              'Cannot fetch details.\nINTERX network is down or your internet is unstable.', //S.of(context).txErrorCannotFetchDetails,
               textAlign: TextAlign.center,
               style: textTheme.bodyMedium!.copyWith(color: DesignColors.redStatus1),
             ),

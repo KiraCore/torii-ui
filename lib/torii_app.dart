@@ -25,29 +25,26 @@ class ToriiApp extends StatelessWidget {
       supportedLocales: S.delegate.supportedLocales,
       routerConfig: router,
       builder: (BuildContext context, Widget? navigator) {
-        return ConstrainedBox(
-          // TODO: make mobile responsive
-          constraints: BoxConstraints(minWidth: 700),
-          child: MultiBlocProvider(
-            providers: [
-              BlocProvider(create: (_) => getIt<SessionCubit>()),
-              BlocProvider(create: (_) => getIt<MetamaskCubit>()),
-              BlocProvider(create: (_) => getIt<NetworkModuleBloc>()),
-            ],
-            child: BlocListener<SessionCubit, SessionState>(
-              listenWhen:
-                  (previous, current) =>
-                      previous.isKiraLoggedIn != current.isKiraLoggedIn ||
-                      previous.isEthereumLoggedIn != current.isEthereumLoggedIn,
-              listener: (context, state) {
-                // NOTE: we shouldn't need to refresh the router if the current 2 routes are dialogs because the dialog is already working on closing itself, and refresh will cause a conflict
-                if (router.isPreviousRouteDialog()) {
-                  return;
-                }
-                router.refresh();
-              },
-              child: navigator!,
-            ),
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (_) => getIt<SessionCubit>()),
+            BlocProvider(create: (_) => getIt<MetamaskCubit>()),
+            BlocProvider(create: (_) => getIt<NetworkModuleBloc>()),
+          ],
+          child: BlocListener<SessionCubit, SessionState>(
+            listenWhen:
+                (previous, current) =>
+                    previous.isKiraLoggedIn != current.isKiraLoggedIn ||
+                    previous.isEthereumLoggedIn != current.isEthereumLoggedIn,
+            listener: (context, state) {
+              // NOTE: we shouldn't need to refresh the router if the current 2 routes are dialogs because the dialog is already working on closing itself, and refresh will cause a conflict
+              if (router.isPreviousRouteDialog()) {
+                return;
+              }
+              router.refresh();
+            },
+            child: navigator!,
+                
           ),
         );
       },

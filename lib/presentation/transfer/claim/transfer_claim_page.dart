@@ -5,6 +5,7 @@ import 'package:torii_client/domain/models/transaction/signed_transaction_model.
 import 'package:torii_client/presentation/transfer/claim/cubit/transfer_claim_cubit.dart';
 import 'package:torii_client/presentation/transfer/claim/widgets/claim_progress_dialog.dart';
 import 'package:torii_client/presentation/transfer/widgets/transfer_app_bar.dart';
+import 'package:torii_client/presentation/widgets/torii_scaffold.dart';
 import 'package:torii_client/utils/exports.dart';
 
 class TransferClaimPage extends StatelessWidget {
@@ -17,8 +18,8 @@ class TransferClaimPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => getIt<TransferClaimCubit>()..init(signedTx: signedTx, msgSendFormModel: msgSendFormModel),
-      child: Scaffold(
-        body: SingleChildScrollView(child: Column(children: [TransferAppBar(), const ClaimProgressDialog()])),
+      child: ToriiScaffold(
+        child: SingleChildScrollView(child: Column(children: [TransferAppBar(), const ClaimProgressDialog()])),
       ),
     );
   }
