@@ -4,21 +4,19 @@ import 'package:torii_client/domain/models/transaction/broadcast_error_log_model
 
 class BroadcastRespModel extends Equatable {
   final String hash;
-  final BroadcastErrorLogModel? broadcastErrorLogModel;
 
-  const BroadcastRespModel({required this.hash, this.broadcastErrorLogModel});
+  const BroadcastRespModel({required this.hash});
 
   factory BroadcastRespModel.fromDto(BroadcastResp broadcastResp) {
-    BroadcastErrorLogModel? checkTxBroadcastErrorLogModel = BroadcastErrorLogModel.fromDto(broadcastResp.checkTx);
-    BroadcastErrorLogModel? deliverTxBroadcastErrorLogModel = BroadcastErrorLogModel.fromDto(broadcastResp.deliverTx);
+    // TODO: errors
+    // BroadcastErrorLogModel? checkTxBroadcastErrorLogModel = BroadcastErrorLogModel.fromDto(broadcastResp.checkTx);
+    // BroadcastErrorLogModel? deliverTxBroadcastErrorLogModel = BroadcastErrorLogModel.fromDto(broadcastResp.deliverTx);
 
     return BroadcastRespModel(
       hash: broadcastResp.hash,
-      broadcastErrorLogModel: checkTxBroadcastErrorLogModel ?? deliverTxBroadcastErrorLogModel,
+      // broadcastErrorLogModel: checkTxBroadcastErrorLogModel ?? deliverTxBroadcastErrorLogModel,
     );
   }
-
-  bool get hasErrors => broadcastErrorLogModel != null;
 
   @override
   List<Object?> get props => <Object>[hash];

@@ -56,11 +56,9 @@ class _TxProcessWrapper<T extends AMsgFormModel> extends State<TxProcessWrapper<
           } else if (txProcessState is TxProcessConfirmState) {
             dialogWidget = widget.txFormPreviewWidgetBuilder(txProcessState);
           } else if (txProcessState is TxProcessBroadcastState) {
-            final SignedTxModel? signedTxModel =
-                txProcessState is TxProcessBroadcastFromKiraState ? txProcessState.signedTxModel : null;
             dialogWidget = TxBroadcastPage<T>(
-              signedTxModel: signedTxModel,
-              passphrase: txProcessState.passphrase,
+              signedTxModel: txProcessState is TxProcessBroadcastFromKiraState ? txProcessState.signedTxModel : null,
+              passphrase: txProcessState is TxProcessBroadcastFromEthState ? txProcessState.passphrase : null,
             );
           } else if (txProcessState is TxProcessErrorState) {
             dialogWidget = TxDialogError<T>(accountErrorBool: txProcessState.accountErrorBool);

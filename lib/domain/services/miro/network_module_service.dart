@@ -1,5 +1,10 @@
 import 'package:injectable/injectable.dart';
-import 'package:torii_client/data/dto/api/query_interx_status/query_interx_status_resp.dart';
+import 'package:torii_client/data/dto/api/query_interx_status/node_info.dart';
+import 'package:torii_client/data/dto/api/query_interx_status/protocol_version.dart';
+import 'package:torii_client/data/dto/api/query_interx_status/pub_key.dart';
+import 'package:torii_client/data/dto/api/query_interx_status/query_sekai_status_resp.dart';
+import 'package:torii_client/data/dto/api/query_interx_status/sync_info.dart';
+import 'package:torii_client/data/dto/api/query_interx_status/validator_info.dart';
 import 'package:torii_client/domain/models/tokens/token_default_denom_model.dart';
 import 'package:torii_client/domain/services/miro/query_interx_status_service.dart';
 import 'package:torii_client/domain/services/miro/query_kira_tokens_aliases_service.dart';
@@ -63,10 +68,36 @@ class NetworkModuleService {
     if (networkUnknownModel.uri == null) {
       throw Exception('Network URI is null');
     }
-    QueryInterxStatusResp queryInterxStatusResp = await _queryInterxStatusService.getQueryInterxStatusResp(
+    QuerySekaiStatusResp querySekaiStatusResp = await _queryInterxStatusService.getQueryInterxStatusResp(
       networkUnknownModel.uri!,
       forceRequestBool: true,
     );
-    return NetworkInfoModel.fromDto(queryInterxStatusResp);
+    return NetworkInfoModel.fromSekaiDto(querySekaiStatusResp);
+
+    // QuerySekaiStatusResp(
+    //   validatorInfo: ValidatorInfo(address: '', pubKey: PubKey(type: '', value: ''), votingPower: ''),
+    //   nodeInfo: NodeInfo(
+    //     channels: '',
+    //     id: '',
+    //     listenAddress: '',
+    //     moniker: '',
+    //     network: '',
+    //     rpcAddress: '',
+    //     txIndex: '',
+    //     version: '',
+    //     protocolVersion: ProtocolVersion(app: '', block: '', p2p: ''),
+    //   ),
+    //   syncInfo: SyncInfo(
+    //     earliestAppHash: '',
+    //     earliestBlockHash: '',
+    //     earliestBlockHeight: '',
+    //     earliestBlockTime: '',
+    //     latestAppHash: '',
+    //     latestBlockHash: '',
+    //     latestBlockHeight: '',
+    //     latestBlockTime: '',
+    //   ),
+    // ),
+    // );
   }
 }

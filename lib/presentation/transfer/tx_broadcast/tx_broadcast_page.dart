@@ -15,13 +15,13 @@ import 'package:torii_client/utils/exports.dart';
 
 class TxBroadcastPage<T extends AMsgFormModel> extends StatefulWidget {
   final SignedTxModel? signedTxModel;
-  final String passphrase;
+  final String? passphrase;
 
-  const TxBroadcastPage({
-    required this.signedTxModel,
-    required this.passphrase,
-    super.key,
-  });
+  const TxBroadcastPage({this.signedTxModel, this.passphrase, super.key})
+    : assert(
+        signedTxModel != null || passphrase != null,
+        'Either signedTxModel or passphrase must be provided. Passphrase is required for Ethereum transactions, signedTxModel is required for Kira transactions.',
+      );
 
   @override
   State<StatefulWidget> createState() => _TxBroadcastPage<T>();
@@ -34,14 +34,14 @@ class _TxBroadcastPage<T extends AMsgFormModel> extends State<TxBroadcastPage<T>
   @override
   void initState() {
     super.initState();
-    if (widget.signedTxModel == null) {
+    if (widget.signedTxModel != null) {
+      txBroadcastCubit.broadcastFromKira(signedTxModel: widget.signedTxModel!);
+    } else if (widget.passphrase != null) {
       txBroadcastCubit.broadcastFromEth(
-        passphrase: widget.passphrase,
+        passphrase: widget.passphrase!,
         kiraRecipient: txProcessCubit.msgFormModel.recipientWalletAddress!.address,
         ukexAmount: txProcessCubit.msgFormModel.tokenAmountModel!.getAmountInDefaultDenomination(),
       );
-    } else {
-      txBroadcastCubit.broadcastFromKira(signedTxModel: widget.signedTxModel!, passphrase: widget.passphrase);
     }
   }
 

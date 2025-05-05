@@ -53,7 +53,6 @@ class _TxSendTokensFormDialog extends State<TxSendTokensFormDialog> {
             child: TxSendFormFooter(
               formKey: formKey,
               feeTokenAmountModel: widget.feeTokenAmountModel,
-              onSubmit: context.read<TxProcessCubit<MsgSendFormModel>>().submitTransactionForm,
             ),
           ),
         ],

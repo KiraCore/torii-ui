@@ -39,13 +39,15 @@ class QueryTransactionsService {
       List<TxListItemModel> txListItemModelList =
           queryTransactionsResp.transactions.map(TxListItemModel.fromDto).toList();
 
-      InterxHeaders interxHeaders = InterxHeaders.fromHeaders(response.headers);
+      // TODO: interxHeaders
+      // InterxHeaders interxHeaders = InterxHeaders.fromHeaders(response.headers);
 
       return PageData<TxListItemModel>(
         listItems: txListItemModelList,
         isLastPage: txListItemModelList.length < queryTransactionsReq.limit!,
-        blockDateTime: interxHeaders.blockDateTime,
-        cacheExpirationDateTime: interxHeaders.cacheExpirationDateTime,
+        // TODO: interxHeaders
+        blockDateTime: DateTime.now(),
+        cacheExpirationDateTime: DateTime.now(),
       );
     } catch (e) {
       getIt<Logger>().e('QueryTransactionsService: Cannot parse getTransactionList() for URI $networkUri $e');

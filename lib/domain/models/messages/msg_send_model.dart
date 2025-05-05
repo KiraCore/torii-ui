@@ -14,8 +14,14 @@ class MsgSendModel extends ATxMsgModel {
   final AWalletAddress fromWalletAddress;
   final AWalletAddress toWalletAddress;
   final TokenAmountModel tokenAmountModel;
-
-  const MsgSendModel({required this.fromWalletAddress, required this.toWalletAddress, required this.tokenAmountModel})
+  final String passphrase;
+  
+  const MsgSendModel({
+    required this.fromWalletAddress,
+    required this.toWalletAddress,
+    required this.tokenAmountModel,
+    required this.passphrase,
+  })
     : super(txMsgType: TxMsgType.msgSend);
 
   factory MsgSendModel.fromMsgDto(MsgSend msgSend) {
@@ -26,6 +32,7 @@ class MsgSendModel extends ATxMsgModel {
         defaultDenominationAmount: Decimal.fromBigInt(msgSend.amount.first.amount),
         tokenAliasModel: TokenAliasModel.local(msgSend.amount.first.denom),
       ),
+      passphrase: msgSend.passphrase,
     );
   }
 
@@ -34,6 +41,7 @@ class MsgSendModel extends ATxMsgModel {
     return MsgSend(
       fromAddress: fromWalletAddress.address,
       toAddress: toWalletAddress.address,
+      passphrase: passphrase,
       amount: <CosmosCoin>[
         CosmosCoin(
           denom: tokenAmountModel.tokenAliasModel.defaultTokenDenominationModel.name,
@@ -82,5 +90,5 @@ class MsgSendModel extends ATxMsgModel {
   }
 
   @override
-  List<Object?> get props => <Object>[fromWalletAddress, toWalletAddress, tokenAmountModel];
+  List<Object?> get props => <Object>[fromWalletAddress, toWalletAddress, tokenAmountModel, passphrase];
 }

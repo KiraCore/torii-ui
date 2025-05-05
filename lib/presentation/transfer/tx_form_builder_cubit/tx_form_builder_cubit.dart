@@ -26,11 +26,11 @@ class TxFormBuilderCubit extends Cubit<ATxFormBuilderState> {
 
   /// Method [buildUnsignedTx] throws [Exception] if one of the methods [_buildTxLocalInfo], [_downloadTxRemoteInfo] throws an exception
   /// Detailed explanation should be above these methods
-  Future<UnsignedTxModel> buildUnsignedTx() async {
+  Future<UnsignedTxModel> buildUnsignedTx({required String passphrase}) async {
     emit(TxFormBuilderDownloadingState());
 
     try {
-      TxLocalInfoModel txLocalInfoModel = _buildTxLocalInfo();
+      TxLocalInfoModel txLocalInfoModel = _buildTxLocalInfo(passphrase: passphrase);
       TxRemoteInfoModel txRemoteInfoModel = await _downloadTxRemoteInfo();
 
       emit(TxFormBuilderEmptyState());
@@ -48,8 +48,8 @@ class TxFormBuilderCubit extends Cubit<ATxFormBuilderState> {
 
   /// Method [msgFormController.buildTxMsgModel] may throw an [Exception] if cannot create [ATxMsgModel]
   /// The most common reason is when all required fields in form were not filled
-  TxLocalInfoModel _buildTxLocalInfo() {
-    ATxMsgModel txMsgModel = msgFormModel.buildTxMsgModel();
+  TxLocalInfoModel _buildTxLocalInfo({required String passphrase}) {
+    ATxMsgModel txMsgModel = msgFormModel.buildTxMsgModel(passphrase: passphrase);
     String memo = msgFormModel.memo;
     TxLocalInfoModel txLocalInfoModel = TxLocalInfoModel(
       feeTokenAmountModel: feeTokenAmountModel,

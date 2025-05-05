@@ -24,7 +24,7 @@ class QueryAccountResp extends Equatable {
 
     return QueryAccountResp(
       type: accountJson['@type'] as String,
-      accountNumber: accountJson['account_number'] as String,
+      accountNumber: accountJson['accountNumber'] as String,
       address: accountJson['address'] as String,
       pubKey: pubKeyJson != null ? PubKey.fromJson(pubKeyJson) : null,
       sequence: accountJson['sequence'] as String?,

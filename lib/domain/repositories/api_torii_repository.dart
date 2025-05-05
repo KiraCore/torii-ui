@@ -34,7 +34,7 @@ class ApiToriiRepository {
     try {
       // TODO: pagination
       final Response<T> response = await _httpClientManager.post(
-        networkUri: Uri.parse('http://89.128.117.28:13000'),
+        networkUri: apiRequestModel.networkUri,
         path: '',
         options: Options(headers: {'Content-Type': 'application/json'}),
         body: {
@@ -43,7 +43,6 @@ class ApiToriiRepository {
           "metadata": {"token": const String.fromEnvironment('TORII_LOG_ACCESS_TOKEN')},
         },
       );
-      print('fetchTransactionsPerAccount response: $response');
       return response;
     } on DioException catch (dioException) {
       getIt<Logger>().e('cosmos error: ${apiRequestModel.networkUri}: ${dioException.message}');

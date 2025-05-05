@@ -81,6 +81,7 @@ class TransferClaimCubit extends Cubit<TransferClaimState> {
     }
   }
 
+// todo claim 123 and hash
   Future<void> claim({required String passphrase}) async {
     if (!state.isReadyToClaim || state.isClaiming) {
       return;

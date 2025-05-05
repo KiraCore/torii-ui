@@ -17,42 +17,46 @@ class ErrorExplorerJsonPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
-    return TxInputWrapper(
-      height: 400,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(title),
-              TextButton.icon(
-                onPressed: () => _handleCopy(context),
-                icon: const Icon(AppIcons.copy, size: 18),
-                label: Text(S.of(context).copy),
-              ),
-            ],
-          ),
-          const SizedBox(height: 15),
-          if (jsonObject is List || jsonObject is Map)
-            Expanded(
-              child: JsonView(
-                json: jsonObject,
-                shrinkWrap: false,
-                physics: null,
-                styleScheme: const JsonStyleScheme(openAtStart: true),
-              ),
-            )
-          else if (jsonObject != null)
-            SelectableText(jsonObject.toString(), style: textTheme.bodyMedium?.copyWith(color: DesignColors.white2))
-          else
-            Text(
-              S.of(context).errorPreviewNotAvailable,
-              style: textTheme.bodyMedium?.copyWith(color: DesignColors.white2),
+
+    Widget text;
+    bool isJson = jsonObject is List || jsonObject is Map;
+    if (isJson) {
+      text = Expanded(
+        child: JsonView(
+          json: jsonObject,
+          shrinkWrap: false,
+          physics: null,
+          styleScheme: const JsonStyleScheme(openAtStart: true),
+        ),
+      );
+    } else if (jsonObject != null) {
+      text = SelectableText(jsonObject.toString(), style: textTheme.bodyMedium?.copyWith(color: DesignColors.white2));
+    } else {
+      text = Text(
+        S.of(context).errorPreviewNotAvailable,
+        style: textTheme.bodyMedium?.copyWith(color: DesignColors.white2),
+      );
+    }
+    final content = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Text(title),
+            TextButton.icon(
+              onPressed: () => _handleCopy(context),
+              icon: const Icon(AppIcons.copy, size: 18),
+              label: Text(S.of(context).copy),
             ),
-        ],
-      ),
+          ],
+        ),
+        const SizedBox(height: 15),
+        text,
+      ],
     );
+
+    return TxInputWrapper(height: 400, child: isJson ? content : SingleChildScrollView(child: content));
   }
 
   void _handleCopy(BuildContext context) {
@@ -60,7 +64,7 @@ class ErrorExplorerJsonPreview extends StatelessWidget {
     String jsonData = encoder.convert(jsonObject);
 
     Clipboard.setData(ClipboardData(text: jsonData));
-    
+
     KiraToast.of(context).show(message: S.of(context).toastSuccessfullyCopied, type: ToastType.success);
   }
 }

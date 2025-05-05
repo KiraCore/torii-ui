@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:torii_client/data/dto/api/query_interx_status/query_interx_status_resp.dart';
+import 'package:torii_client/data/dto/api/query_interx_status/query_sekai_status_resp.dart';
 
 class NetworkInfoModel extends Equatable {
   final String chainId;
@@ -20,6 +21,16 @@ class NetworkInfoModel extends Equatable {
       interxVersion: queryInterxStatusResp.interxInfo.version,
       latestBlockHeight: int.parse(queryInterxStatusResp.syncInfo.latestBlockHeight),
       latestBlockTime: DateTime.parse(queryInterxStatusResp.syncInfo.latestBlockTime),
+    );
+  }
+
+  factory NetworkInfoModel.fromSekaiDto(QuerySekaiStatusResp querySekaiStatusResp) {
+    return NetworkInfoModel(
+      chainId: '',
+      // TODO: get interx version ?
+      interxVersion: '0',
+      latestBlockHeight: int.parse(querySekaiStatusResp.syncInfo.latestBlockHeight),
+      latestBlockTime: DateTime.parse(querySekaiStatusResp.syncInfo.latestBlockTime),
     );
   }
 

@@ -21,14 +21,8 @@ import 'package:torii_client/domain/models/tokens/a_msg_form_model.dart';
 class TxSendFormFooter extends StatefulWidget {
   final TokenAmountModel feeTokenAmountModel;
   final GlobalKey<FormState> formKey;
-  final ValueChanged<SignedTxModel?> onSubmit;
-  
-  const TxSendFormFooter({
-    required this.feeTokenAmountModel,
-    required this.formKey,
-    required this.onSubmit,
-    Key? key,
-  }) : super(key: key);
+
+  const TxSendFormFooter({required this.feeTokenAmountModel, required this.formKey, Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _TxSendFormFooter();
@@ -95,10 +89,14 @@ class _TxSendFormFooter extends State<TxSendFormFooter> {
           getIt<Logger>().e('Form is not valid');
           return;
         }
-        // TODO: refactor this
-        widget.onSubmit(null);
-        // TODO(Mykyta): add error handling at `send-via-metamask` task
-        print('metamask pay amount: ${model.tokenAmountModel!.getAmountInBaseDenomination()}');
+
+        RequestPassphraseDialog.show(
+          context,
+          onProceed: ({required String passphrase}) async {
+            context.read<TxProcessCubit<MsgSendFormModel>>().submitTransactionFromEth(passphrase: passphrase);
+          },
+          needToConfirm: true,
+        );
 
         // RequestPassphraseDialog.show(
         //   context,
@@ -119,23 +117,16 @@ class _TxSendFormFooter extends State<TxSendFormFooter> {
         getIt<Logger>().e('Metamask pay ${e.toString()}');
       }
     } else {
-      try {
-        UnsignedTxModel unsignedTxModel = await context.read<TxFormBuilderCubit>().buildUnsignedTx();
-        SignedTxModel signedTxModel = await _signTransaction(unsignedTxModel);
-        widget.onSubmit(signedTxModel);
-      } catch (e) {
-        getIt<Logger>().e('Kira pay ${e.toString()}');
-      }
+      RequestPassphraseDialog.show(
+        context,
+        onProceed: ({required String passphrase}) async {
+          context.read<TxProcessCubit<MsgSendFormModel>>().signSubmitTransactionFromKira(
+            context.read<TxFormBuilderCubit>(),
+            passphrase: passphrase,
+          );
+        },
+        needToConfirm: true,
+      );
     }
-  }
-
-  Future<SignedTxModel> _signTransaction(UnsignedTxModel unsignedTxModel) async {
-    Wallet? wallet = sessionCubit.state.kiraWallet;
-    if (wallet == null) {
-      throw Exception('Wallet cannot be null when signing transaction');
-    }
-    SignedTxModel signedTxModel = unsignedTxModel.sign(wallet);
-    await Future<void>.delayed(const Duration(milliseconds: 100));
-    return signedTxModel;
   }
 }

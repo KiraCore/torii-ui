@@ -5,12 +5,11 @@ import 'package:torii_client/presentation/transfer/tx_process_cubit/states/tx_pr
 
 abstract class TxProcessBroadcastState extends ATxProcessState {
   final TxProcessLoadedState txProcessLoadedState;
-  final String passphrase;
 
-  const TxProcessBroadcastState({required this.txProcessLoadedState, required this.passphrase});
+  const TxProcessBroadcastState({required this.txProcessLoadedState});
 
   @override
-  List<Object?> get props => <Object>[txProcessLoadedState, passphrase];
+  List<Object?> get props => <Object>[txProcessLoadedState];
 }
 
 class TxProcessBroadcastFromKiraState extends TxProcessBroadcastState {
@@ -18,7 +17,6 @@ class TxProcessBroadcastFromKiraState extends TxProcessBroadcastState {
 
   const TxProcessBroadcastFromKiraState({
     required super.txProcessLoadedState,
-    required super.passphrase,
     required this.signedTxModel,
   });
 
@@ -29,14 +27,15 @@ class TxProcessBroadcastFromKiraState extends TxProcessBroadcastState {
 class TxProcessBroadcastFromEthState extends TxProcessBroadcastState {
   const TxProcessBroadcastFromEthState({
     required super.txProcessLoadedState,
-    required super.passphrase,
+    required this.passphrase,
     required this.kiraRecipient,
     required this.ukexAmount,
   });
 
   final String kiraRecipient;
   final Decimal ukexAmount;
+  final String passphrase;
 
   @override
-  List<Object?> get props => <Object?>[kiraRecipient, ukexAmount, ...super.props];
+  List<Object?> get props => <Object?>[kiraRecipient, ukexAmount, passphrase, ...super.props];
 }

@@ -19,7 +19,7 @@ class HttpClientInterceptor extends Interceptor {
   /// This method is called when server responds with one of the following status codes (1XX), (3XX), (4XX) or (5XX)
   @override
   Future<void> onError(DioException err, ErrorInterceptorHandler handler) async {
-    getIt<Logger>().e('onError: ${err.message}');
+    getIt<Logger>().e('onError: ${err.message}: ${err.response?.data}');
     return handler.next(err);
   }
 }

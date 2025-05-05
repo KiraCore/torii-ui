@@ -21,10 +21,12 @@ class BroadcastService {
       throw Exception('Network URI is null');
     }
 
+    Response<dynamic>? response;
     try {
-      Response<dynamic> response = await _apiKiraRepository.broadcast<dynamic>(
+      response = await _apiKiraRepository.broadcast<dynamic>(
         ApiRequestModel<BroadcastReq>(
-          networkUri: networkUri ?? Uri.parse('https://kira-testnet.rpc.kira.network'),
+          networkUri: networkUri,
+          // todo late somewhere here
           requestData: BroadcastReq(tx: signedTransactionModel.signedCosmosTx),
         ),
       );
@@ -33,7 +35,11 @@ class BroadcastService {
       return BroadcastRespModel.fromDto(broadcastResp);
     } catch (e) {
       getIt<Logger>().e('BroadcastService: Cannot parse broadcastTx for URI $networkUri: ${e}');
-      rethrow;
+      if (response != null) {
+        throw Exception(response.toString());
+      } else {
+        rethrow;
+      }
     }
 
     // if (broadcastRespModel.hasErrors) {

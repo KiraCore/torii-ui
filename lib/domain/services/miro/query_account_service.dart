@@ -20,17 +20,19 @@ class QueryAccountService {
     if (networkUri == null) {
       throw Exception('Network URI is null');
     }
-    Response<dynamic> response = await _apiKiraRepository.fetchQueryAccount<dynamic>(
-      ApiRequestModel<QueryAccountReq>(networkUri: networkUri, requestData: QueryAccountReq(address: accountAddress)),
-    );
 
     try {
+      Response<dynamic> response = await _apiKiraRepository.fetchQueryAccount<dynamic>(
+        ApiRequestModel<QueryAccountReq>(networkUri: networkUri, requestData: QueryAccountReq(address: accountAddress)),
+      );
+
       QueryAccountResp queryAccountResp = QueryAccountResp.fromJson(response.data as Map<String, dynamic>);
-      InterxHeaders interxHeaders = InterxHeaders.fromHeaders(response.headers);
+      // TODO: interxHeaders
+      // InterxHeaders interxHeaders = InterxHeaders.fromHeaders(response.headers);
 
       TxRemoteInfoModel txRemoteInfoModel = TxRemoteInfoModel(
         accountNumber: queryAccountResp.accountNumber,
-        chainId: interxHeaders.chainId,
+        chainId: 'testnet-1', // TODO: interxHeaders.chainId !!!
         sequence: queryAccountResp.sequence,
       );
       return txRemoteInfoModel;
@@ -45,9 +47,15 @@ class QueryAccountService {
     if (networkUri == null) {
       throw Exception('Network URI is null');
     }
-    Response<dynamic> response = await _apiKiraRepository.fetchQueryAccount<dynamic>(
-      ApiRequestModel<QueryAccountReq>(networkUri: networkUri, requestData: QueryAccountReq(address: accountAddress)),
-    );
-    return response.statusCode == 200;
+    try {
+      Response<dynamic> response = await _apiKiraRepository.fetchQueryAccount<dynamic>(
+        ApiRequestModel<QueryAccountReq>(networkUri: networkUri, requestData: QueryAccountReq(address: accountAddress)),
+      );
+      return response.statusCode == 200;
+    } catch (e) {
+      getIt<Logger>().e('QueryAccountService: Cannot parse isAccountRegistered() for URI $networkUri $e');
+      // TODO: refactor work with error / response
+      return false;
+    }
   }
 }

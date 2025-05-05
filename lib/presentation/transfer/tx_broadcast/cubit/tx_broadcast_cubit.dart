@@ -64,7 +64,7 @@ class TxBroadcastCubit extends Cubit<ATxBroadcastState> {
     }
   }
 
-  Future<void> broadcastFromKira({required SignedTxModel signedTxModel, required String passphrase}) async {
+  Future<void> broadcastFromKira({required SignedTxModel signedTxModel}) async {
     emit(TxBroadcastLoadingState());
     try {
       BroadcastRespModel broadcastRespModel = await _broadcastService.broadcastTx(signedTxModel);
@@ -72,6 +72,16 @@ class TxBroadcastCubit extends Cubit<ATxBroadcastState> {
     } on DioException catch (e) {
       getIt<Logger>().e('Error broadcasting from Kira: $e');
       ErrorExplorerModel errorExplorerModel = ErrorExplorerModel.fromDioConnectException(e);
+      emit(TxBroadcastErrorState(errorExplorerModel: errorExplorerModel));
+    } catch (e) {
+      getIt<Logger>().e('Error broadcasting from Kira: $e');
+      ErrorExplorerModel errorExplorerModel = ErrorExplorerModel.unknown(
+        // TODO: add correct uri
+        uri: Uri.parse('/kira/txs'),
+        method: 'POST',
+        request: signedTxModel.signedCosmosTx.toProtoJson(),
+        response: e.toString(),
+      );
       emit(TxBroadcastErrorState(errorExplorerModel: errorExplorerModel));
     }
     // on DioParseException catch (dioParseException) {

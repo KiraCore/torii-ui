@@ -48,52 +48,6 @@ class EthereumSignatureDecodeResult {
 @injectable
 class EthereumService {
   EthereumService();
-  //
-  // three.Ethereum? get threeEthereum => html.window.ethereum;
-  //
-  // Future<void> metamaskThree() async {
-  //   if (threeEthereum == null) {
-  //     return;
-  //   }
-  //
-  //   final EthereumAddress ownAddress =
-  //   EthereumAddress.fromHex('0xCa27b75E10154814663b7Eb254317FA16c5F940A');
-  //   final EthereumAddress contractAddr =
-  //   EthereumAddress.fromHex('0xeE9312C22890e0Bd9a9bB37Fd17572180F4Fc68a');
-  //   final EthereumAddress receiver =
-  //   EthereumAddress.fromHex('0x6c87E1a114C3379BEc929f6356c5263d62542C13');
-  //
-  //   final client = Web3Client.custom(threeEthereum!.asRpcService());
-  //   final credentials = await threeEthereum!.requestAccounts();
-  //
-  //   print('Using ${credentials[0].address}');
-  //   print('Client is listening: ${await client.isListeningForNetwork()}');
-  //
-  //   final message = Uint8List.fromList(utf8.encode('Hello from webthree'));
-  //   final signature = await credentials[0].signPersonalMessage(message);
-  //   print('Signature: ${base64.encode(signature)}');
-  //
-  //   // read the contract abi and tell webthree where it's deployed (contractAddr)
-  //   final token = Token(address: contractAddr, client: client);
-  //
-  //   // listen for the Transfer event when it's emitted by the contract above
-  //   final subscription = token.transferEvents().take(1).listen((event) {
-  //     print('${event.from} sent ${event.value} MetaCoins to ${event.to}!');
-  //   });
-  //
-  //   // check our balance in MetaCoins by calling the appropriate function
-  //   final balance = await token.getBalance(ownAddress);
-  //   print('We have $balance MetaCoins');
-  //
-  //   // send all our MetaCoins to the other address by calling the sendCoin
-  //   // function
-  //   await token.sendCoin(receiver, balance, credentials: credentials);
-  //
-  //   await subscription.asFuture();
-  //   await subscription.cancel();
-  //
-  //   await client.dispose();
-  // }
 
   bool get isSupported => ethereum != null;
 
@@ -239,6 +193,8 @@ class EthereumService {
 
   Future<Decimal?> getBalance(String address) async {
     try {
+      //todo
+      return Decimal.fromBigInt(BigInt.from(1000000000000000000));
       // First, get the token contract address
       final tokenAddress = await contract.call<String>('token', []);
 

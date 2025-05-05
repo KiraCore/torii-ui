@@ -16,7 +16,7 @@ import 'package:torii_client/utils/exports.dart';
 class TxBroadcastErrorBody<T extends AMsgFormModel> extends StatelessWidget {
   final ErrorExplorerModel errorExplorerModel;
   final SignedTxModel? signedTxModel;
-  final String passphrase;
+  final String? passphrase;
   final String kiraRecipient;
   final Decimal ukexAmount;
 
@@ -87,11 +87,11 @@ class TxBroadcastErrorBody<T extends AMsgFormModel> extends StatelessWidget {
   }
 
   void _pressTryAgainButton(BuildContext context) {
-    if (signedTxModel == null) {
-      context.read<TxBroadcastCubit>().broadcastFromKira(signedTxModel: signedTxModel!, passphrase: passphrase);
-    } else {
+    if (signedTxModel != null) {
+      context.read<TxBroadcastCubit>().broadcastFromKira(signedTxModel: signedTxModel!);
+    } else if (passphrase != null) {
       context.read<TxBroadcastCubit>().broadcastFromEth(
-        passphrase: passphrase,
+        passphrase: passphrase!,
         kiraRecipient: kiraRecipient,
         ukexAmount: ukexAmount,
       );

@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/domain/models/tokens/a_msg_form_model.dart';
 import 'package:torii_client/presentation/transfer/send/tx_dialog.dart';
 import 'package:torii_client/presentation/transfer/tx_process_cubit/tx_process_cubit.dart';
-import 'package:torii_client/presentation/transfer/widgets/request_passphrase_dialog.dart';
 import 'package:torii_client/presentation/widgets/buttons/kira_elevated_button.dart';
 import 'package:torii_client/presentation/widgets/buttons/kira_outlined_button.dart';
 import 'package:torii_client/utils/exports.dart';
@@ -43,11 +42,7 @@ class TxDialogConfirmLayout<T extends AMsgFormModel> extends StatelessWidget {
           KiraElevatedButton(
             width: 160,
             onPressed: () {
-              RequestPassphraseDialog.show(
-                context,
-                onProceed: txProcessCubit.confirmTransactionForm,
-                needToConfirm: true,
-              );
+              txProcessCubit.confirmTransaction();
             },
             title: S.of(context).txButtonConfirmSend,
           ),

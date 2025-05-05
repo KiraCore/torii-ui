@@ -47,6 +47,17 @@ class ErrorExplorerModel extends Equatable {
     );
   }
 
+  factory ErrorExplorerModel.unknown({required Uri uri, required String method, dynamic request, dynamic response}) {
+    return ErrorExplorerModel(
+      code: 'UNKNOWN_ERROR',
+      message: 'Unknown error',
+      uri: uri,
+      method: method,
+      request: request,
+      response: response,
+    );
+  }
+
   @override
   List<Object?> get props => <Object?>[uri, method, code, message, request, response];
 }

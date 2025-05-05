@@ -32,7 +32,10 @@ class MsgSendFormModel extends AMsgFormModel {
   /// [_senderWalletAddress], [_recipientWalletAddress] or [_tokenAmountModel]
   /// is not filled (equal null) or [_tokenAmountModel] has amount equal 0.
   @override
-  ATxMsgModel buildTxMsgModel() {
+  ATxMsgModel buildTxMsgModel({String? passphrase}) {
+    // TODO: remove this, edit the abstraction
+    assert(passphrase != null, 'Passphrase is required');
+
     bool messageFilledBool = canBuildTxMsg();
     if (messageFilledBool == false) {
       throw Exception('Cannot build MsgSendModel. Form is not valid');
@@ -41,6 +44,7 @@ class MsgSendFormModel extends AMsgFormModel {
       fromWalletAddress: _senderWalletAddress!,
       toWalletAddress: _recipientWalletAddress!,
       tokenAmountModel: _tokenAmountModel!,
+      passphrase: passphrase!,
     );
   }
 

@@ -38,7 +38,6 @@ class _MsgSendForm extends State<MsgSendForm> {
   final TextEditingController memoTextEditingController = TextEditingController();
   final TextEditingController recipientAmountController = TextEditingController();
   final FocusNode recipientAmountFocusNode = FocusNode();
-  final ValueNotifier<AWalletAddress?> walletAddressNotifier = ValueNotifier<AWalletAddress?>(null);
   TxProcessCubit<MsgSendFormModel> get txProcessCubit => context.read<TxProcessCubit<MsgSendFormModel>>();
 
   @override
@@ -52,7 +51,6 @@ class _MsgSendForm extends State<MsgSendForm> {
   @override
   void dispose() {
     memoTextEditingController.dispose();
-    walletAddressNotifier.dispose();
     super.dispose();
   }
 
@@ -82,11 +80,6 @@ class _MsgSendForm extends State<MsgSendForm> {
                 needKiraAddress: txProcessCubit.msgFormModel.senderWalletAddress is CosmosWalletAddress,
               ),
               const SizedBox(height: 14),
-              // ValueListenableBuilder<AWalletAddress?>(
-              //   valueListenable: walletAddressNotifier,
-              //   builder: (_, AWalletAddress? walletAddress, __) {
-              //     getIt<Logger>().i('updated balance: ${txProcessCubit.msgFormModel.balance}');
-              //     return
               BlocBuilder<TransferInputCubit, TransferInputState>(
                 buildWhen: (previous, current) {
                   return previous.balance != current.balance ||
@@ -103,8 +96,6 @@ class _MsgSendForm extends State<MsgSendForm> {
                     walletAddress: txProcessCubit.msgFormModel.senderWalletAddress,
                   );
                 },
-                // );
-                // },
               ),
               const SizedBox(height: 16),
               Center(child: const ToggleBetweenWalletAddressTypes()),
@@ -154,7 +145,8 @@ class _MsgSendForm extends State<MsgSendForm> {
                     height: 80,
                     hasErrors: false,
                     builderWithFocus:
-                        (FocusNode focusNode) => SizedBox(
+                        (FocusNode focusNode) {
+                      return SizedBox(
                           height: double.infinity,
                           child: Center(
                             child: TxInputStaticLabel(
@@ -179,7 +171,8 @@ class _MsgSendForm extends State<MsgSendForm> {
                               ),
                             ),
                           ),
-                        ),
+                      );
+                    },
                   );
                 },
               ),
@@ -198,7 +191,6 @@ class _MsgSendForm extends State<MsgSendForm> {
 
   void _assignDefaultValues() {
     memoTextEditingController.text = txProcessCubit.msgFormModel.memo;
-    walletAddressNotifier.value = txProcessCubit.msgFormModel.senderWalletAddress;
   }
 
   void _handleRecipientAddressChanged(AWalletAddress? walletAddress) {
