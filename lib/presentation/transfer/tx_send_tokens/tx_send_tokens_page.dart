@@ -11,26 +11,37 @@ import 'package:torii_client/presentation/transfer/tx_send_tokens/tx_send_tokens
 import 'package:torii_client/presentation/transfer/tx_send_tokens/tx_send_tokens_form_dialog.dart';
 import 'package:torii_client/presentation/transfer/widgets/request_passphrase_dialog.dart';
 
-class TxSendTokensPage extends StatelessWidget {
+class TxSendTokensPage extends StatefulWidget {
   final TokenAmountModel? balance;
   final Wallet fromWallet;
 
   TxSendTokensPage({this.balance, required this.fromWallet})
     : super(key: ValueKey(fromWallet.address.address + balance.toString()));
-    
+
+  @override
+  State<TxSendTokensPage> createState() => _TxSendTokensPageState();
+}
+
+class _TxSendTokensPageState extends State<TxSendTokensPage> {
+  late final TxProcessCubit<MsgSendFormModel> txProcessCubit;
+
+  @override
+  void initState() {
+    super.initState();
+    txProcessCubit = TxProcessCubit<MsgSendFormModel>(
+      txMsgType: TxMsgType.msgSend,
+      msgFormModel: MsgSendFormModel(balance: widget.balance, senderWalletAddress: widget.fromWallet.address),
+    )..init(formEnabledBool: true, sendFromKira: widget.fromWallet.isKira);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final TxProcessCubit<MsgSendFormModel> txProcessCubit = TxProcessCubit<MsgSendFormModel>(
-      txMsgType: TxMsgType.msgSend,
-      msgFormModel: MsgSendFormModel(balance: balance, senderWalletAddress: fromWallet.address),
-    )..init(formEnabledBool: true, sendFromKira: fromWallet.isKira);
-
     return TxProcessWrapper<MsgSendFormModel>(
       txProcessCubit: txProcessCubit,
       txFormWidgetBuilder: (TxProcessLoadedState txProcessLoadedState) {
         return TxSendTokensFormDialog(
           feeTokenAmountModel: txProcessLoadedState.feeTokenAmountModel,
-          sendFromKira: fromWallet.isKira,
+          sendFromKira: widget.fromWallet.isKira,
         );
       },
       txFormPreviewWidgetBuilder: (TxProcessConfirmState txProcessConfirmState) {
