@@ -13,28 +13,13 @@ class ApiToriiRepository {
 
   final HttpClientManager _httpClientManager;
 
-  Future<Response<T>> fetchPendingTransaction<T>(ApiRequestModel<void> apiRequestModel) async {
-    try {
-      throw UnimplementedError();
-      // final Response<T> response = await _httpClientManager.get<T>(
-      //   networkUri: apiRequestModel.networkUri,
-      //   path: '/api/torii/transactions',
-      // );
-      // return response;
-    } on DioException catch (dioException) {
-      getIt<Logger>().e(
-        'Cannot fetch fetchQueryTransactions() for URI ${apiRequestModel.networkUri}: ${dioException.message}',
-      );
-      rethrow;
-    }
-  }
-
-  // TODO: test
   Future<Response<T>> fetchTransactionsPerAccount<T>(ApiRequestModel<QueryTransactionsReq> apiRequestModel) async {
+    // TODO: connect to TORII with url given from user
+    final uri = Uri.parse(const String.fromEnvironment('TORII_LOG_URL')); //apiRequestModel.networkUri;
     try {
-      // TODO: pagination
+      // TODO: torii has no pagination here
       final Response<T> response = await _httpClientManager.post(
-        networkUri: apiRequestModel.networkUri,
+        networkUri: uri,
         path: '',
         options: Options(headers: {'Content-Type': 'application/json'}),
         body: {
@@ -45,7 +30,7 @@ class ApiToriiRepository {
       );
       return response;
     } on DioException catch (dioException) {
-      getIt<Logger>().e('cosmos error: ${apiRequestModel.networkUri}: ${dioException.message}');
+      getIt<Logger>().e('cosmos error: $uri: ${dioException.message}');
       rethrow;
     }
   }

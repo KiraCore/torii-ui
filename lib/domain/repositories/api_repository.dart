@@ -35,40 +35,13 @@ class RemoteApiRepository implements IApiRepository {
     }
   }
 
-  // TODO: its SEKAI status, not interx right now
   @override
   Future<Response<T>> fetchQueryInterxStatus<T>(ApiRequestModel<void> apiRequestModel) async {
-    // try {
-    //   print('apiRequestModel.networkUri: ${apiRequestModel.networkUri}');
-    //   print('dio: ${Dio().options.headers}');
-    //   final Response<T> response = await Dio().post(
-    //     apiRequestModel.networkUri,
-    //     options: Options(headers: {'Content-Type': 'application/json'}),
-    //     data: jsonEncode({
-    //       "method": "cosmos",
-    //       "data": {"method": "GET", "path": "/cosmos/bank/v1beta1/supply", "payload": {}},
-    //     }),
-    //   );
-    //   print('responseee: $response');
-    // } on DioException catch (dioException) {
-    //   getIt<Logger>().e('cosmos error: ${apiRequestModel.networkUri}: ${dioException.message}');
-    // }
-  
-    
     try {
-      final Response<T> response = await _httpClientManager.post<T>(
+      final Response<T> response = await _httpClientManager.get<T>(
         networkUri: apiRequestModel.networkUri,
-        path: '', // TODO: remove this, refactor the manager for proxy
-        options: Options(headers: {'Content-Type': 'application/json'}),
-        body: {
-          "method": "cosmos",
-          "data": {"method": "POST", "path": "/kira/status", "payload": {}},
-        },
+        path: '/api/status',
       );
-      // final Response<T> response = await _httpClientManager.get<T>(
-      //   networkUri: apiRequestModel.networkUri,
-      //   path: '/api/status',
-      // );
       return response;
     } on DioException catch (dioException) {
       getIt<Logger>().e(

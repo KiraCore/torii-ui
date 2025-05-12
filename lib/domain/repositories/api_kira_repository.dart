@@ -39,18 +39,8 @@ class RemoteApiKiraRepository implements IApiKiraRepository {
       print('broadcast base64: ${base64Encode(apiRequestModel.requestData.tx.toProtoBytes())}');
       final Response<T> response = await _httpClientManager.post<T>(
         networkUri: apiRequestModel.networkUri,
-        path: '', // TODO: remove this, refactor the manager for proxy
-        options: Options(headers: {'Content-Type': 'application/json'}),
-        body: {
-          "method": "cosmos",
-          "data": {
-            "method": "POST",
-            "path": "/kira/txs",
-            "payload": {
-              "tx": base64Encode(apiRequestModel.requestData.tx.toProtoBytes()), "mode": "sync",
-            },
-          },
-        },
+        path: '/api/kira/txs',
+        body: apiRequestModel.requestData.toJson(),
       );
       return response;
     } on DioException catch (dioException) {
@@ -62,14 +52,9 @@ class RemoteApiKiraRepository implements IApiKiraRepository {
   @override
   Future<Response<T>> fetchQueryAccount<T>(ApiRequestModel<QueryAccountReq> apiRequestModel) async {
     try {
-      final Response<T> response = await _httpClientManager.post<T>(
+      final Response<T> response = await _httpClientManager.get<T>(
         networkUri: apiRequestModel.networkUri,
-        path: '', // TODO: remove this, refactor the manager for proxy
-        options: Options(headers: {'Content-Type': 'application/json'}),
-        body: {
-          "method": "cosmos",
-          "data": {"method": "GET", "path": "/cosmos/auth/v1beta1/accounts/${apiRequestModel.requestData.address}"},
-        },
+        path: '/api/kira/accounts/${apiRequestModel.requestData.address}',
       );
       return response;
     } on DioException catch (dioException) {
@@ -83,14 +68,9 @@ class RemoteApiKiraRepository implements IApiKiraRepository {
   @override
   Future<Response<T>> fetchQueryBalance<T>(ApiRequestModel<QueryBalanceReq> apiRequestModel) async {
     try {
-      final Response<T> response = await _httpClientManager.post<T>(
+      final Response<T> response = await _httpClientManager.get<T>(
         networkUri: apiRequestModel.networkUri,
-        path: '', // TODO: remove this, refactor the manager for proxy
-        options: Options(headers: {'Content-Type': 'application/json'}),
-        body: {
-          "method": "cosmos",
-          "data": {"method": "GET", "path": "/cosmos/bank/v1beta1/balances/${apiRequestModel.requestData.address}"},
-        },
+        path: '/api/kira/balances/${apiRequestModel.requestData.address}',
       );
       return response;
     } on DioException catch (dioException) {
@@ -104,14 +84,10 @@ class RemoteApiKiraRepository implements IApiKiraRepository {
   @override
   Future<Response<T>> fetchQueryExecutionFee<T>(ApiRequestModel<QueryExecutionFeeRequest> apiRequestModel) async {
     try {
-      final Response<T> response = await _httpClientManager.post<T>(
+      final Response<T> response = await _httpClientManager.get<T>(
         networkUri: apiRequestModel.networkUri,
-        path: '', // TODO: remove this, refactor the manager for proxy
-        options: Options(headers: {'Content-Type': 'application/json'}),
-        body: {
-          "method": "cosmos",
-          "data": {"method": "POST", "path": "/kira/gov/execution_fee"},
-        },
+        path: '/api/kira/gov/execution_fee',
+        queryParameters: apiRequestModel.requestData.toJson(),
       );
       return response;
     } on DioException catch (dioException) {
@@ -125,14 +101,10 @@ class RemoteApiKiraRepository implements IApiKiraRepository {
   @override
   Future<Response<T>> fetchQueryKiraTokensAliases<T>(ApiRequestModel<QueryKiraTokensAliasesReq> apiRequestModel) async {
     try {
-      final Response<T> response = await _httpClientManager.post<T>(
+      final Response<T> response = await _httpClientManager.get<T>(
         networkUri: apiRequestModel.networkUri,
-        path: '', // TODO: remove this, refactor the manager for proxy
-        options: Options(headers: {'Content-Type': 'application/json'}),
-        body: {
-          "method": "cosmos",
-          "data": {"method": "GET", "path": "/kira/tokens/aliases"},
-        },
+        path: '/api/kira/tokens/aliases',
+        queryParameters: apiRequestModel.requestData.queryParameters,
       );
       return response;
     } on DioException catch (dioException) {
@@ -146,14 +118,9 @@ class RemoteApiKiraRepository implements IApiKiraRepository {
   @override
   Future<Response<T>> fetchQueryNetworkProperties<T>(ApiRequestModel<void> apiRequestModel) async {
     try {
-      final Response<T> response = await _httpClientManager.post<T>(
+      final Response<T> response = await _httpClientManager.get<T>(
         networkUri: apiRequestModel.networkUri,
-        path: '', // TODO: remove this, refactor the manager for proxy
-        options: Options(headers: {'Content-Type': 'application/json'}),
-        body: {
-          "method": "cosmos",
-          "data": {"method": "GET", "path": "/kira/gov/network_properties"},
-        },
+        path: '/api/kira/gov/network_properties',
       );
       return response;
     } on DioException catch (dioException) {

@@ -13,7 +13,7 @@ class QueryTransactionsResp extends Equatable {
           (json['transactions'] as List<dynamic>? ?? <dynamic>[])
               .map((dynamic e) => Transaction.fromJson(e as Map<String, dynamic>))
               .toList(),
-      totalCount: json['total_count'] as int,
+      totalCount: json['total_count'] as int? ?? 0,
     );
   }
 

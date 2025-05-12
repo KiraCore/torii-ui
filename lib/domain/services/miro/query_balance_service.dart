@@ -47,18 +47,17 @@ class QueryBalanceService {
     );
 
     try {
-      QueryBalanceResp queryBalanceResp = QueryBalanceResp.fromJson(response.data as Map<String, dynamic>);
+      QueryBalanceResp queryBalanceResp = QueryBalanceResp.fromJson(response.data as List<dynamic>);
       List<TokenAmountModel> balanceList = await _buildTokenAmountModels(queryBalanceResp);
 
-      // TODO: interxHeaders
+      // TODO: interx headers
       // InterxHeaders interxHeaders = InterxHeaders.fromHeaders(response.headers);
 
       return PageData<TokenAmountModel>(
         listItems: balanceList,
         isLastPage: balanceList.length < queryBalanceReq.limit!,
-        // TODO: interxHeaders: blockDateTime from a separate request
-        blockDateTime: DateTime.now(),
-        cacheExpirationDateTime: DateTime.now(),
+        blockDateTime: DateTime.now(), //interxHeaders.blockDateTime,
+        cacheExpirationDateTime: DateTime.now(), //interxHeaders.cacheExpirationDateTime,
       );
     } catch (e) {
       getIt<Logger>().e('QueryBalanceService: Cannot parse getTokenAmountModelList() for URI $networkUri $e');

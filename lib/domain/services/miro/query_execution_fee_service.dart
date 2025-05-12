@@ -40,7 +40,7 @@ class QueryExecutionFeeService {
       return feeTokenAmountModel;
     } catch (_) {
       getIt<Logger>().e('Fee for $messageName transaction type is not set. Fetching default fee');
+      return _queryNetworkPropertiesService.getMinTxFee();
     }
-    return _queryNetworkPropertiesService.getMinTxFee();
   }
 }

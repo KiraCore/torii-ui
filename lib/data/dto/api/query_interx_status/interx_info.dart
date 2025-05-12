@@ -39,7 +39,7 @@ class InterxInfo extends Equatable {
     moniker: json['moniker'] as String,
     node: Node.fromJson(json['node'] as Map<String, dynamic>),
     pubKey: PubKey.fromJson(json['pub_key'] as Map<String, dynamic>),
-    version: json['version'] as String,
+    version: json['version'] as String? ?? '0', // TODO: it is required !!! tell to backend team
     faucetAddress: json['faucet_addr'] as String?,
   );
 

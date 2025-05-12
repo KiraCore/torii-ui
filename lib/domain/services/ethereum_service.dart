@@ -156,12 +156,15 @@ class EthereumService {
       getIt<Logger>().e('MetaMask is not connected');
       return null;
     }
-
+    getIt<Logger>().d(
+      'Exporting tokens with passphrase: $passphrase kiraAddress: $kiraAddress ukexAmount: $ukexAmount',
+    );
     try {
       final tx = await contract.send('exportTokens', [
-        kiraAddress, //'kira143q8vxpvuykt9pq50e6hng9s38vmy844n8k9wx', //(await requestAccount())!.first,
+        kiraAddress, //'kira143q8vxpvuykt9pq50e6hng9s38vmy844n8k9wx',
         Sha256.encrypt(passphrase), //'8a8620565a42cfb1acf8d6b9b84d6179fa18050c6fcb305af7dad777804fa047',
-        ukexAmount.toBigInt(), // Amount in Wei
+        // TODO: correct amount in wKEX
+        (ukexAmount / Decimal.fromInt(1000000000000000000)).toBigInt(), // Amount in Wei
       ]);
       getIt<Logger>().d('Transaction hash: ${tx.hash}');
       return tx;

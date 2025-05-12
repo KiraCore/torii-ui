@@ -42,15 +42,14 @@ class ToriiLogService {
       List<TxListItemModel> txListItemModelList =
           queryTransactionsResp.transactions.map(TxListItemModel.fromDto).toList();
 
-      // TODO: interxHeaders
+      // TODO: interx headers
       // InterxHeaders interxHeaders = InterxHeaders.fromHeaders(response.headers);
 
       return PageData<TxListItemModel>(
         listItems: txListItemModelList,
         isLastPage: txListItemModelList.length < queryTransactionsReq.limit!,
-        // TODO: interxHeaders
-        blockDateTime: DateTime.now(),
-        cacheExpirationDateTime: DateTime.now(),
+        blockDateTime: DateTime.now(), //interxHeaders.blockDateTime,
+        cacheExpirationDateTime: DateTime.now(), //interxHeaders.cacheExpirationDateTime,
       );
     } catch (e) {
       getIt<Logger>().e('ToriiLogService: Cannot parse fetchTransactionsPerAccount() for URI $networkUri $e');

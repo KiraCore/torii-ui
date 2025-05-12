@@ -24,17 +24,20 @@ class QueryNetworkPropertiesService {
     if (networkUri == null) {
       throw Exception('Network URI is null');
     }
-    Response<dynamic> response = await _apiKiraRepository.fetchQueryNetworkProperties<dynamic>(
-      ApiRequestModel<void>(networkUri: networkUri, requestData: null),
-    );
 
     try {
+      Response<dynamic> response = await _apiKiraRepository.fetchQueryNetworkProperties<dynamic>(
+        ApiRequestModel<void>(networkUri: networkUri, requestData: null),
+      );
+
       QueryNetworkPropertiesResp queryNetworkPropertiesResp = QueryNetworkPropertiesResp.fromJson(
         response.data as Map<String, dynamic>,
       );
       return NetworkPropertiesModel.fromDto(queryNetworkPropertiesResp.properties);
     } catch (e) {
-      getIt<Logger>().e('QueryNetworkPropertiesService: Cannot parse getNetworkProperties() for URI $networkUri $e');
+      getIt<Logger>().e(
+        'QueryNetworkPropertiesService: Cannot fetch/parse getNetworkProperties() for URI $networkUri $e',
+      );
       rethrow;
     }
   }

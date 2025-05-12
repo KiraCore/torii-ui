@@ -6,6 +6,8 @@ import 'package:injectable/injectable.dart';
 import 'package:torii_client/data/dto/api/query_transactions/request/query_transactions_req.dart';
 import 'package:torii_client/data/dto/api_request_model.dart';
 import 'package:torii_client/domain/exports.dart';
+import 'package:torii_client/domain/models/page_data.dart';
+import 'package:torii_client/domain/models/tokens/list/tx_list_item_model.dart';
 import 'package:torii_client/domain/models/transaction/signed_transaction_model.dart';
 import 'package:torii_client/domain/repositories/api_torii_repository.dart';
 import 'package:torii_client/domain/services/torii_log_service.dart';
@@ -29,25 +31,30 @@ class TransferClaimCubit extends Cubit<TransferClaimState> {
 
   /// If [msgSendFormModel] is null, we need to check pending txs for the recipient
   void init({required SignedTxModel? signedTx, required MsgSendFormModel? msgSendFormModel}) async {
-    try {
-      final pageData = await _toriiLogService.fetchTransactionsPerAccount(
-        '0xb83DF76e62980BDb0E324FC9Ce3e7bAF6309E7b5', //msgSendFormModel!.recipientWalletAddress!.address,
-      );
-    } catch (e) {
-      getIt<Logger>().e('TransferClaimCubit: Cannot parse init() $e');
-      rethrow;
-    }
-
+    emit(TransferClaimState(signedTx: signedTx, msgSendFormModel: msgSendFormModel, isLoading: true));
+    return;
+    await Future.delayed(const Duration(seconds: 1));
     if (msgSendFormModel == null) {
       // TODO: check pending txs from torii tag
       emit(TransferClaimState(signedTx: signedTx, msgSendFormModel: msgSendFormModel, navigateToInput: true));
       return;
     }
+    try {
+      // TODO: check pending txs from torii tag
+      final pageData = await _toriiLogService.fetchTransactionsPerAccount(
+        msgSendFormModel.recipientWalletAddress!.address,
+      );
+    } catch (e) {
+      getIt<Logger>().e('TransferClaimCubit: Cannot parse init() $e');
+      emit(TransferClaimState(signedTx: signedTx, msgSendFormModel: msgSendFormModel, isError: true));
+      return;
+    }
+
     final recipient = msgSendFormModel.recipientWalletAddress!.address;
     if (_sessionCubit.state.kiraWallet?.address.address != recipient &&
         (_sessionCubit.state.ethereumWallet?.address.address != recipient)) {
       // TODO: show message
-      emit(TransferClaimState(signedTx: signedTx, msgSendFormModel: msgSendFormModel, navigateToInput: true));
+      emit(TransferClaimState(signedTx: signedTx, msgSendFormModel: msgSendFormModel, isError: true));
       return;
     }
 
@@ -81,7 +88,6 @@ class TransferClaimCubit extends Cubit<TransferClaimState> {
     }
   }
 
-// todo claim 123 and hash
   Future<void> claim({required String passphrase}) async {
     if (!state.isReadyToClaim || state.isClaiming) {
       return;

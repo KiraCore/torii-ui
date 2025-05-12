@@ -1,11 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/presentation/transfer/claim/cubit/transfer_claim_cubit.dart';
 import 'package:torii_client/presentation/transfer/input/msg_send_form/msg_send_form_preview.dart';
 import 'package:torii_client/presentation/transfer/send/tx_dialog.dart';
 import 'package:torii_client/presentation/transfer/widgets/request_passphrase_dialog.dart';
-import 'package:torii_client/presentation/widgets/buttons/kira_elevated_button.dart';
 import 'package:torii_client/presentation/widgets/exports.dart';
 import 'package:torii_client/utils/exports.dart';
 import 'package:torii_client/utils/extensions/int_extension.dart';
@@ -15,6 +13,12 @@ class ClaimProgressDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // TODO: temp way, fix this
+    if (context.read<TransferClaimCubit>().state.navigateToInput) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        router.replace(const TransferInputRoute().location);
+      });
+    }
     final theme = Theme.of(context).textTheme;
     return BlocConsumer<TransferClaimCubit, TransferClaimState>(
       listener: (context, state) {
@@ -22,16 +26,33 @@ class ClaimProgressDialog extends StatelessWidget {
           router.replace(const TransferInputRoute().location);
         }
       },
-      buildWhen:
-          (previous, current) =>
-              previous.isReadyToClaim != current.isReadyToClaim ||
-              previous.isClaiming != current.isClaiming ||
-              previous.msgSendFormModel != current.msgSendFormModel ||
-              previous.signedTx != current.signedTx ||
-              previous.navigateToInput != current.navigateToInput,
       builder: (context, state) {
+        if (state.isLoading) {
+          return Padding(padding: const EdgeInsets.only(top: 150), child: const CenterLoadSpinner());
+        }
         if (state.msgSendFormModel == null) {
-          return const SizedBox.shrink();
+          return Column(
+            children: [
+              const SizedBox(height: 100),
+              Text(
+                'There was a processing error.\nPlease try again lateror return to home and submit a new transaction.',
+                style: theme.bodyMedium,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 30),
+              KiraElevatedButton(
+                onPressed:
+                    () => context.read<TransferClaimCubit>().init(
+                      signedTx: state.signedTx,
+                      msgSendFormModel: state.msgSendFormModel,
+                    ),
+                title: 'Retry',
+                width: 300,
+              ),
+              const SizedBox(height: 10),
+              KiraOutlinedButton(onPressed: () => router.pop(), width: 300, title: 'Return to home'),
+            ],
+          );
         }
         return TxDialog(
           suffixWidget: null,

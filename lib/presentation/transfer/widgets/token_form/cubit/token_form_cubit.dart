@@ -121,14 +121,15 @@ class TokenFormCubit extends Cubit<TokenFormState> {
         QueryBalanceReq(address: state.walletAddress!.address, offset: 0, limit: 500),
       );
       List<TokenAmountModel> balanceList = balanceData.listItems;
-
+      getIt<Logger>().i('TokenFormCubit: _initWithFirstBalance() $balanceList');
       // if (filterOption != null) {
       //   balanceList = balanceList.where(filterOption.filterComparator).toList();
       // }
 
       TokenAmountModel initialtokenAmountModel = balanceList.first;
       updateBalance(initialtokenAmountModel);
-    } catch (_) {
+    } catch (e) {
+      getIt<Logger>().e('TokenFormCubit: _initWithFirstBalance() $e');
       emit(state.copyWith(errorBool: true));
     }
   }

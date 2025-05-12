@@ -27,12 +27,12 @@ class QueryAccountService {
       );
 
       QueryAccountResp queryAccountResp = QueryAccountResp.fromJson(response.data as Map<String, dynamic>);
-      // TODO: interxHeaders
+      // TODO: interx headers
       // InterxHeaders interxHeaders = InterxHeaders.fromHeaders(response.headers);
 
       TxRemoteInfoModel txRemoteInfoModel = TxRemoteInfoModel(
         accountNumber: queryAccountResp.accountNumber,
-        chainId: 'testnet-1', // TODO: interxHeaders.chainId !!!
+        chainId: 'testnet-1', //interxHeaders.chainId,
         sequence: queryAccountResp.sequence,
       );
       return txRemoteInfoModel;

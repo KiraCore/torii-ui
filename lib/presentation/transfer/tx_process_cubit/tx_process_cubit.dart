@@ -49,12 +49,7 @@ class TxProcessCubit<T extends AMsgFormModel> extends Cubit<ATxProcessState> {
           emit(const TxProcessErrorState(accountErrorBool: true));
           return;
         }
-        // TODO: !!!! fees
-        TokenAmountModel feeTokenAmountModel = TokenAmountModel(
-          defaultDenominationAmount: Decimal.parse('100'),
-          tokenAliasModel: TokenAliasModel.wkex(),
-        );
-        //todo !!!! await _queryExecutionFeeService.getExecutionFeeForMessage(msgTypeName);
+        TokenAmountModel feeTokenAmountModel = await _queryExecutionFeeService.getExecutionFeeForMessage(msgTypeName);
         NetworkPropertiesModel networkPropertiesModel = await _queryNetworkPropertiesService.getNetworkProperties();
         TxProcessLoadedState txProcessLoadedState = TxProcessLoadedState(
           feeTokenAmountModel: feeTokenAmountModel,

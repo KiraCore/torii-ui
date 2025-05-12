@@ -6,11 +6,9 @@ class QueryBalanceResp extends Equatable {
 
   const QueryBalanceResp({required this.balances});
 
-  factory QueryBalanceResp.fromJson(Map<String, dynamic> json) {
-    List<dynamic> balancesList = json['balances'] != null ? json['balances'] as List<dynamic> : List<dynamic>.empty();
-
+  factory QueryBalanceResp.fromJson(List<dynamic> balances) {
     return QueryBalanceResp(
-      balances: balancesList.map((dynamic e) => Balance.fromJson(e as Map<String, dynamic>)).toList(),
+      balances: balances.map((dynamic e) => Balance.fromJson(e as Map<String, dynamic>)).toList(),
     );
   }
 
