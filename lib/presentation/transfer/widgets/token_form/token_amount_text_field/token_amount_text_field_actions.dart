@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/domain/models/tokens/token_amount_model.dart';
+import 'package:torii_client/domain/models/tokens/token_denomination_model.dart';
 import 'package:torii_client/presentation/transfer/widgets/token_form/cubit/token_form_cubit.dart';
 import 'package:torii_client/presentation/transfer/widgets/token_form/cubit/token_form_state.dart';
 import 'package:torii_client/utils/exports.dart';
@@ -25,16 +26,25 @@ class _TokenAmountTextFieldActions extends State<TokenAmountTextFieldActions> {
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
-    TokenAmountModel availableTokenAmountModel =
-        widget.tokenFormState.balance! - widget.tokenFormState.feeTokenAmountModel;
-    String availableAmountText =
-        availableTokenAmountModel.getAmountInDenomination(widget.tokenFormState.tokenDenominationModel!).toString();
+    // TODO: refactor available amount ?? why did we need to extract the fees from the balance ????????
+    TokenAmountModel? availableTokenAmount =
+        widget.tokenFormState.balance; // - widget.tokenFormState.feeTokenAmountModel;
+    TokenDenominationModel? tokenDenomination = widget.tokenFormState.tokenDenominationModel;
+    String availableAmountText = '';
+    if (availableTokenAmount != null && tokenDenomination != null) {
+      availableAmountText = S
+          .of(context)
+          .txAvailableBalances(
+            availableTokenAmount.getAmountInDenomination(tokenDenomination).toString(),
+            tokenDenomination.name,
+          );
+    }
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         Expanded(
           child: Text(
-            S.of(context).txAvailableBalances(availableAmountText, widget.tokenFormState.tokenDenominationModel!.name),
+            availableAmountText,
             style: textTheme.bodySmall!.copyWith(
               color: widget.hasError ? DesignColors.redStatus1 : DesignColors.white2,
             ),

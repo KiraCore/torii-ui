@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:torii_client/presentation/widgets/loading_container.dart';
+import 'package:torii_client/presentation/widgets/loading/center_load_spinner.dart';
 import 'package:torii_client/utils/exports.dart';
 
 class TxDialogLoading extends StatelessWidget {
@@ -14,7 +14,7 @@ class TxDialogLoading extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          const LoadingContainer(),
+          const CenterLoadSpinner(),
           const SizedBox(height: 20),
           Text(S.of(context).txFetchingRemoteData, style: textTheme.bodyLarge!.copyWith(color: DesignColors.white1)),
         ],

@@ -6,6 +6,7 @@ import 'package:torii_client/presentation/network/network_list/network_list/netw
 import 'package:torii_client/presentation/network/network_list/network_list/states/network_list_loaded_state.dart';
 import 'package:torii_client/presentation/network/widgets/network_list_tile.dart';
 import 'package:torii_client/presentation/widgets/exports.dart';
+import 'package:torii_client/presentation/widgets/loading/center_load_spinner.dart';
 import 'package:torii_client/utils/exports.dart';
 import 'package:torii_client/utils/network/network_utils.dart';
 import 'package:torii_client/utils/network/status/a_network_status_model.dart';
@@ -51,7 +52,7 @@ class NetworkList extends StatelessWidget {
             },
           );
         } else {
-          return const LoadingContainer();
+          return const CenterLoadSpinner();
         }
       },
     );

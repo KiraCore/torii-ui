@@ -9,6 +9,7 @@ import 'package:torii_client/presentation/transfer/widgets/token_form/token_amou
 import 'package:torii_client/presentation/transfer/widgets/token_form/token_available_amount.dart';
 import 'package:torii_client/presentation/transfer/widgets/token_form/token_denomination_list.dart';
 import 'package:torii_client/presentation/widgets/exports.dart';
+import 'package:torii_client/presentation/widgets/loading/shimmer.dart';
 import 'package:torii_client/utils/exports.dart';
 
 typedef ValidateCallback = String? Function(TokenAmountModel?);
@@ -86,11 +87,6 @@ class _TokenForm extends State<TokenForm> {
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
-    Widget shimmerWidget = const LoadingContainer(
-      height: 60,
-      circularBorderRadius: 8,
-      boxConstraints: BoxConstraints(minWidth: 100),
-    );
 
     return BlocProvider<TokenFormCubit>.value(
       value: tokenFormCubit,
@@ -107,33 +103,32 @@ class _TokenForm extends State<TokenForm> {
                 children: <Widget>[
                   Row(
                     children: [
-                      if (tokenFormState.loadingBool) ...<Widget>[
-                        Expanded(child: shimmerWidget),
-                        // TODO: dropdown
-                        // const SizedBox(width: 16),
-                        // Expanded(child: shimmerWidget),
-                      ] else ...<Widget>[
-                        Expanded(
-                          child: TokenAmountTextField(
-                            label: widget.label,
-                            errorExistsBool: formFieldState.hasError,
-                            disabledBool: widget.walletAddress == null,
-                            textEditingController: tokenFormCubit.amountTextEditingController,
-                            selectedTokenDenomination: tokenFormState.tokenDenominationModel,
-                            tokenDenominations:
-                                tokenFormState.tokenAmountModel?.tokenAliasModel.tokenDenominations ??
-                                <TokenDenominationModel>[],
-                            tokenFormState: tokenFormState,
+                      Expanded(
+                        child: Shimmer(
+                          child: ShimmerLoading(
+                            isLoading: tokenFormState.loadingBool,
+                            child: TokenAmountTextField(
+                              label: widget.label,
+                              errorExistsBool: formFieldState.hasError,
+                              disabledBool: widget.walletAddress == null,
+                              textEditingController: tokenFormCubit.amountTextEditingController,
+                              selectedTokenDenomination: tokenFormState.tokenDenominationModel,
+                              tokenDenominations:
+                                  tokenFormState.tokenAmountModel?.tokenAliasModel.tokenDenominations ??
+                                  <TokenDenominationModel>[],
+                              tokenFormState: tokenFormState,
+                            ),
                           ),
                         ),
-                        // TODO: dropdown
-                        // TokenDropdown(
-                        //   disabledBool: widget.selectableBool == false,
-                        //   defaultTokenAmountModel: tokenFormState.balance,
-                        //   // initialFilterOption: widget.initialFilterOption,
-                        //   walletAddress: widget.walletAddress,
-                        // ),
-                      ],
+                      ),
+                      // TODO: dropdown
+                      // TokenDropdown(
+                      //   disabledBool: widget.selectableBool == false,
+                      //   defaultTokenAmountModel: tokenFormState.balance,
+                      //   // initialFilterOption: widget.initialFilterOption,
+                      //   walletAddress: widget.walletAddress,
+                      // ),
+                      // ],
                     ],
                   ),
                   if (tokenFormState.errorBool) ...<Widget>[

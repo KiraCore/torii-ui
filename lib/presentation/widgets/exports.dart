@@ -33,11 +33,14 @@ export 'kira_toast/toast_container.dart';
 export 'kira_toast/toast_decoration.dart';
 export 'kira_toast/toast_type.dart';
 
+// Loading
+export 'loading/shimmer.dart';
+export 'loading/center_load_spinner.dart';
+
 // Individual Widgets
 export 'mouse_state_listener.dart';
 export 'text_link.dart';
 export 'kira_tab_bar.dart';
 export 'kira_tooltip.dart';
 export 'avatar/kira_identity_avatar.dart';
-export 'loading_container.dart';
 export 'avatar/jdenticon_gravatar.dart';

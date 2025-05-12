@@ -21,7 +21,7 @@ class _KiraIdentityAvatarState extends State<KiraIdentityAvatar> {
   @override
   Widget build(BuildContext context) {
     if (widget.loadingBool) {
-      return ClipOval(child: LoadingContainer(height: widget.size, width: widget.size));
+      return Shimmer(child: ClipOval(child: ShimmerLoading(isLoading: true, height: widget.size, width: widget.size)));
     } else if (widget.address == null) {
       return Container(
         height: widget.size,

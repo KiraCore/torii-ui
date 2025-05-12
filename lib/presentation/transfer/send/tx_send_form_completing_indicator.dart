@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:torii_client/presentation/widgets/loading_container.dart';
+import 'package:torii_client/presentation/widgets/loading/center_load_spinner.dart';
 import 'package:torii_client/utils/exports.dart';
 
 class TxSendFormCompletingIndicator extends StatelessWidget {
@@ -12,7 +12,7 @@ class TxSendFormCompletingIndicator extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        const LoadingContainer(),
+        const CenterLoadSpinner(),
         const SizedBox(width: 10),
         Text(S.of(context).txSigning, style: textTheme.bodySmall!.copyWith(color: DesignColors.white1)),
       ],
