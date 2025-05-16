@@ -6,7 +6,10 @@ extension GoRouterExtension on KiraGoRouter {
   void tryPop() => canPop() ? pop() : null;
 
   /// TODO: try to refactor. This thing is needed for now to explicitly create the URL CONTEXT with the existing ?rpc= inside the url.
-  /// Without that, it will be lost on the next .push() navigation
+  /// Without that, it will be lost on the next .push() navigation.
+  ///
+  /// The destination point may be different but it should be .go() / .replace(),
+  /// not .push(), as the first call after adding the rpc into the url.
   void createUrlContextWithRpcAtInit() => go(IntroRoute().location);
 
   String? get currentRouteLocation {
