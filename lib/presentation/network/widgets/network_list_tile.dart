@@ -65,7 +65,7 @@ class _NetworkListTile extends State<NetworkListTile> {
                   networkStatusModel: networkStatusModel,
                   arrowEnabledBool: widget.arrowEnabledBool,
                   onConnected: (networkStatusModel) {
-                    router.go(IntroRoute().location);
+                    router.createUrlContextWithRpcAtInit();
                   },
                 ),
               ),

@@ -5,6 +5,10 @@ import 'package:torii_client/utils/router/kira_go_router.dart';
 extension GoRouterExtension on KiraGoRouter {
   void tryPop() => canPop() ? pop() : null;
 
+  /// TODO: try to refactor. This thing is needed for now to explicitly create the URL CONTEXT with the existing ?rpc= inside the url.
+  /// Without that, it will be lost on the next .push() navigation
+  void createUrlContextWithRpcAtInit() => go(IntroRoute().location);
+
   String? get currentRouteLocation {
     try {
       return routerDelegate.currentConfiguration.last.matchedLocation;

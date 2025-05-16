@@ -10,6 +10,19 @@ class ShardsDao {
   final SharedPreferences _shards;
 
   static const _ethereumKey = 'signature_';
+  static const _networkListKey = 'network_list';
+
+  List<String> readNetworkList() {
+    final result = _shards.getStringList(_networkListKey);
+    if (result == null) {
+      return [];
+    }
+    return result;
+  }
+
+  Future<void> writeNetworkList(List<String> networkList) async {
+    await _shards.setStringList(_networkListKey, networkList);
+  }
 
   Map<String, dynamic>? readEthSignatureResult(String ethereumAddressKey) {
     final result = _shards.getString('$_ethereumKey${ethereumAddressKey.toLowerCase()}');

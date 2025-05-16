@@ -54,7 +54,6 @@ class IntroRoute extends GoRouteData {
   @override
   FutureOr<String?> redirect(BuildContext context, GoRouterState state) async {
     if (context.read<SessionCubit>().state.isLoggedIn) {
-      await Future.delayed(Duration.zero);
       return TransferRoute.initialRoute;
     }
     return super.redirect(context, state);

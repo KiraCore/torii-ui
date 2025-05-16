@@ -32,6 +32,7 @@ class NetworkModuleBloc extends Bloc<ANetworkModuleEvent, NetworkModuleState> {
   final NetworkCustomSectionCubit _networkCustomSectionCubit;
   final NetworkModuleService _networkModuleService;
   final RpcBrowserUrlController _rpcBrowserUrlController;
+  final KeyValueRepository _keyValueRepository;
 
   late Timer _timer;
   TokenDefaultDenomModel tokenDefaultDenomModel = TokenDefaultDenomModel.empty();
@@ -41,6 +42,7 @@ class NetworkModuleBloc extends Bloc<ANetworkModuleEvent, NetworkModuleState> {
     this._networkListCubit,
     this._networkCustomSectionCubit,
     this._rpcBrowserUrlController,
+    this._keyValueRepository,
     this._appConfig,
   ) : super(NetworkModuleState.disconnected()) {
     on<NetworkModuleInitEvent>(_mapInitEventToState);
@@ -48,7 +50,7 @@ class NetworkModuleBloc extends Bloc<ANetworkModuleEvent, NetworkModuleState> {
     on<NetworkModuleAutoConnectEvent>(_mapAutoConnectEventToState);
     on<NetworkModuleConnectEvent>(_mapConnectEventToState);
     on<NetworkModuleDisconnectEvent>(_mapDisconnectEventToState);
-    if (_rpcBrowserUrlController.getRpcAddress() != null) {
+    if (_rpcBrowserUrlController.getRpcAddress() != null || _appConfig.getDefaultNetworkUnknownModel() != null) {
       add(NetworkModuleInitEvent());
     }
   }
@@ -115,7 +117,7 @@ class NetworkModuleBloc extends Bloc<ANetworkModuleEvent, NetworkModuleState> {
     if (networkUnchangedBool) {
       _rpcBrowserUrlController.setRpcAddress(networkStatusModel);
       _networkCustomSectionCubit.updateNetworks(networkStatusModel);
-      emit(NetworkModuleState.connected(networkStatusModel));
+      emit(NetworkModuleState.autoConnected(networkStatusModel));
       _refreshTokenDefaultDenomModel(networkStatusModel);
     } else {
       _networkCustomSectionCubit.updateNetworks();
@@ -129,6 +131,9 @@ class NetworkModuleBloc extends Bloc<ANetworkModuleEvent, NetworkModuleState> {
     ANetworkOnlineModel networkOnlineModel = networkModuleConnectEvent.networkOnlineModel;
     _rpcBrowserUrlController.setRpcAddress(networkOnlineModel);
     _networkCustomSectionCubit.updateNetworks(networkOnlineModel);
+    if (networkOnlineModel.uri != null) {
+      await _keyValueRepository.addNetworkToList(networkOnlineModel.uri!);
+    }
     emit(NetworkModuleState.connected(networkOnlineModel));
     _switchTokenDefaultDenomModel(networkOnlineModel);
     await _checkIfSignOutNeeded();

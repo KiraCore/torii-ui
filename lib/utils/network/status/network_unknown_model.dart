@@ -20,6 +20,14 @@ class NetworkUnknownModel extends ANetworkStatusModel {
     );
   }
 
+  factory NetworkUnknownModel.fromUri(Uri uri) {
+    return NetworkUnknownModel(
+      connectionStatusType: ConnectionStatusType.disconnected,
+      lastRefreshDateTime: DateTime.now(),
+      uri: uri,
+    );
+  }
+
   factory NetworkUnknownModel.fromNetworkStatusModel(ANetworkStatusModel networkStatusModel) {
     return NetworkUnknownModel(
       connectionStatusType: networkStatusModel.connectionStatusType,

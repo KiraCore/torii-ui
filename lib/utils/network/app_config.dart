@@ -1,5 +1,6 @@
 // todo: refactor
 import 'package:injectable/injectable.dart';
+import 'package:torii_client/domain/repositories/key_value_repository.dart';
 import 'package:torii_client/utils/browser/rpc_browser_url_controller.dart';
 import 'package:torii_client/utils/exports.dart';
 import 'package:torii_client/utils/network/network_utils.dart';
@@ -7,6 +8,7 @@ import 'package:torii_client/utils/network/status/network_unknown_model.dart';
 
 @singleton
 class AppConfig {
+  final KeyValueRepository _keyValueRepository;
   final Uri proxyServerUri;
   final int bulkSinglePageSize;
   final Duration defaultApiCacheMaxAge;
@@ -27,7 +29,8 @@ class AppConfig {
     required this.supportedInterxVersions,
     required this.rpcBrowserUrlController,
     required int refreshIntervalSeconds,
-  }) : _refreshIntervalSeconds = refreshIntervalSeconds;
+  }) : _refreshIntervalSeconds = refreshIntervalSeconds,
+       _keyValueRepository = getIt<KeyValueRepository>();
 
   @factoryMethod
   factory AppConfig.buildDefaultConfig(RpcBrowserUrlController rpcBrowserUrlController) {
@@ -39,6 +42,7 @@ class AppConfig {
       loadingPageTimerDuration: const Duration(seconds: 4),
       supportedInterxVersions: <String>['v0.4.46', 'v0.4.48'],
       rpcBrowserUrlController: rpcBrowserUrlController,
+      // TODO: decrease refresh interval
       refreshIntervalSeconds: 6000,
     );
   }
@@ -49,11 +53,10 @@ class AppConfig {
 
   List<NetworkUnknownModel> get networkList => _networkList;
 
-  // void init({String proxyServerUrl = 'https://cors.kira.network', int refreshIntervalSeconds = 60}) {
-  //   _initProxyServerUri(proxyServerUrl);
-  //   _initIntervalSeconds(refreshIntervalSeconds);
-  //   // _initNetworkList(configJson['network_list']);
-  // }
+  @PostConstruct()
+  void init() {
+    _initNetworkList(_keyValueRepository.readNetworkList());
+  }
 
   NetworkUnknownModel findNetworkModelInConfig(NetworkUnknownModel networkUnknownModel) {
     List<NetworkUnknownModel> matchingNetworkUnknownModels =
@@ -94,29 +97,12 @@ class AppConfig {
     }
   }
 
-  // TODO: recover previously entered network list
-  // void _initNetworkList(dynamic networkListJson) {
-  //   _networkList = List<NetworkUnknownModel>.empty(growable: true);
-  //   if (networkListJson is List<dynamic>) {
-  //     for (dynamic networkListItem in networkListJson) {
-  //       try {
-  //         _networkList.add(NetworkUnknownModel.fromJson(networkListItem as Map<String, dynamic>));
-  //       } catch (_) {
-  //         getIt<Logger>().e('CONFIG: Cannot parse network list item from network_list_config.json: $networkListItem');
-  //       }
-  //     }
-  //   }
-
-  //   if (_networkList.isEmpty) {
-  //     _networkList.add(
-  //       NetworkUnknownModel(
-  //         connectionStatusType: ConnectionStatusType.disconnected,
-  //         uri: Uri.parse('https://testnet-rpc.kira.network'),
-  //         lastRefreshDateTime: DateTime.now(),
-  //       ),
-  //     );
-  //   }
-  // }
+  void _initNetworkList(List<Uri> networkListJson) {
+    _networkList = List<NetworkUnknownModel>.empty(growable: true);
+    for (Uri networkListItem in networkListJson) {
+      _networkList.add(NetworkUnknownModel.fromUri(networkListItem));
+    }
+  }
 
   NetworkUnknownModel? _getNetworkUnknownModelFromUrl() {
     String? networkAddress = rpcBrowserUrlController.getRpcAddress();
@@ -124,14 +110,10 @@ class AppConfig {
       return null;
     }
     Uri uri = NetworkUtils.parseUrlToInterxUri(networkAddress);
-    NetworkUnknownModel urlNetworkUnknownModel = NetworkUnknownModel(
-      uri: uri,
-      connectionStatusType: ConnectionStatusType.disconnected,
-      lastRefreshDateTime: DateTime.now(),
-    );
+    NetworkUnknownModel urlNetworkUnknownModel = NetworkUnknownModel.fromUri(uri);
     urlNetworkUnknownModel = findNetworkModelInConfig(urlNetworkUnknownModel);
     return urlNetworkUnknownModel;
   }
 }
 
-enum ConnectionStatusType { connecting, connected, disconnected, refreshing }
+enum ConnectionStatusType { connecting, autoConnected, connected, disconnected, refreshing }

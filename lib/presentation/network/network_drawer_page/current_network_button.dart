@@ -6,6 +6,7 @@ import 'package:torii_client/presentation/network/network_list/network_custom_se
 import 'package:torii_client/presentation/network/widgets/network_status_icon.dart';
 import 'package:torii_client/presentation/widgets/mouse_state_listener.dart';
 import 'package:torii_client/utils/exports.dart';
+import 'package:torii_client/utils/network/app_config.dart';
 import 'package:torii_client/utils/network/status/a_network_status_model.dart';
 
 class CurrentNetworkButton extends StatelessWidget {
@@ -16,8 +17,13 @@ class CurrentNetworkButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<NetworkModuleBloc, NetworkModuleState>(
+    return BlocConsumer<NetworkModuleBloc, NetworkModuleState>(
       bloc: getIt<NetworkModuleBloc>(),
+      listener: (_, NetworkModuleState networkModuleState) {
+        if (networkModuleState.networkStatusModel.connectionStatusType == ConnectionStatusType.autoConnected) {
+          router.createUrlContextWithRpcAtInit();
+        }
+      },
       builder: (_, NetworkModuleState networkModuleState) {
         ANetworkStatusModel networkStatusModel = networkModuleState.networkStatusModel;
 

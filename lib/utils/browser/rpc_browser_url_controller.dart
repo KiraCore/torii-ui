@@ -1,4 +1,3 @@
-
 import 'package:injectable/injectable.dart';
 import 'package:torii_client/utils/browser/browser_url_controller.dart';
 import 'package:torii_client/utils/network/status/a_network_status_model.dart';
@@ -41,10 +40,7 @@ class RpcBrowserUrlController {
       queryParameters.remove(rpcQueryParameterKey);
       return queryParameters;
     } else {
-      queryParameters = <String, dynamic>{
-        ...queryParameters,
-        rpcQueryParameterKey: networkStatusModel.uri.toString(),
-      };
+      queryParameters = <String, dynamic>{...queryParameters, rpcQueryParameterKey: networkStatusModel.uri.toString()};
       return queryParameters;
     }
   }

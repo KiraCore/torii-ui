@@ -9,6 +9,18 @@ class KeyValueRepository {
 
   final ShardsDao _shardsDao;
 
+  List<Uri> readNetworkList() {
+    return _shardsDao.readNetworkList().map((e) => Uri.parse(e)).toList();
+  }
+
+  Future<void> addNetworkToList(Uri network) async {
+    Set<String> networks = _shardsDao.readNetworkList().toSet();
+    if (!networks.contains(network.toString())) {
+      networks.add(network.toString());
+      await _shardsDao.writeNetworkList(networks.toList());
+    }
+  }
+
   EthereumSignatureDecodeResult? readEthSignatureResult(String ethereumAddress) {
     try {
       final result = _shardsDao.readEthSignatureResult(ethereumAddress);
