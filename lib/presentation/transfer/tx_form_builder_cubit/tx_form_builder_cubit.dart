@@ -1,13 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/domain/models/messages/a_tx_msg_model.dart';
+import 'package:torii_client/domain/models/messages/msg_send_model.dart';
 import 'package:torii_client/domain/models/tokens/a_msg_form_model.dart';
 import 'package:torii_client/domain/models/tokens/token_amount_model.dart';
 import 'package:torii_client/domain/models/transaction/tx_local_info_model.dart';
 import 'package:torii_client/domain/models/transaction/tx_remote_info_model.dart';
 import 'package:torii_client/domain/models/transaction/unsigned_tx_model.dart';
 import 'package:torii_client/domain/services/miro/query_account_service.dart';
-import 'package:torii_client/presentation/session/cubit/session_cubit.dart';
+import 'package:torii_client/presentation/global/session/cubit/session_cubit.dart';
 import 'package:torii_client/presentation/transfer/tx_form_builder_cubit/a_tx_form_builder_state.dart';
 import 'package:torii_client/presentation/transfer/tx_form_builder_cubit/states/tx_form_builder_downloading_state.dart';
 import 'package:torii_client/presentation/transfer/tx_form_builder_cubit/states/tx_form_builder_empty_state.dart';
@@ -49,7 +50,7 @@ class TxFormBuilderCubit extends Cubit<ATxFormBuilderState> {
   /// Method [msgFormController.buildTxMsgModel] may throw an [Exception] if cannot create [ATxMsgModel]
   /// The most common reason is when all required fields in form were not filled
   TxLocalInfoModel _buildTxLocalInfo({required String passphrase}) {
-    ATxMsgModel txMsgModel = msgFormModel.buildTxMsgModel(passphrase: passphrase);
+    MsgSendModel txMsgModel = msgFormModel.buildTxMsgModel(passphrase: passphrase) as MsgSendModel;
     String memo = msgFormModel.memo;
     TxLocalInfoModel txLocalInfoModel = TxLocalInfoModel(
       feeTokenAmountModel: feeTokenAmountModel,

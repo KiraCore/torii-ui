@@ -14,12 +14,10 @@ class ApiToriiRepository {
   final HttpClientManager _httpClientManager;
 
   Future<Response<T>> fetchTransactionsPerAccount<T>(ApiRequestModel<QueryTransactionsReq> apiRequestModel) async {
-    // TODO: connect to TORII with url given from user
-    final uri = Uri.parse(const String.fromEnvironment('TORII_LOG_URL')); //apiRequestModel.networkUri;
     try {
       // TODO: torii has no pagination here
       final Response<T> response = await _httpClientManager.post(
-        networkUri: uri,
+        networkUri: apiRequestModel.networkUri,
         path: '',
         options: Options(headers: {'Content-Type': 'application/json'}),
         body: {
@@ -30,7 +28,7 @@ class ApiToriiRepository {
       );
       return response;
     } on DioException catch (dioException) {
-      getIt<Logger>().e('cosmos error: $uri: ${dioException.message}');
+      getIt<Logger>().e('cosmos error: ${apiRequestModel.networkUri}: ${dioException.message}');
       rethrow;
     }
   }

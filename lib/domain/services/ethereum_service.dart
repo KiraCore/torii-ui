@@ -12,6 +12,7 @@ import 'package:injectable/injectable.dart';
 import 'package:pointycastle/digests/ripemd160.dart';
 import 'package:secp256k1/secp256k1.dart';
 import 'package:torii_client/domain/exports.dart';
+import 'package:torii_client/utils/ethereum/contract_utils.dart';
 import 'package:torii_client/utils/exports.dart';
 // import 'package:webthree/browser.dart' as three;
 // import 'dart:convert';
@@ -51,89 +52,16 @@ class EthereumService {
 
   bool get isSupported => ethereum != null;
 
-  Contract? _contract;
+  Contract? _bridgeContract;
+  Contract? _tokenContract;
 
-  Contract get contract =>
-      _contract ??= Contract(
-        '0x719CAe5e3d135364e5Ef5AAd386985D86A0E7813',
-        jsonEncode([
-          {
-            "inputs": [
-              {"internalType": "address", "name": "oracleAddress", "type": "address"},
-              {"internalType": "address", "name": "tokenAddress", "type": "address"},
-            ],
-            "stateMutability": "nonpayable",
-            "type": "constructor",
-          },
-          {
-            "anonymous": false,
-            "inputs": [
-              {"indexed": true, "internalType": "string", "name": "cyclAddres", "type": "string"},
-              {"indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256"},
-            ],
-            "name": "TokensExported",
-            "type": "event",
-          },
-          {
-            "anonymous": false,
-            "inputs": [
-              {"indexed": true, "internalType": "address", "name": "ethAddress", "type": "address"},
-              {"indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256"},
-            ],
-            "name": "TokensImported",
-            "type": "event",
-          },
-          {
-            "inputs": [
-              {"internalType": "string", "name": "passphrase", "type": "string"},
-              {"internalType": "address", "name": "sender", "type": "address"},
-            ],
-            "name": "computeHash",
-            "outputs": [
-              {"internalType": "string", "name": "", "type": "string"},
-            ],
-            "stateMutability": "pure",
-            "type": "function",
-          },
-          {
-            "inputs": [
-              {"internalType": "string", "name": "cyclAddress", "type": "string"},
-              {"internalType": "string", "name": "hash", "type": "string"},
-              {"internalType": "uint256", "name": "amount", "type": "uint256"},
-            ],
-            "name": "exportTokens",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function",
-          },
-          {
-            "inputs": [
-              {"internalType": "string", "name": "passphrase", "type": "string"},
-            ],
-            "name": "importTokens",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function",
-          },
-          {
-            "inputs": [],
-            "name": "oracle",
-            "outputs": [
-              {"internalType": "contract Oracle", "name": "", "type": "address"},
-            ],
-            "stateMutability": "view",
-            "type": "function",
-          },
-          {
-            "inputs": [],
-            "name": "token",
-            "outputs": [
-              {"internalType": "contract Token", "name": "", "type": "address"},
-            ],
-            "stateMutability": "view",
-            "type": "function",
-          },
-        ]),
+  Contract get tokenContract =>
+      _tokenContract ??= Contract(ContractUtils.tokenAddress, jsonEncode(ContractUtils.tokenAbi), provider!);
+
+  Contract get bridgeContract =>
+      _bridgeContract ??= Contract(
+        ContractUtils.bridgeAddress,
+        jsonEncode(ContractUtils.bridgeAbi),
         provider!.getSigner(),
       );
 
@@ -160,11 +88,11 @@ class EthereumService {
       'Exporting tokens with passphrase: $passphrase kiraAddress: $kiraAddress ukexAmount: $ukexAmount',
     );
     try {
-      final tx = await contract.send('exportTokens', [
+      final tx = await bridgeContract.send('exportTokens', [
         kiraAddress, //'kira143q8vxpvuykt9pq50e6hng9s38vmy844n8k9wx',
         Sha256.encrypt(passphrase), //'8a8620565a42cfb1acf8d6b9b84d6179fa18050c6fcb305af7dad777804fa047',
-        // TODO: correct amount in wKEX
-        (ukexAmount / Decimal.fromInt(1000000000000000000)).toBigInt(), // Amount in Wei
+        // TODO: correct amount in WKEX
+        (ukexAmount / Decimal.fromBigInt(BigInt.from(10).pow(18))).toBigInt(), // Amount in Wei
       ]);
       getIt<Logger>().d('Transaction hash: ${tx.hash}');
       return tx;
@@ -181,14 +109,12 @@ class EthereumService {
     }
 
     try {
-      final tx = await contract.send('importTokens', [
-        passphrase, //'kirakira11111',
-      ]);
+      final tx = await bridgeContract.send('importTokens', [passphrase]);
       getIt<Logger>().d('Transaction hash: ${tx.hash}');
       return tx;
     } catch (e) {
       getIt<Logger>().e('Error sending transaction: $e');
-      return null;
+      rethrow;
     }
   }
 
@@ -196,32 +122,6 @@ class EthereumService {
 
   Future<Decimal?> getBalance(String address) async {
     try {
-      //todo
-      return Decimal.fromBigInt(BigInt.from(1000000000000000000));
-      // First, get the token contract address
-      final tokenAddress = await contract.call<String>('token', []);
-
-      // Create a new contract for the token
-      final tokenContract = Contract(
-        tokenAddress,
-        // Standard ERC20 ABI for balanceOf function
-        jsonEncode([
-          {
-            "constant": true,
-            "inputs": [
-              {"name": "_owner", "type": "address"},
-            ],
-            "name": "balanceOf",
-            "outputs": [
-              {"name": "balance", "type": "uint256"},
-            ],
-            "type": "function",
-          },
-        ]),
-        provider!,
-      );
-
-      // Now call balanceOf on the token contract
       final balance = await tokenContract.call<dynamic>('balanceOf', [address]);
       getIt<Logger>().d('Balance: $balance');
       return balance == null ? null : Decimal.fromBigInt(BigInt.parse(balance.toString()));
@@ -291,8 +191,8 @@ class EthereumService {
   }
 
   Future<void> watchWkexAsset() async => ethereum?.walletWatchAssets(
-    address: contract.address,
-    symbol: 'wKEX',
+    address: ContractUtils.tokenAddress,
+    symbol: 'WKEX',
     decimals: 9,
     // image: 'https://kira.network/images/kira-logo.png',
   );

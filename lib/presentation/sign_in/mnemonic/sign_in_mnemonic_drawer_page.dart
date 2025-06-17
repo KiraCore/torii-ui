@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:torii_client/presentation/session/cubit/session_cubit.dart';
+import 'package:torii_client/presentation/global/session/cubit/session_cubit.dart';
 import 'package:torii_client/presentation/sign_in/mnemonic/grid/mnemonic_grid_cubit.dart';
 import 'package:torii_client/presentation/sign_in/mnemonic/widgets/mnemonic_grid/mnemonic_grid.dart';
 import 'package:torii_client/presentation/widgets/buttons/kira_elevated_button.dart';

@@ -13,7 +13,7 @@ import 'package:torii_client/presentation/network/bloc/events/network_module_ref
 import 'package:torii_client/presentation/network/network_list/network_custom_section/network_custom_section_cubit.dart';
 import 'package:torii_client/presentation/network/network_list/network_list/network_list_cubit.dart';
 import 'package:torii_client/presentation/network/bloc/network_module_state.dart';
-import 'package:torii_client/presentation/session/cubit/session_cubit.dart';
+import 'package:torii_client/presentation/global/session/cubit/session_cubit.dart';
 import 'package:torii_client/utils/browser/rpc_browser_url_controller.dart';
 import 'package:torii_client/utils/exports.dart';
 import 'package:torii_client/utils/network/app_config.dart';

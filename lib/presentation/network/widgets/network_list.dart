@@ -10,14 +10,12 @@ import 'package:torii_client/utils/network/network_utils.dart';
 import 'package:torii_client/utils/network/status/a_network_status_model.dart';
 
 class NetworkList extends StatelessWidget {
-  final bool arrowEnabledBool;
   final ValueChanged<ANetworkStatusModel>? onConnected;
   final ANetworkStatusModel? hiddenNetworkStatusModel;
   final Widget? emptyListWidget;
   final NetworkModuleState moduleState;
 
   const NetworkList({
-    required this.arrowEnabledBool,
     this.onConnected,
     this.hiddenNetworkStatusModel,
     this.emptyListWidget,
@@ -45,7 +43,6 @@ class NetworkList extends StatelessWidget {
               return NetworkListTile(
                 networkStatusModel: currentNetwork,
                 moduleState: moduleState,
-                arrowEnabledBool: arrowEnabledBool,
               );
             },
           );

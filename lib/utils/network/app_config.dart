@@ -117,3 +117,16 @@ class AppConfig {
 }
 
 enum ConnectionStatusType { connecting, autoConnected, connected, disconnected, refreshing }
+
+extension ConnectionStatusTypeExtension on ConnectionStatusType {
+  bool get isConnected =>
+      this == ConnectionStatusType.autoConnected ||
+      this == ConnectionStatusType.connected ||
+      this == ConnectionStatusType.refreshing;
+
+  bool get isDisconnected => this == ConnectionStatusType.disconnected;
+
+  bool get isRefreshing => this == ConnectionStatusType.refreshing;
+
+  bool get isConnecting => this == ConnectionStatusType.connecting;
+}

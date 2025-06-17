@@ -7,12 +7,10 @@ import 'package:torii_client/utils/exports.dart';
 import 'package:torii_client/utils/network/network_utils.dart';
 
 class NetworkCustomSectionContent extends StatefulWidget {
-  final bool arrowEnabledBool;
   final NetworkCustomSectionCubit networkCustomSectionCubit;
   final NetworkModuleState moduleState;
 
   const NetworkCustomSectionContent({
-    required this.arrowEnabledBool,
     required this.networkCustomSectionCubit,
     required this.moduleState,
     super.key,
@@ -48,13 +46,11 @@ class _NetworkCustomSectionContent extends State<NetworkCustomSectionContent> {
           NetworkListTile(
             networkStatusModel: widget.networkCustomSectionCubit.state.connectedNetworkStatusModel!,
             moduleState: widget.moduleState,
-            arrowEnabledBool: widget.arrowEnabledBool,
           ),
         ] else if (lastConnectedNetworkExistsBool) ...<Widget>[
           NetworkListTile(
             networkStatusModel: widget.networkCustomSectionCubit.state.lastConnectedNetworkStatusModel!,
             moduleState: widget.moduleState,
-            arrowEnabledBool: widget.arrowEnabledBool,
           ),
         ],
         if (checkedNetworkExistsBool) ...<Widget>[
@@ -66,7 +62,6 @@ class _NetworkCustomSectionContent extends State<NetworkCustomSectionContent> {
           NetworkListTile(
             networkStatusModel: widget.networkCustomSectionCubit.state.checkedNetworkStatusModel!,
             moduleState: widget.moduleState,
-            arrowEnabledBool: widget.arrowEnabledBool,
           ),
         ],
         const SizedBox(height: 16),

@@ -33,7 +33,7 @@ class DesignColors {
 
   static const Color avatar = Color(0xFF303430);
 
-  static const Color hyperlink = Color(0xFF4264F2);
+  static const Color hyperlink = Color.fromARGB(255, 105, 128, 220);
 
   static const Gradient primaryButtonGradient = LinearGradient(
     begin: Alignment.topRight,

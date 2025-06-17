@@ -8,4 +8,8 @@ class Sha256 {
     Digest digest = sha256.convert(bytes);
     return digest;
   }
+
+  static String encryptToString(String content) {
+    return encrypt(content).toString();
+  }
 }

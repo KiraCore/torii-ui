@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:torii_client/domain/exports.dart';
 
+// TODO: remove
 class PrefixedTokenAmountModel extends Equatable {
   final TokenAmountModel tokenAmountModel;
   final TokenAmountPrefixType tokenAmountPrefixType;

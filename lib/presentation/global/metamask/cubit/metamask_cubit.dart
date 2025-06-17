@@ -7,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_web3/flutter_web3.dart' hide Wallet;
 import 'package:injectable/injectable.dart';
 import 'package:torii_client/domain/exports.dart';
-import 'package:torii_client/presentation/session/cubit/session_cubit.dart';
+import 'package:torii_client/presentation/global/session/cubit/session_cubit.dart';
 import 'package:torii_client/utils/exports.dart';
 
 part 'metamask_state.dart';
@@ -83,7 +83,6 @@ class MetamaskCubit extends Cubit<MetamaskState> {
     if (!_keyValueRepository.wasWkexAssetAdded()) {
       await _addKiraToken();
     }
-
     if (!_useCacheKiraFromEth || _keyValueRepository.readEthSignatureResult(accounts!.first) != null) {
       _signIn(address: accounts!.first, chainId: chainId);
     } else {

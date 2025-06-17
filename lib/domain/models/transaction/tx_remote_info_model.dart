@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+// TODO: remove
 class TxRemoteInfoModel extends Equatable {
   final String accountNumber;
   final String chainId;

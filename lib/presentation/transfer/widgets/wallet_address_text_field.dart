@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/domain/exports.dart';
-import 'package:torii_client/presentation/session/cubit/session_cubit.dart';
+import 'package:torii_client/presentation/global/session/cubit/session_cubit.dart';
 import 'package:torii_client/presentation/transfer/widgets/tx_input_wrapper.dart';
 import 'package:torii_client/presentation/transfer/widgets/tx_text_field.dart';
 import 'package:torii_client/presentation/widgets/avatar/kira_identity_avatar.dart';

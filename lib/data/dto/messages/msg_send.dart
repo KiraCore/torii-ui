@@ -16,9 +16,10 @@ class MsgSend extends ATxMsg {
 
   factory MsgSend.fromData(Map<String, dynamic> data) {
     return MsgSend(
-      fromAddress: data['from_address'] as String,
-      toAddress: data['to_address'] as String,
-      passphrase: data['passphrase'] as String,
+      fromAddress: data['from'] as String,
+      toAddress: data['to'] as String,
+      // TODO: make passphrase nullable for transactionList
+      passphrase: data['passphrase'] as String? ?? '',
       amount:
           (data['amount'] as List<dynamic>)
               .map((dynamic e) => CosmosCoin.fromProtoJson(e as Map<String, dynamic>))
@@ -31,7 +32,7 @@ class MsgSend extends ATxMsg {
     return ProtobufEncoder.encode(<int, AProtobufField>{
       1: ProtobufBytes(Bech32.decode(fromAddress).data),
       2: ProtobufString(toAddress),
-      3: ProtobufString(passphrase),
+      3: ProtobufString(Sha256.encryptToString(passphrase)),
       4: ProtobufList(amount),
     });
   }
@@ -42,7 +43,7 @@ class MsgSend extends ATxMsg {
       '@type': typeUrl,
       'from_address': fromAddress,
       'to_address': toAddress,
-      'passphrase': passphrase,
+      'passphrase': Sha256.encryptToString(passphrase),
       'amount': amount.map((CosmosCoin coin) => coin.toProtoJson()).toList(),
     };
   }

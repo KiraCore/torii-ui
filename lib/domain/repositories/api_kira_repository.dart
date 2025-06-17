@@ -38,13 +38,33 @@ class RemoteApiKiraRepository implements IApiKiraRepository {
       print('broadcast bytes: ${apiRequestModel.requestData.tx.toProtoBytes()}');
       print('broadcast base64: ${base64Encode(apiRequestModel.requestData.tx.toProtoBytes())}');
       final Response<T> response = await _httpClientManager.post<T>(
-        networkUri: apiRequestModel.networkUri,
-        path: '/api/kira/txs',
-        body: apiRequestModel.requestData.toJson(),
+        //todo
+        networkUri: Uri.parse('http://89.128.117.28:13001/'), //apiRequestModel.networkUri,
+        path: '',
+        body: //apiRequestModel.requestData.toJson(),
+            {
+          'method': 'cosmos',
+          'data': {
+            'method': 'POST',
+            'path': '/kira/txs',
+            'payload': {
+              'tx': base64Encode(apiRequestModel.requestData.tx.toProtoBytes()),
+              'mode': apiRequestModel.requestData.mode,
+            },
+          },
+        },
       );
-      return response;
+      final json = response.data! as Map<dynamic, dynamic>;
+      if (json['code'] == 0) {
+        return response;
+      }
+      // TODO: handle correct error
+      throw Exception(response.toString());
     } on DioException catch (dioException) {
       getIt<Logger>().e('Cannot fetch broadcast() for URI ${apiRequestModel.networkUri}: ${dioException.message}');
+      rethrow;
+    } catch (e) {
+      getIt<Logger>().e('Cannot fetch broadcast(): $e');
       rethrow;
     }
   }

@@ -15,14 +15,13 @@ class MsgSendModel extends ATxMsgModel {
   final AWalletAddress toWalletAddress;
   final TokenAmountModel tokenAmountModel;
   final String passphrase;
-  
+
   const MsgSendModel({
     required this.fromWalletAddress,
     required this.toWalletAddress,
     required this.tokenAmountModel,
     required this.passphrase,
-  })
-    : super(txMsgType: TxMsgType.msgSend);
+  }) : super(txMsgType: TxMsgType.msgSend);
 
   factory MsgSendModel.fromMsgDto(MsgSend msgSend) {
     return MsgSendModel(

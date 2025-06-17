@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/domain/exports.dart';
-import 'package:torii_client/presentation/session/cubit/session_cubit.dart';
+import 'package:torii_client/presentation/global/session/cubit/session_cubit.dart';
 import 'package:torii_client/presentation/sign_in/keyfile_dropzone/cubit/keyfile_dropzone_state.dart';
 import 'package:torii_client/presentation/sign_in/keyfile_dropzone/cubit/sign_in_keyfile_drawer_page_cubit.dart';
 import 'package:torii_client/presentation/sign_in/keyfile_dropzone/keyfile_dropzone_preview.dart';

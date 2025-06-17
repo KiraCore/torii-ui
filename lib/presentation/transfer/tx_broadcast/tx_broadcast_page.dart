@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/domain/exports.dart';
 import 'package:torii_client/domain/models/tokens/a_msg_form_model.dart';
+import 'package:torii_client/domain/models/tokens/list/tx_direction_type.dart';
+import 'package:torii_client/domain/models/tokens/list/tx_list_item_model.dart';
+import 'package:torii_client/domain/models/tokens/list/tx_status_type.dart';
 import 'package:torii_client/domain/models/transaction/signed_transaction_model.dart';
+import 'package:torii_client/presentation/global/logs/torii_logs_cubit.dart';
 import 'package:torii_client/presentation/transfer/tx_broadcast/cubit/a_tx_broadcast_state.dart';
 import 'package:torii_client/presentation/transfer/tx_broadcast/cubit/states/tx_broadcast_completed_state.dart';
 import 'package:torii_client/presentation/transfer/tx_broadcast/cubit/states/tx_broadcast_error_state.dart';
@@ -59,7 +63,27 @@ class _TxBroadcastPage<T extends AMsgFormModel> extends State<TxBroadcastPage<T>
         listener: (BuildContext context, ATxBroadcastState txBroadcastState) {
           if (txBroadcastState is TxBroadcastCompletedState) {
             ClaimProgressRoute(
-              ClaimProgressRouteExtra(signedTx: widget.signedTxModel, msgSendFormModel: txProcessCubit.msgFormModel),
+              ClaimProgressRouteExtra(
+                signedTx: TxListItemModel(
+                  hash: txBroadcastState.broadcastRespModel.hash,
+                  // TODO: inaccurate time
+                  time: DateTime.now(),
+                  txDirectionType: TxDirectionType.outbound,
+                  txStatusType: TxStatusType.confirmed,
+                  txMsgModels: [widget.signedTxModel!.txLocalInfoModel.txMsgModel],
+                  fees: [widget.signedTxModel!.txLocalInfoModel.feeTokenAmountModel],
+                  prefixedTokenAmounts: [
+                    PrefixedTokenAmountModel(
+                      tokenAmountModel: widget.signedTxModel!.txLocalInfoModel.txMsgModel.tokenAmountModel,
+                      tokenAmountPrefixType: TokenAmountPrefixType.subtract,
+                    ),
+                  ],
+                  memo: widget.signedTxModel!.txLocalInfoModel.memo,
+                ),
+                msgSendFormModel: txProcessCubit.msgFormModel,
+                pendingSenderTransaction: null,
+                pendingRecipientTransaction: null,
+              ),
             ).replace(context);
           }
         },

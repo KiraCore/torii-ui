@@ -48,6 +48,10 @@ app.*.map.json
 locator.config.dart
 *.g.dart
 **/l10n/generated/
+**/node_modules/
 
 # Environment variables
 .env
+
+# Test data
+/assets/test

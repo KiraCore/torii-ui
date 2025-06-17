@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/presentation/transfer/claim/cubit/transfer_claim_cubit.dart';
+import 'package:torii_client/presentation/transfer/claim/widgets/claim_form_preview.dart';
 import 'package:torii_client/presentation/transfer/input/msg_send_form/msg_send_form_preview.dart';
 import 'package:torii_client/presentation/transfer/send/tx_dialog.dart';
 import 'package:torii_client/presentation/transfer/widgets/request_passphrase_dialog.dart';
@@ -21,6 +22,17 @@ class ClaimProgressDialog extends StatelessWidget {
     }
     final theme = Theme.of(context).textTheme;
     return BlocConsumer<TransferClaimCubit, TransferClaimState>(
+      listenWhen: (previous, current) {
+        if (previous.isClaiming) {
+          if (current.navigateToInput) {
+            KiraToast.of(context).show(message: 'Claimed successfully', type: ToastType.success);
+          } else if (current.isError) {
+            KiraToast.of(context).show(message: 'Claim failed', type: ToastType.error);
+            context.read<TransferClaimCubit>().claimErrorHandled();
+          }
+        }
+        return previous.navigateToInput != current.navigateToInput;
+      },
       listener: (context, state) {
         if (state.navigateToInput) {
           router.replace(const TransferInputRoute().location);
@@ -30,27 +42,28 @@ class ClaimProgressDialog extends StatelessWidget {
         if (state.isLoading) {
           return Padding(padding: const EdgeInsets.only(top: 150), child: const CenterLoadSpinner());
         }
-        if (state.msgSendFormModel == null) {
+        // TODO: fix this
+        if (state.isError || state.txToProcess == null) {
           return Column(
             children: [
               const SizedBox(height: 100),
               Text(
-                'There was a processing error.\nPlease try again lateror return to home and submit a new transaction.',
+                'There was a processing error.\nPlease try again later or return to home and submit a new transaction.',
                 style: theme.bodyMedium,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 30),
               KiraElevatedButton(
-                onPressed:
-                    () => context.read<TransferClaimCubit>().init(
-                      signedTx: state.signedTx,
-                      msgSendFormModel: state.msgSendFormModel,
-                    ),
+                onPressed: () => context.read<TransferClaimCubit>().forceReloadTransactions(),
                 title: 'Retry',
                 width: 300,
               ),
               const SizedBox(height: 10),
-              KiraOutlinedButton(onPressed: () => router.pop(), width: 300, title: 'Return to home'),
+              KiraOutlinedButton(
+                onPressed: () => TransferInputRoute().go(context),
+                width: 300,
+                title: 'Return to home',
+              ),
             ],
           );
         }
@@ -61,13 +74,15 @@ class ClaimProgressDialog extends StatelessWidget {
                   ? 'Ready to claim'
                   : state.isClaiming
                   ? 'Claiming...'
-                  : 'Waiting for confirmation',
+                  : state.waitForRecipientToClaim
+                  ? 'Waiting for recipient to claim'
+                  : state.shouldBeManuallyClaimed
+                  ? 'Waiting for confirmation'
+                  : '',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              MsgSendFormPreview(
-                txLocalInfoModel: state.signedTx?.txLocalInfoModel,
-              ),
+              ClaimFormPreview(txListItemModel: state.txToProcess!),
               const SizedBox(height: 30),
               if (state.isReadyToClaim || state.isClaiming)
                 Center(
@@ -91,30 +106,35 @@ class ClaimProgressDialog extends StatelessWidget {
                   ),
                 ),
               const SizedBox(height: 20),
-              Row(
-                children: [
-                  if (state.shouldBeManuallyClaimed)
-                  KiraElevatedButton(
-                    width: 160,
-                    disabled: !state.isReadyToClaim,
-                    onPressed: () {
-                      RequestPassphraseDialog.show(
-                        context,
-                        onProceed: context.read<TransferClaimCubit>().claim,
-                        needToConfirm: false,
-                      );
-                    },
-                    title: 'Claim',
-                  ),
-                  const Spacer(),
-                  KiraOutlinedButton(
-                    width: 100,
-                    disabled: state.isReadyToClaim || state.isClaiming,
-                    onPressed: context.read<TransferClaimCubit>().refreshIsReadyToClaim,
-                    title: 'Refresh',
-                  ),
-                ],
-              ),
+              if (state.shouldBeManuallyClaimed)
+                Row(
+                  children: [
+                    const Spacer(),
+                    KiraElevatedButton(
+                      width: 200,
+                      disabled: !state.isReadyToClaim || state.isClaiming,
+                      onPressed: () {
+                        RequestPassphraseDialog.show(
+                          context,
+                          onProceed: context.read<TransferClaimCubit>().claim,
+                          needToConfirm: false,
+                        );
+                      },
+                      title: 'Claim',
+                    ),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: KiraOutlinedButton(
+                          width: 100,
+                          disabled: state.isReadyToClaim || state.isClaiming,
+                          onPressed: context.read<TransferClaimCubit>().refreshIsReadyToClaim,
+                          title: 'Refresh',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
             ],
           ),
         );

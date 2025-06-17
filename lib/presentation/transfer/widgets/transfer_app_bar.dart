@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:torii_client/presentation/metamask/cubit/metamask_cubit.dart';
+import 'package:torii_client/presentation/global/metamask/cubit/metamask_cubit.dart';
 import 'package:torii_client/presentation/network/network_drawer_page/current_network_button.dart';
-import 'package:torii_client/presentation/session/cubit/session_cubit.dart';
+import 'package:torii_client/presentation/global/session/cubit/session_cubit.dart';
 import 'package:torii_client/presentation/widgets/exports.dart';
 import 'package:torii_client/utils/exports.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -40,6 +40,12 @@ class TransferAppBar extends StatelessWidget {
                         key: const ValueKey('kira-dialog-menu'),
                         popupWidth: 170,
                         popupItems: [
+                          KiraDialogMenuItem(
+                            title: 'Transactions',
+                            onTap: () {
+                              TransactionListRoute(forKira: true).push(context);
+                            },
+                          ),
                           KiraDialogMenuItem(
                             title: 'Disconnect',
                             onTap: () {
@@ -80,6 +86,12 @@ class TransferAppBar extends StatelessWidget {
                         key: const ValueKey('eth-dialog-menu'),
                         popupWidth: 170,
                         popupItems: [
+                          KiraDialogMenuItem(
+                            title: 'Transactions',
+                            onTap: () {
+                              TransactionListRoute(forKira: false).push(context);
+                            },
+                          ),
                           KiraDialogMenuItem(
                             title: 'Disconnect',
                             onTap: () {

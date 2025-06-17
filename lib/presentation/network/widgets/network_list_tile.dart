@@ -9,12 +9,10 @@ import 'package:torii_client/utils/network/network_utils.dart';
 import 'package:torii_client/utils/network/status/a_network_status_model.dart';
 
 class NetworkListTile extends StatefulWidget {
-  final bool arrowEnabledBool;
   final ANetworkStatusModel networkStatusModel;
   final NetworkModuleState moduleState;
 
   const NetworkListTile({
-    required this.arrowEnabledBool,
     required this.networkStatusModel,
     required this.moduleState,
     super.key,
@@ -62,11 +60,7 @@ class _NetworkListTile extends State<NetworkListTile> {
               const SizedBox(width: 35),
               Expanded(
                 child: NetworkButton(
-                  networkStatusModel: networkStatusModel,
-                  arrowEnabledBool: widget.arrowEnabledBool,
-                  onConnected: (networkStatusModel) {
-                    router.createUrlContextWithRpcAtInit();
-                  },
+                  networkStatusModel: networkStatusModel
                 ),
               ),
               const SizedBox(width: 35),

@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:torii_client/presentation/session/cubit/session_cubit.dart';
+import 'package:torii_client/presentation/global/session/cubit/session_cubit.dart';
 import 'package:torii_client/presentation/transfer/input/cubit/transfer_input_cubit.dart';
 import 'package:torii_client/presentation/widgets/kira_tooltip.dart';
 import 'package:torii_client/utils/assets.dart';

@@ -24,16 +24,13 @@ class NetworkModuleState extends Equatable {
         lastRefreshDateTime: DateTime.now(),
       );
 
-  bool get isConnecting => networkStatusModel.connectionStatusType == ConnectionStatusType.connecting;
+  bool get isConnecting => networkStatusModel.connectionStatusType.isConnecting;
 
-  bool get isConnected =>
-      networkStatusModel.connectionStatusType == ConnectionStatusType.connected ||
-      networkStatusModel.connectionStatusType == ConnectionStatusType.autoConnected ||
-      networkStatusModel.connectionStatusType == ConnectionStatusType.refreshing;
+  bool get isConnected => networkStatusModel.connectionStatusType.isConnected;
 
-  bool get isDisconnected => networkStatusModel.connectionStatusType == ConnectionStatusType.disconnected;
+  bool get isDisconnected => networkStatusModel.connectionStatusType.isDisconnected;
 
-  bool get isRefreshing => networkStatusModel.connectionStatusType == ConnectionStatusType.refreshing;
+  bool get isRefreshing => networkStatusModel.connectionStatusType.isRefreshing;
 
   Uri? get networkUri => networkStatusModel.uri;
 

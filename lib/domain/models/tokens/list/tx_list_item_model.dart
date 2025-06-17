@@ -5,6 +5,7 @@ import 'package:torii_client/data/dto/api/query_transactions/response/transactio
 import 'package:torii_client/data/dto/coin.dart';
 import 'package:torii_client/domain/exports.dart';
 import 'package:torii_client/domain/models/messages/a_tx_msg_model.dart';
+import 'package:torii_client/domain/models/messages/msg_send_model.dart';
 import 'package:torii_client/domain/models/messages/tx_msg_type.dart';
 import 'package:torii_client/domain/models/tokens/list/tx_direction_type.dart';
 import 'package:torii_client/domain/models/tokens/list/tx_status_type.dart';
@@ -16,9 +17,10 @@ class TxListItemModel extends Equatable {
   final DateTime time;
   final TxDirectionType txDirectionType;
   final TxStatusType txStatusType;
-  final List<ATxMsgModel> txMsgModels;
+  final List<MsgSendModel> txMsgModels;
   final List<TokenAmountModel> fees;
   final List<PrefixedTokenAmountModel> prefixedTokenAmounts;
+  final String memo;
 
   const TxListItemModel({
     required this.hash,
@@ -28,11 +30,21 @@ class TxListItemModel extends Equatable {
     required this.fees,
     required this.prefixedTokenAmounts,
     required this.txMsgModels,
+    required this.memo,
   });
 
   factory TxListItemModel.fromDto(Transaction transaction) {
+    final fees =
+        transaction.fee
+            .map(
+              (Coin fee) => TokenAmountModel(
+                defaultDenominationAmount: Decimal.parse(fee.amount),
+                tokenAliasModel: TokenAliasModel.local(fee.denom),
+              ),
+            )
+            .toList();
     TxDirectionType txDirectionType = EnumUtils.parseFromString(TxDirectionType.values, transaction.direction);
-    List<ATxMsgModel> txMsgModels = transaction.txs.map(ATxMsgModel.buildFromDto).toList();
+    List<MsgSendModel> txMsgModels = transaction.txs.map((tx) => MsgSendModel.fromMsgDto(tx)).toList();
 
     return TxListItemModel(
       hash: transaction.hash,
@@ -42,16 +54,13 @@ class TxListItemModel extends Equatable {
       txMsgModels: txMsgModels,
       prefixedTokenAmounts:
           txMsgModels.expand((ATxMsgModel txMsgModel) => txMsgModel.getPrefixedTokenAmounts(txDirectionType)).toList(),
-      fees:
-          transaction.fee
-              .map(
-                (Coin fee) => TokenAmountModel(
-                  defaultDenominationAmount: Decimal.parse(fee.amount),
-                  tokenAliasModel: TokenAliasModel.local(fee.denom),
-                ),
-              )
-              .toList(),
+      fees: fees,
+      memo: transaction.memo,
     );
+  }
+
+  TokenAmountModel get totalFees {
+    return fees.reduce((a, b) => a + b);
   }
 
   bool get isOutbound {
@@ -104,5 +113,6 @@ class TxListItemModel extends Equatable {
     txMsgModels,
     fees,
     prefixedTokenAmounts,
+    memo,
   ];
 }

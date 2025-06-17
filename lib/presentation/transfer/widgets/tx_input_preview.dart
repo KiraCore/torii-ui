@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:torii_client/presentation/widgets/buttons/copy_button.dart';
 import 'package:torii_client/utils/exports.dart';
 
 class TxInputPreview extends StatelessWidget {
@@ -7,6 +8,7 @@ class TxInputPreview extends StatelessWidget {
   final Widget? icon;
   final bool large;
   final Color labelColor;
+  final bool copyable;
 
   const TxInputPreview({
     required this.label,
@@ -14,6 +16,7 @@ class TxInputPreview extends StatelessWidget {
     this.icon,
     this.large = false,
     this.labelColor = DesignColors.accent,
+    this.copyable = false,
     Key? key,
   }) : super(key: key);
 
@@ -32,13 +35,20 @@ class TxInputPreview extends StatelessWidget {
             children: <Widget>[
               Text(label, style: textTheme.bodySmall!.copyWith(color: labelColor)),
               SizedBox(height: 5),
-              Text(
-                value,
-                style: textStyle?.copyWith(
-                  fontSize: large ? 22 : null,
-                  fontWeight: large ? FontWeight.w500 : null,
-                  color: DesignColors.white1,
-                ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      value,
+                      style: textStyle?.copyWith(
+                        fontSize: large ? 22 : null,
+                        fontWeight: large ? FontWeight.w500 : null,
+                        color: DesignColors.white1,
+                      ),
+                    ),
+                  ),
+                  if (copyable) CopyButton(value: value, notificationText: S.of(context).toastSuccessfullyCopied),
+                ],
               ),
             ],
           ),

@@ -3,13 +3,11 @@ import 'package:torii_client/utils/exports.dart';
 import 'package:torii_client/utils/network/status/a_network_status_model.dart';
 
 class NetworkSelectedButton extends StatelessWidget {
-  final bool clickableBool;
   final String title;
   final ANetworkStatusModel networkStatusModel;
   final VoidCallback? onPressed;
 
   const NetworkSelectedButton({
-    required this.clickableBool,
     required this.title,
     required this.networkStatusModel,
     this.onPressed,
@@ -21,7 +19,7 @@ class NetworkSelectedButton extends StatelessWidget {
     return Row(
       children: <Widget>[
         ElevatedButton(
-          onPressed: clickableBool ? onPressed : null,
+          onPressed: onPressed,
           style: ButtonStyle(backgroundColor: WidgetStateProperty.all(networkStatusModel.statusColor)),
           child: Text(
             title.toUpperCase(),

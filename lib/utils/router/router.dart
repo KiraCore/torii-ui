@@ -6,14 +6,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:torii_client/domain/exports.dart';
 import 'package:torii_client/domain/models/connection/connection_error_type.dart';
+import 'package:torii_client/domain/models/tokens/list/tx_list_item_model.dart';
 import 'package:torii_client/domain/models/transaction/signed_transaction_model.dart';
+import 'package:torii_client/presentation/global/logs/torii_logs_cubit.dart';
 import 'package:torii_client/presentation/intro/intro_page.dart';
 import 'package:torii_client/presentation/loading/loading_page.dart';
 import 'package:torii_client/presentation/network/network_drawer_page/network_drawer_page.dart';
-import 'package:torii_client/presentation/session/cubit/session_cubit.dart';
+import 'package:torii_client/presentation/global/session/cubit/session_cubit.dart';
 import 'package:torii_client/presentation/sign_in/keyfile_dropzone/sign_in_keyfile_drawer_page.dart';
 import 'package:torii_client/presentation/sign_in/mnemonic/sign_in_mnemonic_drawer_page.dart';
 import 'package:torii_client/presentation/sign_in/sign_in_drawer_page.dart';
+import 'package:torii_client/presentation/transaction_list/transaction_details_drawer_page.dart';
+import 'package:torii_client/presentation/transaction_list/transactions_page.dart';
 import 'package:torii_client/presentation/transfer/claim/transfer_claim_page.dart';
 import 'package:torii_client/presentation/transfer/input/transfer_input_page.dart';
 import 'package:torii_client/utils/browser/rpc_browser_url_controller.dart';
@@ -86,6 +90,19 @@ class TransferInputRoute extends GoRouteData {
     if (!context.read<SessionCubit>().state.isLoggedIn) {
       return const IntroRoute().location;
     }
+    //todo
+    // final pendingSenderTransaction = context.read<ToriiLogsCubit>().state.pendingSenderTransaction;
+    // final pendingRecipientTransaction = context.read<ToriiLogsCubit>().state.pendingRecipientTransaction;
+    // if (pendingSenderTransaction != null || pendingRecipientTransaction != null) {
+    //   return ClaimProgressRoute(
+    //     ClaimProgressRouteExtra(
+    //       pendingSenderTransaction: pendingSenderTransaction,
+    //       pendingRecipientTransaction: pendingRecipientTransaction,
+    //       signedTx: null,
+    //       msgSendFormModel: null,
+    //     ),
+    //   ).location;
+    // }
     return super.redirect(context, state);
   }
 
@@ -103,13 +120,43 @@ class ClaimProgressRoute extends GoRouteData {
     if (!context.read<SessionCubit>().state.isLoggedIn) {
       return const IntroRoute().location;
     }
+    // TODO: fix
+    final pendingSenderTransaction =
+        $extra?.pendingSenderTransaction ?? context.read<ToriiLogsCubit>().state.pendingSenderTransaction;
+    final pendingRecipientTransaction =
+        $extra?.pendingRecipientTransaction ?? context.read<ToriiLogsCubit>().state.pendingRecipientTransaction;
+    if (pendingSenderTransaction == null && pendingRecipientTransaction == null) {
+      return const TransferInputRoute().location;
+    }
     return super.redirect(context, state);
   }
 
   @override
-  Widget build(BuildContext context, GoRouterState state) =>
-      TransferClaimPage(signedTx: $extra?.signedTx, msgSendFormModel: $extra?.msgSendFormModel);
+  Widget build(BuildContext context, GoRouterState state) {
+    return TransferClaimPage(
+      signedTx: $extra?.signedTx,
+      msgSendFormModel: $extra?.msgSendFormModel,
+      // TODO: extra is not saved during redirect due to issue  https://github.com/flutter/flutter/issues/146616
+      pendingSenderTransaction:
+          $extra?.pendingSenderTransaction ?? context.read<ToriiLogsCubit>().state.pendingSenderTransaction,
+      pendingRecipientTransaction:
+          $extra?.pendingRecipientTransaction ?? context.read<ToriiLogsCubit>().state.pendingRecipientTransaction,
+    );
+  }
 }
+
+@TypedGoRoute<TransactionListRoute>(path: '/transactions')
+class TransactionListRoute extends GoRouteData {
+  const TransactionListRoute({required this.forKira});
+
+  final bool forKira;
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return TransactionsPage(forKira: forKira);
+  }
+}
+
 
 // ---- Dialogs ----
 
@@ -162,5 +209,21 @@ class NetworkDrawerRoute extends GoRouteData {
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
     return RouterDialogPage(builder: (_) => NetworkDrawerPage());
+  }
+}
+
+// TODO: add id into path
+@TypedGoRoute<TransactionDetailsDrawerRoute>(path: '/transaction-details-drawer')
+class TransactionDetailsDrawerRoute extends GoRouteData {
+  const TransactionDetailsDrawerRoute(this.$extra);
+
+  final TxListItemModel? $extra;
+
+  // NOTE: obligated for dialogs: go from navigator key state because of parent ShellRoutes
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = navigatorKey;
+
+  @override
+  Page<void> buildPage(BuildContext context, GoRouterState state) {
+    return RouterDialogPage(builder: (_) => TransactionDetailsDrawerPage(txListItemModel: $extra!));
   }
 }

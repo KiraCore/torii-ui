@@ -7,10 +7,9 @@ import 'package:torii_client/presentation/network/widgets/network_custom_section
 import 'package:torii_client/utils/exports.dart';
 
 class NetworkCustomSection extends StatefulWidget {
-  final bool arrowEnabledBool;
   final NetworkModuleState moduleState;
 
-  const NetworkCustomSection({required this.arrowEnabledBool, required this.moduleState, super.key});
+  const NetworkCustomSection({required this.moduleState, super.key});
 
   @override
   State<StatefulWidget> createState() => _NetworkCustomSection();
@@ -49,11 +48,10 @@ class _NetworkCustomSection extends State<NetworkCustomSection> {
               //   ),
               // ),
               // if (sectionExpandedBool)
-                NetworkCustomSectionContent(
-                  networkCustomSectionCubit: networkCustomSectionCubit,
-                  arrowEnabledBool: widget.arrowEnabledBool,
-                  moduleState: widget.moduleState,
-                ),
+              NetworkCustomSectionContent(
+                networkCustomSectionCubit: networkCustomSectionCubit,
+                moduleState: widget.moduleState,
+              ),
             ],
           ),
         );

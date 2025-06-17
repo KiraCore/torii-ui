@@ -9,7 +9,7 @@ import 'package:torii_client/domain/models/transaction/unsigned_tx_model.dart';
 import 'package:torii_client/domain/services/miro/query_account_service.dart';
 import 'package:torii_client/domain/services/miro/query_execution_fee_service.dart';
 import 'package:torii_client/domain/services/miro/query_network_properties_service.dart';
-import 'package:torii_client/presentation/session/cubit/session_cubit.dart';
+import 'package:torii_client/presentation/global/session/cubit/session_cubit.dart';
 import 'package:torii_client/presentation/transfer/tx_form_builder_cubit/tx_form_builder_cubit.dart';
 import 'package:torii_client/presentation/transfer/tx_process_cubit/a_tx_process_state.dart';
 import 'package:torii_client/presentation/transfer/tx_process_cubit/states/tx_process_broadcast_state.dart';

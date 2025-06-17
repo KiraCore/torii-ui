@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/domain/exports.dart';
-import 'package:torii_client/presentation/metamask/cubit/metamask_cubit.dart';
+import 'package:torii_client/presentation/global/metamask/cubit/metamask_cubit.dart';
 import 'package:torii_client/presentation/network/network_drawer_page/current_network_button.dart';
 import 'package:torii_client/presentation/widgets/buttons/kira_outlined_button.dart';
 import 'package:torii_client/presentation/widgets/torii_scaffold.dart';

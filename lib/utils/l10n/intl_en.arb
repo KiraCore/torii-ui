@@ -113,6 +113,20 @@
     }
   },
 
+  "txListAge": "Age",
+  "ageShortSecond": "1 sec",
+  "ageShortSeconds": "{seconds} secs",
+  "ageSecondsAgo": "{seconds} seconds ago",
+  "ageShortMinute": "1 min",
+  "ageShortMinutes": "{minutes} minutes",
+  "ageMinutesAgo": "{minutes} minutes ago",
+  "ageShortHour": "1 hour",
+  "ageShortHours": "{hours} hrs",
+  "ageHoursAgo": "{hours} hours ago",
+  "ageShortDay": "1 day",
+  "ageShortDays": "{days} days",
+  "ageDaysAgo": "{days} days ago",
+
   "txHintSendFrom": "Send from",
   "txHintSendTo": "Send to",
   "txHintMemo": "Memo",
