@@ -91,7 +91,7 @@ class EthereumService {
       final tx = await bridgeContract.send('exportTokens', [
         kiraAddress, //'kira143q8vxpvuykt9pq50e6hng9s38vmy844n8k9wx',
         Sha256.encrypt(passphrase), //'8a8620565a42cfb1acf8d6b9b84d6179fa18050c6fcb305af7dad777804fa047',
-        // TODO: correct amount in WKEX
+        // TODO: correct amount in wKEX
         (ukexAmount / Decimal.fromBigInt(BigInt.from(10).pow(18))).toBigInt(), // Amount in Wei
       ]);
       getIt<Logger>().d('Transaction hash: ${tx.hash}');
@@ -192,7 +192,7 @@ class EthereumService {
 
   Future<void> watchWkexAsset() async => ethereum?.walletWatchAssets(
     address: ContractUtils.tokenAddress,
-    symbol: 'WKEX',
+    symbol: 'wKEX',
     decimals: 9,
     // image: 'https://kira.network/images/kira-logo.png',
   );

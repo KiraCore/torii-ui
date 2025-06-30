@@ -36,7 +36,7 @@ class TxBroadcastCubit extends Cubit<ATxBroadcastState> {
       );
       if (tx != null) {
         final BroadcastRespModel broadcastRespModel = BroadcastRespModel(hash: tx.hash);
-        emit(TxBroadcastCompletedState(broadcastRespModel: broadcastRespModel));
+        emit(TxBroadcastCompletedState(broadcastRespModel: broadcastRespModel, isEthRecipient: false));
       } else {
         emit(
           TxBroadcastErrorState(
@@ -68,7 +68,7 @@ class TxBroadcastCubit extends Cubit<ATxBroadcastState> {
     emit(TxBroadcastLoadingState());
     try {
       BroadcastRespModel broadcastRespModel = await _broadcastService.broadcastTx(signedTxModel);
-      emit(TxBroadcastCompletedState(broadcastRespModel: broadcastRespModel));
+      emit(TxBroadcastCompletedState(broadcastRespModel: broadcastRespModel, isEthRecipient: true));
     } on DioException catch (e) {
       getIt<Logger>().e('Error broadcasting from Kira: $e');
       ErrorExplorerModel errorExplorerModel = ErrorExplorerModel.fromDioConnectException(e);

@@ -3,7 +3,7 @@ import 'package:torii_client/utils/l10n/generated/l10n.dart';
 
 extension DateTimeExtension on DateTime {
   String toShortAge(BuildContext context) {
-    DateTime now = DateTime.now();
+    DateTime now = DateTime.now().toUtc();
     Duration difference = now.difference(this);
 
     if (difference.inDays > 0) {
@@ -22,7 +22,7 @@ extension DateTimeExtension on DateTime {
   }
 
   String toAgeAgo(BuildContext context) {
-    DateTime now = DateTime.now();
+    DateTime now = DateTime.now().toUtc();
     Duration difference = now.difference(this);
 
     if (difference.inDays > 0) {

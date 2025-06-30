@@ -1,9 +1,9 @@
 import 'package:decimal/decimal.dart';
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
-import 'package:torii_client/data/api/interx_headers.dart';
+import 'package:torii_client/data/dto/api/query_log_txs/query_log_txs_req.dart';
 import 'package:torii_client/data/dto/api/query_transactions/request/query_transactions_req.dart';
-import 'package:torii_client/data/dto/api/query_transactions/response/query_log_txs_resp.dart';
+import 'package:torii_client/data/dto/api/query_log_txs/query_log_txs_resp.dart';
 import 'package:torii_client/data/dto/api/query_transactions/response/query_transactions_resp.dart';
 import 'package:torii_client/data/dto/api_kira/query_account/request/query_account_req.dart';
 import 'package:torii_client/data/dto/api_kira/query_account/response/query_account_resp.dart';
@@ -35,36 +35,44 @@ class ToriiLogsService {
 
   ToriiLogsService(this._repository, this._networkModuleBloc);
 
-  Future<LogTxs> fetchTransactionsPerAccount(AWalletAddress accountAddress) async {
+  Future<LogTxs> fetchTransactionsPerAccount({
+    CosmosWalletAddress? kiraAddress,
+    EthereumWalletAddress? ethAddress,
+  }) async {
+    if (kiraAddress == null && ethAddress == null) {
+      throw Exception('kiraAddress or ethAddress must be provided');
+    }
     if (!(const bool.hasEnvironment('TORII_LOG_URL'))) {
       throw Exception('Torii log url is not set');
     }
     final uri = Uri.parse(const String.fromEnvironment('TORII_LOG_URL'));
 
-    final queryTransactionsReq = QueryTransactionsReq(
-      address: accountAddress.address,
-      // TODO: it's not working
-      limit: 2,
-      offset: 0,
-      sort: TxSortType.dateDESC,
-      // pageSize: 20,
+    final queryLogTxsReq = QueryLogTxsReq(
+      ethAddress: ethAddress?.address,
+      kiraAddress: kiraAddress?.address,
+      // limit: 20,
+      // skip: 0,
+      // count: 10,
+      // TODO:
+      sortAsc: false,
     );
     try {
       // TODO: test transactions
       await Future.delayed(const Duration(seconds: 1));
       // return _testData;
 
-      final response = await _repository.fetchTransactionsPerAccount<dynamic>(
-        ApiRequestModel<QueryTransactionsReq>(
-          networkUri: uri,
-          requestData: queryTransactionsReq,
-          forceRequestBool: true,
-        ),
+      final kiraResponse = await _repository.fetchCosmosTransactionsPerAccount<dynamic>(
+        ApiRequestModel<QueryLogTxsReq>(networkUri: uri, requestData: queryLogTxsReq, forceRequestBool: true),
+      );
+      final ethResponse = await _repository.fetchEthTransactionsPerAccount<dynamic>(
+        ApiRequestModel<QueryLogTxsReq>(networkUri: uri, requestData: queryLogTxsReq, forceRequestBool: true),
       );
 
+      // TODO: resp model should be in data layer
       QueryLogTxsResp queryLogTxsResp = QueryLogTxsResp.fromJson(
-        response.data as Map<String, dynamic>,
-        askingForKira: accountAddress is CosmosWalletAddress,
+        kiraJson: (kiraResponse.data as Map<String, dynamic>)['result'] as List<dynamic>? ?? [],
+        ethJson: (ethResponse.data as Map<String, dynamic>)['result'] as List<dynamic>? ?? [],
+        askingForKira: kiraAddress != null,
       );
       List<TxListItemModel> kiraTransactions = [];
       for (final tx in queryLogTxsResp.fromKira) {
@@ -84,23 +92,17 @@ class ToriiLogsService {
           getIt<Logger>().w('ToriiLogsService: Skip invalid Eth transaction $tx: $e');
         }
       }
-      // TODO: interx headers
-      // InterxHeaders interxHeaders = InterxHeaders.fromHeaders(response.headers);
 
       return LogTxs(
         fromKira: PageData<TxListItemModel>(
           listItems: kiraTransactions,
           // TODO: check limit
           isLastPage: true, //fromKira.length < queryTransactionsReq.limit!,
-          blockDateTime: DateTime.now(), //interxHeaders.blockDateTime,
-          cacheExpirationDateTime: DateTime.now(), //interxHeaders.cacheExpirationDateTime,
         ),
         fromEth: PageData<TxListItemModel>(
           listItems: ethTransactions,
           // TODO: check limit
           isLastPage: true, //fromEth.length < queryTransactionsReq.limit!,
-          blockDateTime: DateTime.now(), //interxHeaders.blockDateTime,
-          cacheExpirationDateTime: DateTime.now(), //interxHeaders.cacheExpirationDateTime,
         ),
       );
     } catch (e) {
@@ -108,11 +110,68 @@ class ToriiLogsService {
       rethrow;
     }
   }
+
+  // TODO: refactor, it's not working
+  Future<LogTxs> fetchPendingEthTransactions(EthereumWalletAddress accountAddress) async {
+    if (!(const bool.hasEnvironment('TORII_LOG_URL'))) {
+      throw Exception('Torii log url is not set');
+    }
+    final uri = Uri.parse(const String.fromEnvironment('TORII_LOG_URL'));
+
+    final queryLogTxsReq = QueryLogTxsReq(
+      ethAddress: accountAddress.address,
+      // limit: 20,
+      // skip: 0,
+      // count: 10,
+      // TODO:
+      sortAsc: false,
+    );
+    try {
+      // TODO: test transactions
+      await Future.delayed(const Duration(seconds: 1));
+      // return _testData;
+
+      final response = await _repository.fetchPendingEthTransactions<dynamic>(
+        ApiRequestModel<QueryLogTxsReq>(networkUri: uri, requestData: queryLogTxsReq, forceRequestBool: true),
+      );
+
+      // TODO: resp model should be in data layer
+      QueryLogTxsResp queryLogTxsResp = QueryLogTxsResp.fromJson(
+        kiraJson: (response.data as Map<String, dynamic>)['result'] as List<dynamic>? ?? [],
+        // TODO: review in the future
+        ethJson: [],
+        askingForKira: false,
+      );
+      List<TxListItemModel> kiraTransactions = [];
+      for (final tx in queryLogTxsResp.fromKira) {
+        try {
+          final transaction = TxListItemModel.fromDto(tx);
+          kiraTransactions.add(transaction);
+        } catch (e) {
+          getIt<Logger>().w('ToriiLogsService: Skip invalid Kira transaction $tx: $e');
+        }
+      }
+
+      return LogTxs(
+        fromKira: PageData<TxListItemModel>(
+          listItems: kiraTransactions,
+          // TODO: check limit
+          isLastPage: true, //fromKira.length < queryTransactionsReq.limit!,
+        ),
+        fromEth: PageData<TxListItemModel>(
+          listItems: [],
+          // TODO: check limit
+          isLastPage: true, //fromEth.length < queryTransactionsReq.limit!,
+        ),
+      );
+    } catch (e) {
+      getIt<Logger>().e('ToriiLogsService: Cannot parse fetchPendingEthTransactions() for URI $e');
+      rethrow;
+    }
+  }
 }
 
 PageData<TxListItemModel> _testData = PageData<TxListItemModel>(
-  blockDateTime: DateTime.parse('2022-08-26 22:08:27.607Z'),
-  cacheExpirationDateTime: DateTime.parse('2022-08-26 22:08:27.607Z'),
   listItems: <TxListItemModel>[
     // MsgSend inbound
     TxListItemModel(
@@ -163,7 +222,7 @@ PageData<TxListItemModel> _testData = PageData<TxListItemModel>(
       prefixedTokenAmounts: <PrefixedTokenAmountModel>[
         PrefixedTokenAmountModel(
           tokenAmountPrefixType: TokenAmountPrefixType.add,
-          tokenAmountModel: TokenAmountModel.zero(tokenAliasModel: TokenAliasModel.local('WKEX')),
+          tokenAmountModel: TokenAmountModel.zero(tokenAliasModel: TokenAliasModel.local('wKEX')),
         ),
       ],
       txMsgModels: <MsgSendModel>[
@@ -172,7 +231,7 @@ PageData<TxListItemModel> _testData = PageData<TxListItemModel>(
           toWalletAddress: AWalletAddress.fromAddress('kira143q8vxpvuykt9pq50e6hng9s38vmy844n8k9wx'),
           tokenAmountModel: TokenAmountModel(
             defaultDenominationAmount: Decimal.fromInt(200),
-            tokenAliasModel: TokenAliasModel.local('WKEX'),
+            tokenAliasModel: TokenAliasModel.local('wKEX'),
           ),
           passphrase: '123',
         ),

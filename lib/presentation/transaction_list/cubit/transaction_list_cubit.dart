@@ -17,23 +17,22 @@ class TransactionListCubit extends Cubit<TransactionListState> {
 
   void init({bool forKira = true}) {
     this.forKira = forKira;
+    emit(TransactionListState(isLoading: true));
     // TODO: listen
-    // toriiLogsCubit.stream.listen((ToriiLogsState state) {
-    emit(
-      TransactionListState(
-        kiraTxs:
-            forKira
-                // TODO: sorting here is temp. Fetch from server in correct order
-                ? toriiLogsCubit.state.kiraTransactions?.fromKira.sortDescByDate()
-                : toriiLogsCubit.state.ethereumTransactions?.fromKira.sortDescByDate(),
-        ethTxs:
-            forKira
-                ? toriiLogsCubit.state.kiraTransactions?.fromEth.sortDescByDate()
-                : toriiLogsCubit.state.ethereumTransactions?.fromEth.sortDescByDate(),
-        isLoading: false,
-      ),
-    );
-    // });
+    if (forKira) {
+      emit(TransactionListState(txs: toriiLogsCubit.state.kiraTxs?.combineAndSortDesc(), isLoading: false));
+      toriiLogsCubit.updateTransactions(forMyKira: true);
+    } else {
+      emit(TransactionListState(txs: toriiLogsCubit.state.ethereumTxs?.combineAndSortDesc(), isLoading: false));
+      toriiLogsCubit.updateTransactions(forMyEthereum: true);
+    }
+    toriiLogsCubit.stream.listen((ToriiLogsState state) {
+      if (forKira) {
+        emit(TransactionListState(txs: toriiLogsCubit.state.kiraTxs?.combineAndSortDesc(), isLoading: false));
+      } else {
+        emit(TransactionListState(txs: toriiLogsCubit.state.ethereumTxs?.combineAndSortDesc(), isLoading: false));
+      }
+    });
   }
 
   void search(String query) {
@@ -47,39 +46,20 @@ class TransactionListCubit extends Cubit<TransactionListState> {
     emit(state.copyWith(isLoading: true));
 
     String pattern = query.toLowerCase();
-    List<TxListItemModel> filteredItems = [];
+    List<TxListItemModel> filteredItems =
+        state.txs?.listItems.where((TxListItemModel item) {
+          bool hashMatch = item.hash.toLowerCase().contains(pattern);
+          bool fromMatch =
+              item.txMsgModels.isNotEmpty &&
+              (item.txMsgModels.first.fromWalletAddress?.address.toLowerCase().contains(pattern) ?? false);
+          bool toMatch =
+              item.txMsgModels.isNotEmpty &&
+              (item.txMsgModels.first.toWalletAddress?.address.toLowerCase().contains(pattern) ?? false);
+          return hashMatch || fromMatch || toMatch;
+        }).toList() ??
+        [];
 
-    if (state.currentFromKira) {
-      filteredItems =
-          state.kiraTxs?.listItems.where((TxListItemModel item) {
-            bool hashMatch = item.hash.toLowerCase().contains(pattern);
-            bool fromMatch =
-                item.txMsgModels.isNotEmpty &&
-                (item.txMsgModels.first.fromWalletAddress?.address.toLowerCase().contains(pattern) ?? false);
-            bool toMatch =
-                item.txMsgModels.isNotEmpty &&
-                (item.txMsgModels.first.toWalletAddress?.address.toLowerCase().contains(pattern) ?? false);
-            return hashMatch || fromMatch || toMatch;
-          }).toList() ??
-          [];
-
-      emit(state.copyWith(kiraTxs: PageData<TxListItemModel>(listItems: filteredItems), isLoading: false));
-    } else {
-      filteredItems =
-          state.ethTxs?.listItems.where((TxListItemModel item) {
-            bool hashMatch = item.hash.toLowerCase().contains(pattern);
-            bool fromMatch =
-                item.txMsgModels.isNotEmpty &&
-                (item.txMsgModels.first.fromWalletAddress?.address.toLowerCase().contains(pattern) ?? false);
-            bool toMatch =
-                item.txMsgModels.isNotEmpty &&
-                (item.txMsgModels.first.toWalletAddress?.address.toLowerCase().contains(pattern) ?? false);
-            return hashMatch || fromMatch || toMatch;
-          }).toList() ??
-          [];
-
-      emit(state.copyWith(ethTxs: PageData<TxListItemModel>(listItems: filteredItems), isLoading: false));
-    }
+    emit(state.copyWith(txs: PageData<TxListItemModel>(listItems: filteredItems), isLoading: false));
   }
 
   void switchDateFormat() {

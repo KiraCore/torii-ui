@@ -7,8 +7,9 @@ import 'drawer_app_bar.dart';
 class KiraDrawer extends StatelessWidget {
   final Widget child;
   final double width;
+  final EdgeInsets? padding;
 
-  const KiraDrawer({required this.child, this.width = 400, super.key});
+  const KiraDrawer({required this.child, this.width = 400, this.padding, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +29,7 @@ class KiraDrawer extends StatelessWidget {
                 onClose: GoRouter.of(context).pop,
                 onPop: GoRouter.of(context).pop,
               ),
-              Padding(padding: const EdgeInsets.symmetric(horizontal: 32), child: child),
+              Padding(padding: padding ?? const EdgeInsets.symmetric(horizontal: 32), child: child),
             ],
           ),
         ),

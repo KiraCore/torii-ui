@@ -23,6 +23,7 @@ class TransactionsPage extends StatefulWidget {
 
 class _TransactionsPage extends State<TransactionsPage> {
   final TextEditingController searchBarTextEditingController = TextEditingController();
+  // TODO: implement pagination
   int pageSize = 15;
 
   @override
@@ -71,11 +72,13 @@ class _TransactionsPage extends State<TransactionsPage> {
                 feeWidget: Text('Fee', style: headerStyle),
               );
 
+              final itemCount = (state.txs?.listItems.length ?? 0) + 2;
               return Padding(
-                padding: const EdgeInsets.all(40.0),
+                padding: const EdgeInsets.symmetric(horizontal: 40.0),
                 child: ListView.builder(
-                  itemCount: state.txs.listItems.length + 2,
+                  itemCount: itemCount,
                   itemBuilder: (context, index) {
+                    // TODO: remove them from the scrollable area
                     if (index == 0) {
                       return TransactionListTitle(
                         searchBarTextEditingController: searchBarTextEditingController,
@@ -84,12 +87,19 @@ class _TransactionsPage extends State<TransactionsPage> {
                     } else if (index == 1) {
                       return listHeaderWidget;
                     }
-                    return SizedBox(
-                      height: 80,
-                      child: TransactionListItem(
-                        key: Key(state.txs.listItems[index - 2].toString()),
-                        txListItemModel: state.txs.listItems[index - 2],
-                        isAgeFormat: state.isAgeFormat,
+                    EdgeInsets padding = EdgeInsets.zero;
+                    if (index == itemCount - 1) {
+                      padding = const EdgeInsets.only(bottom: 40);
+                    }
+                    return Padding(
+                      padding: padding,
+                      child: SizedBox(
+                        height: 80,
+                        child: TransactionListItem(
+                          key: Key(state.txs!.listItems[index - 2].toString()),
+                          txListItemModel: state.txs!.listItems[index - 2],
+                          isAgeFormat: state.isAgeFormat,
+                        ),
                       ),
                     );
                   },

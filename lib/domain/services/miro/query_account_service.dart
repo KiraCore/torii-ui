@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
-import 'package:torii_client/data/api/interx_headers.dart';
 import 'package:torii_client/data/dto/api_kira/query_account/request/query_account_req.dart';
 import 'package:torii_client/data/dto/api_kira/query_account/response/query_account_resp.dart';
 import 'package:torii_client/data/dto/api_request_model.dart';

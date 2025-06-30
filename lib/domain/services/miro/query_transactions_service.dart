@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
-import 'package:torii_client/data/api/interx_headers.dart';
 import 'package:torii_client/data/dto/api/query_transactions/request/query_transactions_req.dart';
 import 'package:torii_client/data/dto/api/query_transactions/response/query_transactions_resp.dart';
 import 'package:torii_client/data/dto/api_request_model.dart';
@@ -39,14 +38,9 @@ class QueryTransactionsService {
       List<TxListItemModel> txListItemModelList =
           queryTransactionsResp.transactions.map(TxListItemModel.fromDto).toList();
 
-      // TODO: interx headers
-      // InterxHeaders interxHeaders = InterxHeaders.fromHeaders(response.headers);
-
       return PageData<TxListItemModel>(
         listItems: txListItemModelList,
         isLastPage: txListItemModelList.length < queryTransactionsReq.limit!,
-        blockDateTime: DateTime.now(), //interxHeaders.blockDateTime,
-        cacheExpirationDateTime: DateTime.now(), //interxHeaders.cacheExpirationDateTime,
       );
     } catch (e) {
       getIt<Logger>().e('QueryTransactionsService: Cannot parse getTransactionList() for URI $networkUri $e');

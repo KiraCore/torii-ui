@@ -1,7 +1,6 @@
 import 'package:decimal/decimal.dart';
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
-import 'package:torii_client/data/api/interx_headers.dart';
 import 'package:torii_client/data/dto/api_kira/query_balance/request/query_balance_req.dart';
 import 'package:torii_client/data/dto/api_kira/query_balance/response/balance.dart';
 import 'package:torii_client/data/dto/api_kira/query_balance/response/query_balance_resp.dart';
@@ -50,14 +49,9 @@ class QueryBalanceService {
       QueryBalanceResp queryBalanceResp = QueryBalanceResp.fromJson(response.data as List<dynamic>);
       List<TokenAmountModel> balanceList = await _buildTokenAmountModels(queryBalanceResp);
 
-      // TODO: interx headers
-      // InterxHeaders interxHeaders = InterxHeaders.fromHeaders(response.headers);
-
       return PageData<TokenAmountModel>(
         listItems: balanceList,
         isLastPage: balanceList.length < queryBalanceReq.limit!,
-        blockDateTime: DateTime.now(), //interxHeaders.blockDateTime,
-        cacheExpirationDateTime: DateTime.now(), //interxHeaders.cacheExpirationDateTime,
       );
     } catch (e) {
       getIt<Logger>().e('QueryBalanceService: Cannot parse getTokenAmountModelList() for URI $networkUri $e');

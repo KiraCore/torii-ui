@@ -50,11 +50,16 @@ class _ClaimFormPreview extends State<ClaimFormPreview> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        TxInputPreview(label: 'Hash', value: widget.txListItemModel.hash.toLowerCase(), copyable: true),
+        TxInputPreview(
+          label: 'Hash',
+          value: widget.txListItemModel.hash.toLowerCase(),
+          copyable: true,
+          fitInOneLine: true,
+        ),
         const SizedBox(height: 16),
         TxInputPreview(
           label: 'Timestamp',
-          value: DateFormat('d/M/y, HH:mm').format(widget.txListItemModel.time.toLocal()),
+          value: DateFormat('dd/MM/yyyy, HH:mm').format(widget.txListItemModel.time.toLocal()),
         ),
         const SizedBox(height: 28),
         TxInputPreview(
@@ -65,6 +70,7 @@ class _ClaimFormPreview extends State<ClaimFormPreview> {
             size: 45,
           ),
           copyable: true,
+          fitInOneLine: true,
         ),
         const SizedBox(height: 28),
         TxInputPreview(
@@ -75,6 +81,7 @@ class _ClaimFormPreview extends State<ClaimFormPreview> {
             size: 45,
           ),
           copyable: true,
+          fitInOneLine: true,
         ),
         const SizedBox(height: 28),
         TxInputPreview(

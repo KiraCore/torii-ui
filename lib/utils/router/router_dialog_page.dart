@@ -6,6 +6,7 @@ class RouterDialogPage<T> extends Page<T> {
   const RouterDialogPage({
     required this.builder,
     this.barrierDismissible = true,
+    this.padding,
     super.key,
     super.name,
     super.arguments,
@@ -14,6 +15,7 @@ class RouterDialogPage<T> extends Page<T> {
 
   final WidgetBuilder builder;
   final bool barrierDismissible;
+  final EdgeInsets? padding;
 
   @override
   Route<T> createRoute(BuildContext context) {
@@ -28,7 +30,7 @@ class RouterDialogPage<T> extends Page<T> {
           (BuildContext context) => Dialog(
             alignment: Alignment.centerRight,
             insetPadding: const EdgeInsets.all(0),
-            child: KiraDrawer(child: builder(context)),
+            child: KiraDrawer(padding: padding, child: builder(context)),
           ),
     );
   }

@@ -73,7 +73,7 @@ class Transaction extends Equatable {
       fee: [Coin(amount: json['Amount'].toString(), denom: 'ukex')],
       txs: [
         MsgSend(
-          amount: [CosmosCoin(amount: BigInt.parse(json['Input']['amount']), denom: 'ukex')],
+          amount: [CosmosCoin(amount: BigInt.parse(json['Input']['amount'].toString()), denom: 'ukex')],
           fromAddress: json['From'],
           toAddress: json['Input']['cyclAddress'],
           passphrase: '',

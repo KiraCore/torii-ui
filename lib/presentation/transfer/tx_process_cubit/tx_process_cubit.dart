@@ -26,17 +26,26 @@ class TxProcessCubit<T extends AMsgFormModel> extends Cubit<ATxProcessState> {
   final QueryNetworkPropertiesService _queryNetworkPropertiesService = getIt<QueryNetworkPropertiesService>();
 
   final TxMsgType txMsgType;
-  final T msgFormModel;
+  final MsgSendFormModel msgFormModel;
 
   TxProcessCubit({required this.txMsgType, required this.msgFormModel}) : super(const TxProcessLoadingState());
 
-  Future<void> init({required bool sendFromKira, bool formEnabledBool = true}) async {
+  Future<void> init({required bool sendFromKira, bool formEnabledBool = true, bool resetModel = false}) async {
+    // TODO: refactor, delete msgFormModel from here
+    if (resetModel) {
+      msgFormModel.tokenAmountModel = null;
+      msgFormModel.recipientRelativeAmount = null;
+      msgFormModel.recipientTokenDenomination = null;
+      msgFormModel.memo = '';
+    }
+
     emit(const TxProcessLoadingState());
 
     if (sessionCubit.state.isLoggedIn == false) {
       emit(const TxProcessErrorState());
       return;
     }
+
 
     String msgTypeName = InterxMsgTypes.getName(txMsgType);
 

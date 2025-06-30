@@ -1,14 +1,22 @@
 import 'package:equatable/equatable.dart';
-import 'package:torii_client/data/dto/api/query_transactions/response/transaction.dart';
 import 'package:torii_client/domain/models/page_data.dart';
 import 'package:torii_client/domain/models/tokens/list/tx_list_item_model.dart';
-import 'package:torii_client/utils/exports.dart';
+import 'package:torii_client/utils/extensions/page_data_extension.dart';
 
 class LogTxs extends Equatable {
   const LogTxs({required this.fromKira, required this.fromEth});
 
   final PageData<TxListItemModel> fromKira;
   final PageData<TxListItemModel> fromEth;
+
+  PageData<TxListItemModel> combineAndSortDesc() {
+    final List<TxListItemModel> combinedList = [...fromKira.listItems, ...fromEth.listItems];
+    print('fromEth.listItems');
+    print(fromEth.listItems);
+    print('fromKira.listItems');
+    print(fromKira.listItems);
+    return PageData<TxListItemModel>(listItems: combinedList).sortDescByDate();
+  }
 
   // todo remove
   // factory LogTxs.fromJson(Map<String, dynamic> json) {

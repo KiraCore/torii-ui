@@ -11,6 +11,7 @@ import 'package:torii_client/presentation/widgets/loading/center_load_spinner.da
 import 'package:torii_client/presentation/widgets/torii_scaffold.dart';
 import 'package:torii_client/utils/exports.dart';
 
+@Deprecated('Use notif box instead')
 class TransferClaimPage extends StatelessWidget {
   const TransferClaimPage({
     super.key,
@@ -43,12 +44,12 @@ class TransferClaimPage extends StatelessWidget {
       child: BlocConsumer<ToriiLogsCubit, ToriiLogsState>(
         listenWhen:
             (previous, current) =>
-                previous.ethereumTransactions != current.ethereumTransactions ||
-                previous.kiraTransactions != current.kiraTransactions,
+                previous.pendingEthTxs != current.pendingEthTxs,
         listener: (context, state) {
           context.read<TransferClaimCubit>().reloadTransactions(
-            pendingSenderTransaction: state.pendingSenderTransaction,
-            pendingRecipientTransaction: state.pendingRecipientTransaction,
+            pendingSenderTransaction: null,
+            // todo: remove, its temp
+            pendingRecipientTransaction: state.pendingEthTxs?.listItems.firstOrNull,
           );
         },
         buildWhen: (previous, current) => previous.isLoading != current.isLoading,

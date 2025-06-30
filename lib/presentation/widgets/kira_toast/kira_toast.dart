@@ -16,7 +16,7 @@ class KiraToast {
     String? actionTitle,
     Icon? icon,
     bool showDefaultIcon = true,
-    Duration toastDuration = const Duration(seconds: 1),
+    Duration toastDuration = const Duration(seconds: 5),
   }) async {
     FToast()
       // Remove actual displayed toast if exists

@@ -84,7 +84,7 @@ class ClaimProgressDialog extends StatelessWidget {
             children: <Widget>[
               ClaimFormPreview(txListItemModel: state.txToProcess!),
               const SizedBox(height: 30),
-              if (state.isReadyToClaim || state.isClaiming)
+              if (!state.isReadyToClaim || state.isClaiming)
                 Center(
                   child: Text(
                     'Confirmed in ${state.passedSeconds.toTimeFromSeconds()}',

@@ -3,9 +3,10 @@ import 'package:torii_client/presentation/transfer/tx_broadcast/cubit/a_tx_broad
 
 class TxBroadcastCompletedState extends ATxBroadcastState {
   final BroadcastRespModel broadcastRespModel;
+  final bool isEthRecipient;
 
-  const TxBroadcastCompletedState({required this.broadcastRespModel});
+  const TxBroadcastCompletedState({required this.broadcastRespModel, required this.isEthRecipient});
 
   @override
-  List<Object?> get props => <Object>[broadcastRespModel];
+  List<Object?> get props => <Object>[broadcastRespModel, isEthRecipient];
 }

@@ -20,6 +20,7 @@ class TransferClaimState extends Equatable {
   /// Need to be claimed manually only when Ethereum is a recipient (Kira is a sender)
   final bool shouldBeManuallyClaimed;
   final int passedSeconds;
+  final int remainingSeconds;
   final bool navigateToInput;
   final bool isError;
   final bool isLoading;
@@ -40,6 +41,7 @@ class TransferClaimState extends Equatable {
     this.shouldBeManuallyClaimed = false,
     this.isClaiming = false,
     this.passedSeconds = 0,
+    this.remainingSeconds = 0,
     this.navigateToInput = false,
     this.isError = false,
     this.isLoading = false,
@@ -56,6 +58,7 @@ class TransferClaimState extends Equatable {
     waitForRecipientToClaim,
     isClaiming,
     passedSeconds,
+    remainingSeconds,
     shouldBeManuallyClaimed,
     navigateToInput,
     isError,

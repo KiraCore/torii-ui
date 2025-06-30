@@ -7,6 +7,7 @@ import 'package:torii_client/domain/models/tokens/list/tx_list_item_model.dart';
 import 'package:torii_client/domain/models/tokens/list/tx_status_type.dart';
 import 'package:torii_client/domain/models/transaction/signed_transaction_model.dart';
 import 'package:torii_client/presentation/global/logs/torii_logs_cubit.dart';
+import 'package:torii_client/presentation/transfer/input/cubit/transfer_input_cubit.dart';
 import 'package:torii_client/presentation/transfer/tx_broadcast/cubit/a_tx_broadcast_state.dart';
 import 'package:torii_client/presentation/transfer/tx_broadcast/cubit/states/tx_broadcast_completed_state.dart';
 import 'package:torii_client/presentation/transfer/tx_broadcast/cubit/states/tx_broadcast_error_state.dart';
@@ -15,6 +16,8 @@ import 'package:torii_client/presentation/transfer/tx_broadcast/cubit/tx_broadca
 import 'package:torii_client/presentation/transfer/tx_broadcast/widgets/tx_broadcast_error_body.dart';
 import 'package:torii_client/presentation/transfer/tx_broadcast/widgets/tx_broadcast_loading_body.dart';
 import 'package:torii_client/presentation/transfer/tx_process_cubit/tx_process_cubit.dart';
+import 'package:torii_client/presentation/widgets/kira_toast/kira_toast.dart';
+import 'package:torii_client/presentation/widgets/kira_toast/toast_type.dart';
 import 'package:torii_client/utils/exports.dart';
 
 class TxBroadcastPage<T extends AMsgFormModel> extends StatefulWidget {
@@ -62,29 +65,18 @@ class _TxBroadcastPage<T extends AMsgFormModel> extends State<TxBroadcastPage<T>
       child: BlocConsumer<TxBroadcastCubit, ATxBroadcastState>(
         listener: (BuildContext context, ATxBroadcastState txBroadcastState) {
           if (txBroadcastState is TxBroadcastCompletedState) {
-            ClaimProgressRoute(
-              ClaimProgressRouteExtra(
-                signedTx: TxListItemModel(
-                  hash: txBroadcastState.broadcastRespModel.hash,
-                  // TODO: inaccurate time
-                  time: DateTime.now(),
-                  txDirectionType: TxDirectionType.outbound,
-                  txStatusType: TxStatusType.confirmed,
-                  txMsgModels: [widget.signedTxModel!.txLocalInfoModel.txMsgModel],
-                  fees: [widget.signedTxModel!.txLocalInfoModel.feeTokenAmountModel],
-                  prefixedTokenAmounts: [
-                    PrefixedTokenAmountModel(
-                      tokenAmountModel: widget.signedTxModel!.txLocalInfoModel.txMsgModel.tokenAmountModel,
-                      tokenAmountPrefixType: TokenAmountPrefixType.subtract,
-                    ),
-                  ],
-                  memo: widget.signedTxModel!.txLocalInfoModel.memo,
-                ),
-                msgSendFormModel: txProcessCubit.msgFormModel,
-                pendingSenderTransaction: null,
-                pendingRecipientTransaction: null,
-              ),
-            ).replace(context);
+            if (txBroadcastState.isEthRecipient) {
+              KiraToast.of(context).show(message: 'Wait for transaction in Notifications', type: ToastType.success);
+            } else {
+              KiraToast.of(context).show(message: 'Transaction is accepted', type: ToastType.success);
+            }
+            // TODO: refactor routing, make .replace
+            context.read<TransferInputCubit>().resetAmounts();
+            context.read<TxProcessCubit<MsgSendFormModel>>().init(
+              sendFromKira: txBroadcastState.isEthRecipient,
+              resetModel: true,
+            );
+            context.read<ToriiLogsCubit>().reload();
           }
         },
         builder: (BuildContext context, ATxBroadcastState txBroadcastState) {

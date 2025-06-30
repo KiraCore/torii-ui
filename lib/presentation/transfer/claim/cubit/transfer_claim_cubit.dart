@@ -74,6 +74,8 @@ class TransferClaimCubit extends Cubit<TransferClaimState> {
       final loggedInEth = _sessionCubit.state.ethereumWallet;
       if ((loggedInEth != null && txToProcess?.txMsgModels.firstOrNull?.toWalletAddress == loggedInEth.address) ||
           (signedTx == null && msgSendFormModel != null)) {
+        final passedSeconds = DateTime.now().toUtc().difference(txToProcess!.time.toUtc()).inSeconds;
+        final isReadyToClaim = passedSeconds >= 60;
         emit(
           TransferClaimState(
             signedTx: state.signedTx,
@@ -81,9 +83,14 @@ class TransferClaimCubit extends Cubit<TransferClaimState> {
             pendingSenderTransaction: state.pendingSenderTransaction,
             pendingRecipientTransaction: state.pendingRecipientTransaction,
             shouldBeManuallyClaimed: true,
+            // TODO: temp remainingSeconds
+            remainingSeconds: 60 - passedSeconds,
+            isReadyToClaim: isReadyToClaim,
           ),
         );
-        _signUpToClaim();
+        if (!isReadyToClaim) {
+          _signUpToClaim();
+        }
       } else if (txToProcess?.txMsgModels.firstOrNull?.toWalletAddress is CosmosWalletAddress) {
         emit(
           TransferClaimState(
@@ -169,6 +176,8 @@ class TransferClaimCubit extends Cubit<TransferClaimState> {
         pendingSenderTransaction: state.pendingSenderTransaction,
         pendingRecipientTransaction: state.pendingRecipientTransaction,
         shouldBeManuallyClaimed: true,
+        remainingSeconds: state.remainingSeconds,
+        isReadyToClaim: state.isReadyToClaim,
       ),
     );
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -181,12 +190,12 @@ class TransferClaimCubit extends Cubit<TransferClaimState> {
         TransferClaimState(
           signedTx: state.signedTx,
           msgSendFormModel: state.msgSendFormModel,
-          passedSeconds: state.passedSeconds + 1,
+          remainingSeconds: state.remainingSeconds - 1,
           pendingSenderTransaction: state.pendingSenderTransaction,
           pendingRecipientTransaction: state.pendingRecipientTransaction,
           shouldBeManuallyClaimed: true,
           // TODO: temp way, fix this
-          isReadyToClaim: state.passedSeconds >= 10,
+          isReadyToClaim: state.remainingSeconds <= 1,
         ),
       );
     });
@@ -245,6 +254,7 @@ class TransferClaimCubit extends Cubit<TransferClaimState> {
         pendingSenderTransaction: state.pendingSenderTransaction,
         pendingRecipientTransaction: state.pendingRecipientTransaction,
         passedSeconds: state.passedSeconds,
+        shouldBeManuallyClaimed: state.shouldBeManuallyClaimed,
         isClaiming: true,
       ),
     );
@@ -262,6 +272,7 @@ class TransferClaimCubit extends Cubit<TransferClaimState> {
           pendingSenderTransaction: state.pendingSenderTransaction,
           pendingRecipientTransaction: state.pendingRecipientTransaction,
           passedSeconds: state.passedSeconds,
+          shouldBeManuallyClaimed: state.shouldBeManuallyClaimed,
           navigateToInput: true,
         ),
       );
@@ -274,7 +285,9 @@ class TransferClaimCubit extends Cubit<TransferClaimState> {
           pendingSenderTransaction: state.pendingSenderTransaction,
           pendingRecipientTransaction: state.pendingRecipientTransaction,
           passedSeconds: state.passedSeconds,
+          shouldBeManuallyClaimed: state.shouldBeManuallyClaimed,
           isError: true,
+          isReadyToClaim: true,
         ),
       );
     }

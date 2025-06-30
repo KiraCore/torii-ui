@@ -19,6 +19,16 @@ class TransferInputCubit extends Cubit<TransferInputState> {
     init();
   }
 
+  void resetAmounts() {
+    emit(
+      TransferInputState(
+        fromWallet: state.fromWallet,
+        balance: state.balance,
+        recipientWalletAddress: state.recipientWalletAddress,
+      ),
+    );
+  }
+
   Future<void> init() async {
     _initEthBalanceEmitWallet(state.fromWallet);
   }

@@ -1,32 +1,27 @@
 part of 'torii_logs_cubit.dart';
 
 class ToriiLogsState extends Equatable {
-  const ToriiLogsState({this.ethereumTransactions, this.kiraTransactions, this.isLoading = false});
+  const ToriiLogsState({this.pendingEthTxs, this.ethereumTxs, this.kiraTxs, this.isLoading = false});
 
   final bool isLoading;
-  final LogTxs? ethereumTransactions;
-  final LogTxs? kiraTransactions;
-
-  // TODO: optimize, put in state
-  // TODO: check for a pending transaction
-  TxListItemModel? get pendingSenderTransaction =>
-      ethereumTransactions?.fromKira.listItems.lastOrNull ?? kiraTransactions?.fromEth.listItems.lastOrNull;
-
-  TxListItemModel? get pendingRecipientTransaction =>
-      ethereumTransactions?.fromEth.listItems.lastOrNull ?? kiraTransactions?.fromKira.listItems.lastOrNull;
+  final PageData<TxListItemModel>? pendingEthTxs;
+  final LogTxs? ethereumTxs;
+  final LogTxs? kiraTxs;
 
   ToriiLogsState copyWith({
-    LogTxs? Function()? ethereumTransactions,
-    LogTxs? Function()? kiraTransactions,
+    PageData<TxListItemModel>? Function()? pendingEthTxs,
+    LogTxs? Function()? ethereumTxs,
+    LogTxs? Function()? kiraTxs,
     bool? isLoading,
   }) {
     return ToriiLogsState(
-      ethereumTransactions: ethereumTransactions != null ? ethereumTransactions() : this.ethereumTransactions,
-      kiraTransactions: kiraTransactions != null ? kiraTransactions() : this.kiraTransactions,
+      pendingEthTxs: pendingEthTxs != null ? pendingEthTxs() : this.pendingEthTxs,
+      ethereumTxs: ethereumTxs != null ? ethereumTxs() : this.ethereumTxs,
+      kiraTxs: kiraTxs != null ? kiraTxs() : this.kiraTxs,
       isLoading: isLoading ?? this.isLoading,
     );
   }
 
   @override
-  List<Object?> get props => [ethereumTransactions, kiraTransactions, isLoading];
+  List<Object?> get props => [pendingEthTxs, ethereumTxs, kiraTxs, isLoading];
 }

@@ -45,21 +45,7 @@ class ToriiApp extends StatelessWidget {
               }
               router.refresh();
             },
-            child: BlocListener<ToriiLogsCubit, ToriiLogsState>(
-              listenWhen:
-                  (previous, current) =>
-                      previous.pendingSenderTransaction != current.pendingSenderTransaction ||
-                      previous.pendingRecipientTransaction != current.pendingRecipientTransaction,
-              listener: (context, state) {
-                // TODO: test
-                // NOTE: we shouldn't need to refresh the router if the current 2 routes are dialogs because the dialog is already working on closing itself, and refresh will cause a conflict
-                if (router.isPreviousRouteDialog()) {
-                  return;
-                }
-                router.refresh();
-              },
-              child: navigator!,
-            ),
+            child: navigator!,
           ),
         );
       },

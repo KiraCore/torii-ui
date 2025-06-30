@@ -17,9 +17,9 @@ class TokenAliasModel extends Equatable {
 
   factory TokenAliasModel.wkex() {
     return TokenAliasModel(
-      name: 'WKEX',
+      name: 'wKEX',
       defaultTokenDenominationModel: TokenDenominationModel(name: 'ukex', decimals: 0),
-      baseTokenDenominationModel: TokenDenominationModel(name: 'WKEX', decimals: 9),
+      baseTokenDenominationModel: TokenDenominationModel(name: 'wKEX', decimals: 9),
     );
   }
 
