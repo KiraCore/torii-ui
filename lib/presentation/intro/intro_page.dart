@@ -6,7 +6,6 @@ import 'package:torii_client/presentation/network/network_drawer_page/current_ne
 import 'package:torii_client/presentation/widgets/buttons/kira_outlined_button.dart';
 import 'package:torii_client/presentation/widgets/torii_scaffold.dart';
 import 'package:torii_client/utils/exports.dart';
-import 'package:torii_client/utils/router/router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class IntroPage extends StatelessWidget {
@@ -30,7 +29,7 @@ class IntroPage extends StatelessWidget {
           children: [
             Expanded(
               child: Align(
-                alignment: Alignment.topRight,
+                alignment: Alignment.topCenter,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
                   child: CurrentNetworkButton(),
