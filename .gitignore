@@ -55,3 +55,6 @@ locator.config.dart
 
 # Test data
 /assets/test
+
+# Code review
+CODE_REVIEW.md
