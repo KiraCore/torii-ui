@@ -6,9 +6,6 @@ on:
     branches:
       - dev
 
-env:
-  FLUTTER_VERSION: '3.29.0'
-
 jobs:
   app-version-check:
     runs-on: ubuntu-20.04
@@ -47,7 +44,7 @@ jobs:
     needs: app-version-check
     runs-on: ubuntu-20.04
     container:
-      image: ghcr.io/cirruslabs/flutter:${{ env.FLUTTER_VERSION }}
+      image: ghcr.io/cirruslabs/flutter:3.29.0
     steps:
       # https://github.com/marketplace/actions/checkout
       - uses: actions/checkout@main
