@@ -1,0 +1,66 @@
+name: Version and tests check
+run-name: Version and tests check
+
+on:
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  app-version-check:
+    runs-on: ubuntu-24.04
+    steps:
+      # https://github.com/marketplace/actions/checkout
+      - uses: actions/checkout@main
+        with:
+          ref: dev
+      - name: Extract version from branch DEV
+        run: |
+          chmod -R 777 scripts
+          DEV_BRANCH_VERSION="$(./scripts/version.sh)"
+          echo "DEV_BRANCH_VERSION=$DEV_BRANCH_VERSION" >> $GITHUB_ENV
+          echo "DEV_BRANCH_VERSION: $DEV_BRANCH_VERSION"
+      - uses: actions/checkout@main
+      - name: Extract version from branch WORKING
+        run: |
+          chmod -R 777 scripts
+          WORKING_BRANCH_VERSION="$(./scripts/version.sh)"
+          echo "WORKING_BRANCH_VERSION=$WORKING_BRANCH_VERSION" >> $GITHUB_ENV
+          echo "WORKING_BRANCH_VERSION: $WORKING_BRANCH_VERSION"
+      - name: Compare versions
+        run: |
+          echo "DEV_BRANCH_VERSION: $DEV_BRANCH_VERSION"
+          echo "WORKING_BRANCH_VERSION: $WORKING_BRANCH_VERSION"
+
+          RESULT="$(./scripts/compare_versions.py $DEV_BRANCH_VERSION $WORKING_BRANCH_VERSION)"
+
+          if [ $RESULT == "True" ]; then
+            exit 0
+          fi
+
+          echo "Working branch version isn't updated in file pubspec.yaml. Please update accordingly."
+          exit 1
+  run-unit-tests:
+    needs: app-version-check
+    runs-on: ubuntu-24.04
+    container:
+      image: ghcr.io/cirruslabs/flutter:3.29.0
+    steps:
+      # https://github.com/marketplace/actions/checkout
+      - uses: actions/checkout@main
+
+      # TODO: Replace hardcoded values with secrets for production:
+      #   TORII_LOG_ACCESS_TOKEN="${{ secrets.TORII_LOG_ACCESS_TOKEN }}"
+      #   TORII_LOG_URL="${{ secrets.TORII_LOG_URL }}"
+      - name: Create .env file
+        run: |
+          cat <<EOF > .env
+          TORII_LOG_ACCESS_TOKEN="lafijsiadnm/a@@#lsa\$fd8f"
+          TORII_LOG_URL="http://157.180.16.117:8890/"
+          KIRA_ETH_ENABLED=false
+          IS_TEST_ENVIRONMENT=true
+          EOF
+
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test "test/unit" --platform chrome --null-assertions
