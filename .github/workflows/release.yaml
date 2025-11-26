@@ -1,0 +1,174 @@
+name: Release
+run-name: "Release: ${{ github.sha }}"
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      packages: write
+      id-token: write
+    container:
+      image: ghcr.io/cirruslabs/flutter:3.29.0
+      options: --privileged
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Determine version bump type
+        id: bump-type
+        run: |
+          # Get the merge commit message or last commit
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          PR_TITLE=$(git log -1 --pretty=%s)
+
+          echo "Commit message: $COMMIT_MSG"
+          echo "PR title: $PR_TITLE"
+
+          # Check for major bump indicators
+          if echo "$COMMIT_MSG" | grep -qiE "BREAKING CHANGE|^major:|!\:"; then
+            BUMP_TYPE="major"
+          # Check for minor bump indicators (feature branches or feat commits)
+          elif echo "$COMMIT_MSG" | grep -qiE "^feat:|^feature:|Merge.*feature/"; then
+            BUMP_TYPE="minor"
+          # Default to patch for everything else (hotfix, bugfix, fix, perf, etc.)
+          else
+            BUMP_TYPE="patch"
+          fi
+
+          echo "BUMP_TYPE=$BUMP_TYPE" >> $GITHUB_ENV
+          echo "Determined bump type: $BUMP_TYPE"
+
+      - name: Bump version
+        run: |
+          chmod +x scripts/version.sh
+          CURRENT_VERSION=$(./scripts/version.sh)
+          echo "Current version: $CURRENT_VERSION"
+
+          # Parse version components
+          MAJOR=$(echo $CURRENT_VERSION | cut -d. -f1)
+          MINOR=$(echo $CURRENT_VERSION | cut -d. -f2)
+          PATCH=$(echo $CURRENT_VERSION | cut -d. -f3)
+
+          # Bump based on type
+          case $BUMP_TYPE in
+            major)
+              MAJOR=$((MAJOR + 1))
+              MINOR=0
+              PATCH=0
+              ;;
+            minor)
+              MINOR=$((MINOR + 1))
+              PATCH=0
+              ;;
+            patch)
+              PATCH=$((PATCH + 1))
+              ;;
+          esac
+
+          NEW_VERSION="$MAJOR.$MINOR.$PATCH"
+          echo "New version: $NEW_VERSION"
+          echo "RELEASE_VER=$NEW_VERSION" >> $GITHUB_ENV
+
+          # Update pubspec.yaml
+          sed -i "s/^version: .*/version: $NEW_VERSION/" pubspec.yaml
+
+          # Commit version bump
+          git add pubspec.yaml
+          git commit -m "chore: bump version to $NEW_VERSION [skip ci]"
+          git push origin master
+
+      # TODO: Replace hardcoded values with secrets for production
+      - name: Create .env file
+        run: |
+          cat <<EOF > .env
+          TORII_LOG_ACCESS_TOKEN="lafijsiadnm/a@@#lsa\$fd8f"
+          TORII_LOG_URL="http://157.180.16.117:8890/"
+          KIRA_ETH_ENABLED=false
+          IS_TEST_ENVIRONMENT=false
+          EOF
+
+      - name: Build web version
+        run: |
+          flutter build web --dart-define-from-file=.env
+          sed -i 's/base href="\/"/base href=\".\/\"/' ./build/web/index.html
+          cd ./build/web
+          zip -r ../../html-web-app.zip ./*
+          cd ../..
+
+      - name: Pin/Upload to IPFS
+        run: |
+          IPFS_HASH=""
+          IPFS_UPLOAD_NAME="torii-www-$RELEASE_VER"
+
+          bash-utils timerStart "pin-timeout"
+
+          while [ -z "$IPFS_HASH" ] || [ $(bash-utils timerSpan "pin-timeout") -gt 120 ]; do
+            bash-utils echoInfo "INFO: Attempting files pin to IPFS..."
+            [ -e ./ipfs-pin.log ] && rm ./ipfs-pin.log
+            touch ./ipfs-pin.log
+            ipfs-api delete $IPFS_UPLOAD_NAME --key=${{ secrets.PINATA_API_JWT }} --verbose=true || echo "WARNING: Failed to delete existing pin"
+            ipfs-api pin ./build/web $IPFS_UPLOAD_NAME --key=${{ secrets.PINATA_API_JWT }} --verbose=true | tee -a ./ipfs-pin.log || echo "ERROR: Failed to pin web app"
+            IPFS_HASH=$(cat ./ipfs-pin.log | tail -n 1 | bash-utils jsonParse ".hash" || echo "")
+            sleep 10
+          done
+
+          echo "IPFS_HASH=$IPFS_HASH" >> $GITHUB_ENV
+          echo "Private Gateway: https://ipfs.kira.network/ipfs/$IPFS_HASH"
+          echo "Public Gateway: https://ipfs.io/ipfs/$IPFS_HASH"
+
+      - name: Create RELEASE.md
+        run: |
+          cat <<EOF > RELEASE.md
+          ## Torii UI v$RELEASE_VER
+
+          ### IPFS Deployment
+          - **Private Gateway:** https://ipfs.kira.network/ipfs/$IPFS_HASH
+          - **Public Gateway:** https://ipfs.io/ipfs/$IPFS_HASH
+
+          ### Build Info
+          \`\`\`
+          Version: $RELEASE_VER
+          Released: $(date --rfc-2822)
+          Commit: ${{ github.sha }}
+          html-web-app.zip: sha256:$(sha256sum ./html-web-app.zip | awk '{ print $1 }')
+          \`\`\`
+          EOF
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@main
+        with:
+          cosign-release: 'v1.13.1'
+
+      - name: Sign release files
+        env:
+          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+          COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
+        run: |
+          cosign version
+          cosign sign-blob --key=env://COSIGN_PRIVATE_KEY --output-signature=./html-web-app.zip.sig ./html-web-app.zip
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          body_path: RELEASE.md
+          tag_name: v${{ env.RELEASE_VER }}
+          name: v${{ env.RELEASE_VER }}
+          draft: false
+          fail_on_unmatched_files: true
+          files: |
+            ./html-web-app.zip
+            ./html-web-app.zip.sig

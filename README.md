@@ -77,10 +77,10 @@ flutter run -d chrome --dart-define=KIRA_ETH_ENABLED=true
 
 ```bash
 # Build web release
-flutter build web --web-renderer canvaskit
+flutter build web --dart-define-from-file=.env
 
 # Build with KIRA-ETH bridge enabled
-flutter build web --web-renderer canvaskit --dart-define=KIRA_ETH_ENABLED=true
+flutter build web --dart-define-from-file=.env --dart-define=KIRA_ETH_ENABLED=true
 ```
 
 ## Configuration

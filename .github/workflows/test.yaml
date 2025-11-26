@@ -1,0 +1,62 @@
+name: Test & Validate
+run-name: "PR: ${{ github.head_ref }}"
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-24.04
+    container:
+      image: ghcr.io/cirruslabs/flutter:3.29.0
+    steps:
+      - uses: actions/checkout@v4
+
+      # TODO: Replace hardcoded values with secrets for production
+      - name: Create .env file
+        run: |
+          cat <<EOF > .env
+          TORII_LOG_ACCESS_TOKEN="lafijsiadnm/a@@#lsa\$fd8f"
+          TORII_LOG_URL="http://157.180.16.117:8890/"
+          KIRA_ETH_ENABLED=false
+          IS_TEST_ENVIRONMENT=true
+          EOF
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run analyzer
+        run: flutter analyze
+
+      - name: Run unit tests
+        run: flutter test "test/unit" --platform chrome --null-assertions
+
+  build-check:
+    runs-on: ubuntu-24.04
+    needs: lint-and-test
+    container:
+      image: ghcr.io/cirruslabs/flutter:3.29.0
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create .env file
+        run: |
+          cat <<EOF > .env
+          TORII_LOG_ACCESS_TOKEN="lafijsiadnm/a@@#lsa\$fd8f"
+          TORII_LOG_URL="http://157.180.16.117:8890/"
+          KIRA_ETH_ENABLED=false
+          IS_TEST_ENVIRONMENT=true
+          EOF
+
+      - name: Build web version
+        run: flutter build web --dart-define-from-file=.env
+
+      - name: Verify build output
+        run: |
+          if [ ! -f "./build/web/index.html" ]; then
+            echo "ERROR: Build failed - index.html not found"
+            exit 1
+          fi
+          echo "Build verified successfully"

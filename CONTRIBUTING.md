@@ -4,102 +4,98 @@
 
 ### Branch Structure
 
-- `dev` - Main development branch. All PRs should target this branch.
+- `master` - Production branch. PRs from feature branches target this.
+- `feature/*` - New features
+- `hotfix/*` - Critical production fixes
+- `bugfix/*` - Bug fixes
+- `perf/*` - Performance improvements
+- `refactor/*` - Code refactoring
+- `chore/*` - Maintenance tasks
 
 ### Version Management
 
-The app version is defined in `pubspec.yaml`:
+**Automatic Semver Bumping** - Version is automatically bumped on merge to `master`:
 
-```yaml
-version: 1.0.0+1
-```
+| Commit/Branch Pattern | Bump Type | Example |
+|-----------------------|-----------|---------|
+| `BREAKING CHANGE`, `major:`, `!:` | Major | 1.0.0 → 2.0.0 |
+| `feat:`, `feature:`, `feature/*` branch | Minor | 1.0.0 → 1.1.0 |
+| `fix:`, `hotfix:`, `bugfix:`, `perf:`, etc. | Patch | 1.0.0 → 1.0.1 |
 
-**Important:** You must bump the version in `pubspec.yaml` for every PR to `dev`. The CI will reject PRs where the working branch version is not greater than the `dev` branch version.
-
-### Scripts
-
-Located in `/scripts`:
-
-| Script | Purpose |
-|--------|---------|
-| `version.sh` | Extracts normalized version (X.Y.Z) from pubspec.yaml |
-| `compare_versions.py` | Compares two versions, returns True if second > first |
+The version is stored in `pubspec.yaml` and updated automatically by CI.
 
 ### CI/CD Pipeline
 
-#### On Pull Request to `dev`
+#### On Push to Feature Branches (`preview.yaml`)
 
-1. **Version Check** (`version_and_tests.yaml`)
-   - Extracts version from `dev` branch
-   - Extracts version from your working branch
-   - Fails if working branch version ≤ dev branch version
+Triggers on push to: `feature/*`, `hotfix/*`, `bugfix/*`, `perf/*`, `refactor/*`, `chore/*`
 
-2. **Unit Tests** (`version_and_tests.yaml`)
-   - Runs `flutter pub get`
-   - Runs `flutter analyze`
-   - Runs `flutter test "test/unit" --platform chrome`
+1. **Build** - Builds web app with `flutter build web --dart-define-from-file=.env`
+2. **Deploy Preview** - Pins to IPFS for testing
+3. **Output URLs** - Preview URLs shown in workflow summary
 
-3. **Build Preview** (`deploy_and_release.yaml`)
-   - Builds web app with canvaskit renderer
-   - Pins to IPFS with temporary version `0.0.1`
-   - No GitHub release created
+#### On Pull Request to `master` (`test.yaml`)
 
-#### On Push/Merge to `dev`
+1. **Lint** - Runs `flutter analyze`
+2. **Unit Tests** - Runs `flutter test "test/unit" --platform chrome`
+3. **Build Check** - Verifies the build succeeds
 
-1. **Build** (`deploy_and_release.yaml`)
-   - Builds web app: `flutter build web --web-renderer canvaskit`
-   - Creates `html-web-app.zip`
+#### On Merge to `master` (`release.yaml`)
 
-2. **IPFS Deployment**
-   - Pins build to IPFS via Pinata
-   - Upload name: `torii-www-{version}`
-   - Available at:
-     - `https://ipfs.kira.network/ipfs/{hash}`
-     - `https://ipfs.io/ipfs/{hash}`
-
-3. **GitHub Release**
-   - Creates release with tag matching version
-   - Signs `html-web-app.zip` with cosign
-   - Attaches:
-     - `html-web-app.zip`
-     - `html-web-app.zip.sig`
+1. **Version Bump** - Auto-increments version based on commit message/branch
+2. **Build** - Builds production web app
+3. **IPFS Deployment** - Pins to IPFS via Pinata
+4. **Sign** - Signs artifacts with cosign
+5. **Release** - Creates GitHub release with:
+   - `html-web-app.zip`
+   - `html-web-app.zip.sig`
+   - IPFS gateway URLs
 
 ### Making a Contribution
 
-1. Create a feature branch from `dev`:
+1. Create a feature branch from `master`:
    ```bash
-   git checkout dev
-   git pull origin dev
+   git checkout master
+   git pull origin master
    git checkout -b feature/my-feature
    ```
 
 2. Make your changes
 
-3. Bump version in `pubspec.yaml`:
-   ```yaml
-   # Before
-   version: 1.0.0+1
-
-   # After (example)
-   version: 1.0.1+1
-   ```
-
-4. Run tests locally:
+3. Push to trigger preview deployment:
    ```bash
-   flutter pub get
-   flutter analyze
-   flutter test "test/unit" --platform chrome
+   git push origin feature/my-feature
    ```
+   Check the workflow summary for preview URLs.
 
-5. Push and create PR targeting `dev`
+4. Create PR targeting `master`
 
-6. Wait for CI checks to pass
+5. Wait for tests to pass
 
-7. Get review and merge
+6. Get review and merge
+
+7. Release is created automatically with bumped version
+
+### Conventional Commits (Recommended)
+
+Use conventional commit messages for clear version bumping:
+
+```bash
+# Patch bump (default)
+git commit -m "fix: resolve login issue"
+git commit -m "perf: optimize image loading"
+
+# Minor bump
+git commit -m "feat: add dark mode toggle"
+
+# Major bump (breaking change)
+git commit -m "feat!: redesign authentication flow"
+git commit -m "feat: new API
+
+BREAKING CHANGE: removed legacy endpoints"
+```
 
 ### Required Secrets (for maintainers)
-
-The following GitHub secrets must be configured:
 
 | Secret | Purpose |
 |--------|---------|
@@ -123,9 +119,19 @@ dart pub global run intl_utils:generate
 flutter run -d chrome
 
 # Build web version
-flutter build web --web-renderer canvaskit
+flutter build web --dart-define-from-file=.env
+```
+
+### Testing
+
+```bash
+# Run unit tests
+flutter test "test/unit" --platform chrome
+
+# Run analyzer
+flutter analyze
 ```
 
 ### Flutter Version
 
-This project uses Flutter `3.29.0` (stable channel). Ensure you have a compatible version installed.
+This project uses Flutter `3.29.0` (stable channel).

@@ -1,0 +1,80 @@
+name: Preview Deployment
+run-name: "Preview: ${{ github.ref_name }}"
+
+on:
+  push:
+    branches:
+      - 'feature/**'
+      - 'hotfix/**'
+      - 'bugfix/**'
+      - 'perf/**'
+      - 'refactor/**'
+      - 'chore/**'
+
+jobs:
+  build-and-preview:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pull-requests: write
+    container:
+      image: ghcr.io/cirruslabs/flutter:3.29.0
+      options: --privileged
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get branch name
+        run: |
+          BRANCH_NAME="${GITHUB_REF_NAME}"
+          # Sanitize branch name for IPFS upload name (replace / with -)
+          SANITIZED_BRANCH=$(echo "$BRANCH_NAME" | tr '/' '-')
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+          echo "SANITIZED_BRANCH=$SANITIZED_BRANCH" >> $GITHUB_ENV
+          echo "Building preview for branch: $BRANCH_NAME"
+
+      # TODO: Replace hardcoded values with secrets for production
+      - name: Create .env file
+        run: |
+          cat <<EOF > .env
+          TORII_LOG_ACCESS_TOKEN="lafijsiadnm/a@@#lsa\$fd8f"
+          TORII_LOG_URL="http://157.180.16.117:8890/"
+          KIRA_ETH_ENABLED=false
+          IS_TEST_ENVIRONMENT=true
+          EOF
+
+      - name: Build web version
+        run: |
+          flutter build web --dart-define-from-file=.env
+          sed -i 's/base href="\/"/base href=\".\/\"/' ./build/web/index.html
+
+      - name: Pin/Upload to IPFS
+        run: |
+          IPFS_HASH=""
+          IPFS_UPLOAD_NAME="torii-preview-$SANITIZED_BRANCH"
+
+          bash-utils timerStart "pin-timeout"
+
+          while [ -z "$IPFS_HASH" ] || [ $(bash-utils timerSpan "pin-timeout") -gt 120 ]; do
+            bash-utils echoInfo "INFO: Attempting files pin to IPFS..."
+            [ -e ./ipfs-pin.log ] && rm ./ipfs-pin.log
+            touch ./ipfs-pin.log
+            ipfs-api delete $IPFS_UPLOAD_NAME --key=${{ secrets.PINATA_API_JWT }} --verbose=true || echo "WARNING: Failed to delete file with name '$IPFS_UPLOAD_NAME'"
+            ipfs-api pin ./build/web $IPFS_UPLOAD_NAME --key=${{ secrets.PINATA_API_JWT }} --verbose=true | tee -a ./ipfs-pin.log || echo "ERROR: Failed to pin web app"
+            IPFS_HASH=$(cat ./ipfs-pin.log | tail -n 1 | bash-utils jsonParse ".hash" || echo "")
+            sleep 10
+          done
+
+          echo "IPFS_HASH=$IPFS_HASH" >> $GITHUB_ENV
+
+      - name: Output preview URLs
+        run: |
+          echo "## 🚀 Preview Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** \`$BRANCH_NAME\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Preview URLs" >> $GITHUB_STEP_SUMMARY
+          echo "- **Private Gateway:** https://ipfs.kira.network/ipfs/$IPFS_HASH" >> $GITHUB_STEP_SUMMARY
+          echo "- **Public Gateway:** https://ipfs.io/ipfs/$IPFS_HASH" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "_Built at: $(date --rfc-2822)_" >> $GITHUB_STEP_SUMMARY
