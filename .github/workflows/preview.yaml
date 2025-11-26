@@ -63,7 +63,7 @@ jobs:
           dpkg-deb -x /tmp/ipfs-api.deb /tmp/ipfs-api
           cp -f /tmp/ipfs-api/bin/ipfs-api /usr/local/bin/ipfs-api
           chmod +x /usr/local/bin/ipfs-api
-          ipfs-api --version
+          ipfs-api version
 
       - name: Pin/Upload to IPFS
         run: |
