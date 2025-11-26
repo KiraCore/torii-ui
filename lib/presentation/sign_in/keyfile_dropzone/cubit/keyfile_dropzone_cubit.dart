@@ -1,11 +1,11 @@
 import 'dart:convert';
-import 'dart:html' as html;
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:torii_client/domain/exports.dart';
 import 'package:torii_client/utils/exports.dart';
+import 'package:web/web.dart';
 
 import 'keyfile_dropzone_state.dart';
 
@@ -13,12 +13,8 @@ import 'keyfile_dropzone_state.dart';
 class KeyfileDropzoneCubit extends Cubit<KeyfileDropzoneState> {
   KeyfileDropzoneCubit() : super(KeyfileDropzoneState.empty());
 
-  Future<void> uploadFileViaHtml(dynamic htmlFile) async {
-    if (htmlFile is html.File) {
-      updateSelectedFile(await FileModel.fromHtmlFile(htmlFile));
-    } else {
-      getIt<Logger>().e('Unsupported file type ${htmlFile.runtimeType}');
-    }
+  Future<void> uploadFileViaHtml(File file) async {
+    updateSelectedFile(await FileModel.fromHtmlFile(file));
   }
 
   Future<void> uploadFileManually() async {

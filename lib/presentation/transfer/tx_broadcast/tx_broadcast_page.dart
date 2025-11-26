@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/domain/exports.dart';
-import 'package:torii_client/domain/models/tokens/a_msg_form_model.dart';
-import 'package:torii_client/domain/models/tokens/list/tx_direction_type.dart';
-import 'package:torii_client/domain/models/tokens/list/tx_list_item_model.dart';
-import 'package:torii_client/domain/models/tokens/list/tx_status_type.dart';
 import 'package:torii_client/domain/models/transaction/signed_transaction_model.dart';
 import 'package:torii_client/presentation/global/logs/torii_logs_cubit.dart';
 import 'package:torii_client/presentation/transfer/input/cubit/transfer_input_cubit.dart';

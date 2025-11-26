@@ -11,7 +11,7 @@ import 'package:torii_client/utils/exports.dart';
 class TxBroadcastCompleteBody extends StatelessWidget {
   final TxBroadcastCompletedState txBroadcastCompletedState;
 
-  const TxBroadcastCompleteBody({required this.txBroadcastCompletedState, Key? key}) : super(key: key);
+  const TxBroadcastCompleteBody({required this.txBroadcastCompletedState, super.key});
 
   @override
   Widget build(BuildContext context) {

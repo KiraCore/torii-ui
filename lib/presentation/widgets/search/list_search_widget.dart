@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/presentation/widgets/search/kira_search_bar.dart';
 import 'package:torii_client/utils/theme/design_colors.dart';
 
@@ -20,8 +19,8 @@ class ListSearchWidget extends StatefulWidget {
     this.hint,
     this.onSubmit,
     this.onClear,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<StatefulWidget> createState() => _ListSearchWidget();

@@ -9,13 +9,12 @@ import 'package:torii_client/presentation/widgets/drawer/drawer_subtitle.dart';
 import 'package:torii_client/presentation/widgets/key_value/copy_hover_title_value.dart';
 import 'package:torii_client/presentation/widgets/key_value/detail_title.dart';
 import 'package:torii_client/presentation/widgets/key_value/detail_value.dart';
-import 'package:torii_client/utils/l10n/generated/l10n.dart';
 import 'package:torii_client/utils/theme/design_colors.dart';
 
 class TransactionDetailsDrawerPage extends StatefulWidget {
   final TxListItemModel txListItemModel;
 
-  const TransactionDetailsDrawerPage({required this.txListItemModel, Key? key}) : super(key: key);
+  const TransactionDetailsDrawerPage({required this.txListItemModel, super.key});
 
   @override
   State<StatefulWidget> createState() => _TransactionDetailsDrawerPage();

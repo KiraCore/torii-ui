@@ -3,7 +3,7 @@ import 'package:torii_client/presentation/widgets/loading/center_load_spinner.da
 import 'package:torii_client/utils/exports.dart';
 
 class TxDialogLoading extends StatelessWidget {
-  const TxDialogLoading({Key? key}) : super(key: key);
+  const TxDialogLoading({super.key});
 
   @override
   Widget build(BuildContext context) {

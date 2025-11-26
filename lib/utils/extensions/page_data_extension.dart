@@ -1,7 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:torii_client/domain/models/page_data.dart';
 import 'package:torii_client/domain/models/tokens/list/tx_list_item_model.dart';
-import 'package:torii_client/utils/l10n/generated/l10n.dart';
 
 extension PageDataTxExtension on PageData<TxListItemModel> {
   PageData<TxListItemModel> sortDescByDate() {

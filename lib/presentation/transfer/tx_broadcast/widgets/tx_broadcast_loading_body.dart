@@ -3,7 +3,7 @@ import 'package:torii_client/utils/assets.dart';
 import 'package:torii_client/utils/exports.dart';
 
 class TxBroadcastLoadingBody extends StatelessWidget {
-  const TxBroadcastLoadingBody({Key? key}) : super(key: key);
+  const TxBroadcastLoadingBody({super.key});
 
   @override
   Widget build(BuildContext context) {

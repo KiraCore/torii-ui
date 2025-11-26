@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/domain/models/tokens/a_msg_form_model.dart';
-import 'package:torii_client/domain/models/tokens/msg_send_form_model.dart';
-import 'package:torii_client/domain/models/transaction/signed_transaction_model.dart';
 import 'package:torii_client/presentation/transfer/send/tx_dialog_error.dart';
 import 'package:torii_client/presentation/transfer/send/tx_dialog_loading.dart';
 import 'package:torii_client/presentation/transfer/tx_broadcast/tx_broadcast_page.dart';
@@ -28,12 +26,11 @@ class TxProcessWrapper<T extends AMsgFormModel> extends StatefulWidget {
     required this.txFormWidgetBuilder,
     required this.txFormPreviewWidgetBuilder,
     this.formEnabledBool = true,
-    Key? key,
+    super.key,
   }) : assert(
          (formEnabledBool == false) || (formEnabledBool && txFormWidgetBuilder != null),
          'txFormWidgetBuilder should be defined when formEnabledBool is equal true',
-       ),
-       super(key: key);
+       );
 
   @override
   State<StatefulWidget> createState() => _TxProcessWrapper<T>();

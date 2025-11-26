@@ -3,6 +3,7 @@ import 'package:flutter_dropzone/flutter_dropzone.dart';
 import 'package:torii_client/presentation/widgets/kira_dropzone/kira_dropzone_drop_view.dart';
 import 'package:torii_client/presentation/widgets/kira_dropzone/kira_dropzone_empty_view.dart';
 import 'package:torii_client/utils/exports.dart';
+import 'package:web/web.dart';
 
 typedef FilePreviewErrorBuilder = Widget Function(String? errorMessage);
 
@@ -12,7 +13,7 @@ class KiraDropzone extends StatefulWidget {
   final double width;
   final double height;
   final String emptyLabel;
-  final ValueChanged<dynamic> uploadViaHtmlFile;
+  final ValueChanged<File> uploadViaHtmlFile;
   final VoidCallback uploadFileManually;
   final FilePreviewErrorBuilder filePreviewErrorBuilder;
   final String? errorMessage;
@@ -80,8 +81,8 @@ class _KiraDropzone extends State<KiraDropzone> {
     );
   }
 
-  void _listenFileDrop(dynamic htmlFile) {
-    widget.uploadViaHtmlFile(htmlFile);
+  void _listenFileDrop(dynamic file) {
+    widget.uploadViaHtmlFile(file as File);
     _setHoverState(status: false);
   }
 

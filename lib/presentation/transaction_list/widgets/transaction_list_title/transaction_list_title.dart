@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:torii_client/domain/models/tokens/list/tx_list_item_model.dart';
 import 'package:torii_client/presentation/transaction_list/cubit/transaction_list_cubit.dart';
 import 'package:torii_client/presentation/widgets/search/list_search_widget.dart';
-import 'package:torii_client/utils/l10n/generated/l10n.dart';
 import 'package:torii_client/utils/theme/design_colors.dart';
 
 class TransactionListTitle extends StatelessWidget {

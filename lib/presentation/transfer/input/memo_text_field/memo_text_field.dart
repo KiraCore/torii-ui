@@ -22,8 +22,8 @@ class MemoTextField extends StatefulWidget {
     this.maxLength = 256,
     this.maxLines,
     this.inputFormatters,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<StatefulWidget> createState() => _MemoTextField();
@@ -71,7 +71,7 @@ class _MemoTextField extends State<MemoTextField> {
                     valueListenable: replacedMemoLengthNotifier,
                     builder: (BuildContext context, int replacedMemoLength, _) {
                       return Text(
-                        '${replacedMemoLength} / ${widget.maxLength}',
+                        '$replacedMemoLength / ${widget.maxLength}',
                         style: const TextStyle(fontSize: 12, color: Color(0xFF9B9B9B)),
                       );
                     },

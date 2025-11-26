@@ -14,8 +14,8 @@ class TxDialog extends StatelessWidget {
     this.maxWidth = 616,
     this.subtitle,
     this.suffixWidget,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +56,7 @@ class TxDialog extends StatelessWidget {
                               child: Text(message, style: textTheme.bodyLarge!.copyWith(color: DesignColors.orange)),
                             ),
                           )
-                          .toList(),
+                          ,
                     ],
                     const SizedBox(height: 30),
                     child,

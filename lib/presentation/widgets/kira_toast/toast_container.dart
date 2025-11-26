@@ -33,14 +33,20 @@ class ToastContainer extends StatelessWidget {
     TextTheme textTheme = Theme.of(context).textTheme;
 
     Icon? toastIcon = _getIcon();
-    ToastDecoration localToastDecoration = toastDecoration ?? ToastDecoration.fromToastType(toastType);
+    ToastDecoration localToastDecoration =
+        toastDecoration ?? ToastDecoration.fromToastType(toastType);
     return Container(
       width: width,
       constraints: BoxConstraints(minHeight: height),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
         color: localToastDecoration.backgroundColor,
-        border: showBorder == true ? Border.all(color: localToastDecoration.actionButtonBorderColor) : null,
+        border:
+            showBorder == true
+                ? Border.all(
+                  color: localToastDecoration.actionButtonBorderColor,
+                )
+                : null,
       ),
       padding: const EdgeInsets.symmetric(horizontal: 18),
       child: Row(
@@ -49,7 +55,11 @@ class ToastContainer extends StatelessWidget {
         mainAxisSize: width == null ? MainAxisSize.min : MainAxisSize.max,
         children: <Widget>[
           if (toastIcon != null) ...<Widget>[
-            Icon(toastIcon.icon, size: toastIcon.size ?? 20, color: toastIcon.color ?? localToastDecoration.iconColor),
+            Icon(
+              toastIcon.icon,
+              size: toastIcon.size ?? 20,
+              color: toastIcon.color ?? localToastDecoration.iconColor,
+            ),
             const SizedBox(width: 20),
           ],
           if (width != null)
@@ -60,7 +70,8 @@ class ToastContainer extends StatelessWidget {
                   title.data ?? '',
                   style: textTheme.bodyMedium!.copyWith(
                     color: localToastDecoration.titleColor,
-                    fontSize: title.style?.fontSize ?? textTheme.bodyMedium!.fontSize,
+                    fontSize:
+                        title.style?.fontSize ?? textTheme.bodyMedium!.fontSize,
                   ),
                 ),
               ),
@@ -70,7 +81,8 @@ class ToastContainer extends StatelessWidget {
               title.data ?? '',
               style: textTheme.bodyMedium!.copyWith(
                 color: localToastDecoration.titleColor,
-                fontSize: title.style?.fontSize ?? textTheme.bodyMedium!.fontSize,
+                fontSize:
+                    title.style?.fontSize ?? textTheme.bodyMedium!.fontSize,
               ),
             ),
           if (actionTitle != null) ...<Widget>[
@@ -89,14 +101,10 @@ class ToastContainer extends StatelessWidget {
   }
 
   Icon? _getIcon() {
-    Icon? toastIcon = icon;
-    if (toastIcon == null && showDefaultIcon) {
-      toastIcon = _getDefaultIcon();
-    }
-    return toastIcon;
+    return icon ?? (showDefaultIcon ? _getDefaultIcon() : null);
   }
 
-  Icon? _getDefaultIcon() {
+  Icon _getDefaultIcon() {
     switch (toastType) {
       case ToastType.error:
         return const Icon(AppIcons.error);
@@ -104,8 +112,8 @@ class ToastContainer extends StatelessWidget {
         return const Icon(AppIcons.alert_circle);
       case ToastType.success:
         return const Icon(AppIcons.checkbox_circle);
-      default:
-        return null;
+      case ToastType.normal:
+        return const Icon(Icons.info_outline);
     }
   }
 }

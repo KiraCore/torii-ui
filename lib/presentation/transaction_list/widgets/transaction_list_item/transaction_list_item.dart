@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:torii_client/domain/models/messages/msg_send_model.dart';
-import 'package:torii_client/domain/models/tokens/list/tx_direction_type.dart';
 import 'package:torii_client/domain/models/tokens/list/tx_list_item_model.dart';
 import 'package:torii_client/domain/models/tokens/token_amount_model.dart';
 import 'package:torii_client/presentation/transaction_list/widgets/transaction_list_item/transaction_list_item_desktop_layout.dart';
@@ -9,7 +8,6 @@ import 'package:torii_client/presentation/widgets/buttons/ink_wrapper.dart';
 import 'package:torii_client/presentation/widgets/kira_tooltip.dart';
 import 'package:torii_client/utils/exports.dart';
 import 'package:torii_client/utils/extensions/date_time_extension.dart';
-import 'package:torii_client/utils/router/router.dart';
 
 class TransactionListItem extends StatelessWidget {
   static const double height = 64;
@@ -17,18 +15,18 @@ class TransactionListItem extends StatelessWidget {
   final TxListItemModel txListItemModel;
   final bool isAgeFormat;
 
-  const TransactionListItem({required this.txListItemModel, required this.isAgeFormat, Key? key}) : super(key: key);
+  const TransactionListItem({required this.txListItemModel, required this.isAgeFormat, super.key});
 
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
     TokenAmountModel? totalAmount = txListItemModel.txMsgModels.firstOrNull?.tokenAmountModel;
     Set<String> fromAddresses =
-        txListItemModel.txMsgModels.map((MsgSendModel e) => e.fromWalletAddress!.address).toSet();
-    Set<String> toAddresses = txListItemModel.txMsgModels.map((MsgSendModel e) => e.toWalletAddress!.address).toSet();
+        txListItemModel.txMsgModels.map((MsgSendModel e) => e.fromWalletAddress.address).toSet();
+    Set<String> toAddresses = txListItemModel.txMsgModels.map((MsgSendModel e) => e.toWalletAddress.address).toSet();
 
     return InkWrapper(
-      onTap: () => TransactionDetailsDrawerRoute(txListItemModel).push(context),
+      onTap: () => TransactionDetailsDrawerRoute(txListItemModel, id: txListItemModel.hash).push(context),
       child: TransactionListItemDesktopLayout(
         height: height,
         hashWidget: KiraToolTip(

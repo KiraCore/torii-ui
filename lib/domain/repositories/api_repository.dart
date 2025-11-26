@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:torii_client/data/api/http_client_manager.dart';

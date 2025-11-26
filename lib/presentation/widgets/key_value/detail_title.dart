@@ -11,6 +11,6 @@ class DetailTitle extends StatelessWidget {
     TextTheme textTheme = Theme.of(context).textTheme;
     TextStyle headerStyle = textTheme.bodySmall!.copyWith(color: DesignColors.white1);
 
-    return Text('${title}:', style: headerStyle);
+    return Text('$title:', style: headerStyle);
   }
 }

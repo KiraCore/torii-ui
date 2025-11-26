@@ -1,9 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:torii_client/utils/browser/rpc_browser_url_controller.dart';
 import 'package:torii_client/utils/exports.dart';
-import 'package:torii_client/utils/extensions/go_router_extension.dart';
 
 class KiraGoRouter extends GoRouter {
   KiraGoRouter({

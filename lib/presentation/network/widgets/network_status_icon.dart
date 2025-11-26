@@ -7,7 +7,7 @@ class NetworkStatusIcon extends StatelessWidget {
   final ANetworkStatusModel networkStatusModel;
   final double size;
 
-  const NetworkStatusIcon({required this.networkStatusModel, required this.size, Key? key}) : super(key: key);
+  const NetworkStatusIcon({required this.networkStatusModel, required this.size, super.key});
 
   @override
   Widget build(BuildContext context) {

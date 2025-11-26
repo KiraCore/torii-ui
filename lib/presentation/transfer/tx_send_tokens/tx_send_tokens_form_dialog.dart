@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/domain/models/tokens/msg_send_form_model.dart';
 import 'package:torii_client/domain/models/tokens/token_amount_model.dart';
-import 'package:torii_client/domain/models/transaction/signed_transaction_model.dart';
 import 'package:torii_client/presentation/transfer/input/msg_send_form/msg_send_form.dart';
 import 'package:torii_client/presentation/transfer/send/tx_dialog.dart';
 import 'package:torii_client/presentation/transfer/send/tx_send_form_footer.dart';
 import 'package:torii_client/presentation/transfer/tx_form_builder_cubit/tx_form_builder_cubit.dart';
 import 'package:torii_client/presentation/transfer/tx_process_cubit/tx_process_cubit.dart';
-import 'package:torii_client/presentation/transfer/widgets/toggle_between_wallet_address_types.dart';
 
 class TxSendTokensFormDialog extends StatefulWidget {
   final TokenAmountModel feeTokenAmountModel;

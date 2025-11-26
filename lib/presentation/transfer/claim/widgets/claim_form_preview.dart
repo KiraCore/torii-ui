@@ -1,20 +1,13 @@
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:torii_client/domain/models/messages/msg_send_model.dart';
 import 'package:torii_client/domain/models/tokens/list/tx_list_item_model.dart';
-import 'package:torii_client/domain/models/tokens/msg_send_form_model.dart';
-import 'package:torii_client/domain/models/tokens/token_alias_model.dart';
 import 'package:torii_client/domain/models/tokens/token_amount_model.dart';
 import 'package:torii_client/domain/models/tokens/token_denomination_model.dart';
-import 'package:torii_client/domain/models/transaction/tx_local_info_model.dart';
-import 'package:torii_client/presentation/transfer/tx_process_cubit/tx_process_cubit.dart';
 import 'package:torii_client/presentation/transfer/widgets/token_form/token_denomination_list.dart';
 import 'package:torii_client/presentation/transfer/widgets/tx_input_preview.dart';
 import 'package:torii_client/presentation/widgets/avatar/kira_identity_avatar.dart';
 import 'package:torii_client/presentation/widgets/avatar/token_avatar.dart';
-import 'package:torii_client/presentation/widgets/buttons/copy_button.dart';
 import 'package:torii_client/utils/exports.dart';
 import 'package:torii_client/utils/extensions/tx_utils.dart';
 
@@ -35,7 +28,7 @@ class _ClaimFormPreview extends State<ClaimFormPreview> {
   void initState() {
     super.initState();
     selectedTokenDenominationModel =
-        widget.txListItemModel.txMsgModels.firstOrNull!.tokenAmountModel!.tokenAliasModel!.baseTokenDenominationModel;
+        widget.txListItemModel.txMsgModels.firstOrNull!.tokenAmountModel.tokenAliasModel.baseTokenDenominationModel;
   }
 
   @override
@@ -64,9 +57,9 @@ class _ClaimFormPreview extends State<ClaimFormPreview> {
         const SizedBox(height: 28),
         TxInputPreview(
           label: S.of(context).txHintSendFrom,
-          value: widget.txListItemModel.txMsgModels.firstOrNull!.fromWalletAddress!.address,
+          value: widget.txListItemModel.txMsgModels.firstOrNull!.fromWalletAddress.address,
           icon: KiraIdentityAvatar(
-            address: widget.txListItemModel.txMsgModels.firstOrNull!.fromWalletAddress!.address,
+            address: widget.txListItemModel.txMsgModels.firstOrNull!.fromWalletAddress.address,
             size: 45,
           ),
           copyable: true,
@@ -75,9 +68,9 @@ class _ClaimFormPreview extends State<ClaimFormPreview> {
         const SizedBox(height: 28),
         TxInputPreview(
           label: S.of(context).txHintSendTo,
-          value: widget.txListItemModel.txMsgModels.firstOrNull!.toWalletAddress!.address,
+          value: widget.txListItemModel.txMsgModels.firstOrNull!.toWalletAddress.address,
           icon: KiraIdentityAvatar(
-            address: widget.txListItemModel.txMsgModels.firstOrNull!.toWalletAddress!.address,
+            address: widget.txListItemModel.txMsgModels.firstOrNull!.toWalletAddress.address,
             size: 45,
           ),
           copyable: true,
@@ -100,7 +93,7 @@ class _ClaimFormPreview extends State<ClaimFormPreview> {
         ),
         const SizedBox(height: 15),
         TokenDenominationList(
-          tokenAliasModel: widget.txListItemModel.txMsgModels.firstOrNull!.tokenAmountModel!.tokenAliasModel,
+          tokenAliasModel: widget.txListItemModel.txMsgModels.firstOrNull!.tokenAmountModel.tokenAliasModel,
           defaultTokenDenominationModel: selectedTokenDenominationModel,
           onChanged: _handleTokenDenominationChanged,
         ),

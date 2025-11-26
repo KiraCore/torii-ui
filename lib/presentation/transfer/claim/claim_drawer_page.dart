@@ -1,26 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/domain/models/tokens/list/tx_list_item_model.dart';
-import 'package:torii_client/domain/models/tokens/msg_send_form_model.dart';
-import 'package:torii_client/presentation/global/logs/torii_logs_cubit.dart';
-import 'package:torii_client/presentation/network/bloc/network_module_bloc.dart';
-import 'package:torii_client/presentation/network/bloc/network_module_state.dart';
-import 'package:torii_client/presentation/network/widgets/network_custom_section/network_custom_section.dart';
-import 'package:torii_client/presentation/network/widgets/network_list.dart';
 import 'package:torii_client/presentation/transfer/claim/cubit/transfer_claim_cubit.dart';
 import 'package:torii_client/presentation/transfer/claim/widgets/claim_form_preview.dart';
-import 'package:torii_client/presentation/transfer/claim/widgets/claim_progress_dialog.dart';
 import 'package:torii_client/presentation/transfer/widgets/request_passphrase_dialog.dart';
 import 'package:torii_client/presentation/widgets/buttons/kira_elevated_button.dart';
-import 'package:torii_client/presentation/widgets/buttons/kira_outlined_button.dart';
 import 'package:torii_client/presentation/widgets/drawer/drawer_subtitle.dart';
 import 'package:torii_client/presentation/widgets/kira_toast/kira_toast.dart';
 import 'package:torii_client/presentation/widgets/kira_toast/toast_type.dart';
-import 'package:torii_client/presentation/widgets/loading/center_load_spinner.dart';
-import 'package:torii_client/presentation/widgets/torii_scaffold.dart';
 import 'package:torii_client/utils/exports.dart';
 import 'package:torii_client/utils/extensions/int_extension.dart';
-import 'package:torii_client/utils/network/app_config.dart';
 
 class ClaimDrawerPage extends StatelessWidget {
   const ClaimDrawerPage({super.key, required this.pendingTransaction});

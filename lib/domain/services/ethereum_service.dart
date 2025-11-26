@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math' show pow;
 import 'dart:typed_data';
 
 import 'package:codec_utils/codec_utils.dart';
@@ -14,13 +13,6 @@ import 'package:secp256k1/secp256k1.dart';
 import 'package:torii_client/domain/exports.dart';
 import 'package:torii_client/utils/ethereum/contract_utils.dart';
 import 'package:torii_client/utils/exports.dart';
-// import 'package:webthree/browser.dart' as three;
-// import 'dart:convert';
-// import 'dart:html' as html;
-// import 'dart:typed_data';
-//
-// import 'package:webthree/webthree.dart';
-// import 'package:flutter_web3/flutter_web3.dart';
 
 class EthereumSignatureDecodeResult {
   final String compressedPublicKey;

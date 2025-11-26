@@ -5,7 +5,7 @@ class TxBroadcastStatusIcon extends StatelessWidget {
   final double size;
   final bool status;
 
-  const TxBroadcastStatusIcon({required this.size, required this.status, Key? key}) : super(key: key);
+  const TxBroadcastStatusIcon({required this.size, required this.status, super.key});
 
   @override
   Widget build(BuildContext context) {

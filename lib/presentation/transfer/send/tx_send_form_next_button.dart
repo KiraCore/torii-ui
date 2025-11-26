@@ -7,8 +7,7 @@ class TxSendFormNextButton extends StatelessWidget {
   final bool errorExistsBool;
   final VoidCallback onPressed;
 
-  TxSendFormNextButton({required this.disabledBool, required this.errorExistsBool, required this.onPressed, Key? key})
-    : super(key: key);
+  const TxSendFormNextButton({required this.disabledBool, required this.errorExistsBool, required this.onPressed, super.key});
 
   @override
   Widget build(BuildContext context) {

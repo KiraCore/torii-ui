@@ -7,8 +7,7 @@ class DateTextField extends StatelessWidget {
   final TextEditingController textEditingController;
   final ValueChanged<DateTime?> onDateChanged;
 
-  const DateTextField({required this.label, required this.textEditingController, required this.onDateChanged, Key? key})
-    : super(key: key);
+  const DateTextField({required this.label, required this.textEditingController, required this.onDateChanged, super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -7,7 +7,7 @@ import 'package:torii_client/utils/exports.dart';
 class TxDialogError<T extends AMsgFormModel> extends StatelessWidget {
   final bool accountErrorBool;
 
-  const TxDialogError({required this.accountErrorBool, Key? key}) : super(key: key);
+  const TxDialogError({required this.accountErrorBool, super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -34,7 +34,7 @@ class BroadcastService {
       BroadcastResp broadcastResp = BroadcastResp.fromJson(response.data as Map<String, dynamic>);
       return BroadcastRespModel.fromDto(broadcastResp);
     } catch (e) {
-      getIt<Logger>().e('BroadcastService: Cannot parse broadcastTx for URI $networkUri: ${e}');
+      getIt<Logger>().e('BroadcastService: Cannot parse broadcastTx for URI $networkUri: $e');
       if (response != null) {
         throw Exception(response.toString());
       } else {

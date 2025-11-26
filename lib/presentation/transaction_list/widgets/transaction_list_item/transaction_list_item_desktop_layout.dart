@@ -19,8 +19,8 @@ class TransactionListItemDesktopLayout extends StatelessWidget {
     required this.amountWidget,
     required this.feeWidget,
     this.isDateInAgeFormatBool = false,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

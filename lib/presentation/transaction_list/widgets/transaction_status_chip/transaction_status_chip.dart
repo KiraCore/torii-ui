@@ -7,7 +7,7 @@ import 'package:torii_client/domain/models/tokens/list/tx_status_type.dart';
 class TransactionStatusChip extends StatelessWidget {
   final TxStatusType txStatusType;
 
-  const TransactionStatusChip({required this.txStatusType, Key? key}) : super(key: key);
+  const TransactionStatusChip({required this.txStatusType, super.key});
 
   @override
   Widget build(BuildContext context) {

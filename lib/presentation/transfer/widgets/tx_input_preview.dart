@@ -20,8 +20,8 @@ class TxInputPreview extends StatelessWidget {
     this.labelColor = DesignColors.accent,
     this.copyable = false,
     this.fitInOneLine = false,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

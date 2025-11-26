@@ -3,7 +3,7 @@ import 'package:torii_client/presentation/widgets/loading/center_load_spinner.da
 import 'package:torii_client/utils/exports.dart';
 
 class TxSendFormCompletingIndicator extends StatelessWidget {
-  const TxSendFormCompletingIndicator({Key? key}) : super(key: key);
+  const TxSendFormCompletingIndicator({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/domain/exports.dart';
 import 'package:torii_client/domain/models/tokens/list/tx_list_item_model.dart';
-import 'package:torii_client/domain/models/transaction/signed_transaction_model.dart';
 import 'package:torii_client/presentation/global/logs/torii_logs_cubit.dart';
 import 'package:torii_client/presentation/transfer/claim/cubit/transfer_claim_cubit.dart';
 import 'package:torii_client/presentation/transfer/claim/widgets/claim_progress_dialog.dart';
@@ -11,7 +10,7 @@ import 'package:torii_client/presentation/widgets/loading/center_load_spinner.da
 import 'package:torii_client/presentation/widgets/torii_scaffold.dart';
 import 'package:torii_client/utils/exports.dart';
 
-@Deprecated('Use notif box instead')
+@Deprecated('Use ClaimDrawerPage instead')
 class TransferClaimPage extends StatelessWidget {
   const TransferClaimPage({
     super.key,
@@ -29,9 +28,6 @@ class TransferClaimPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(
-      'TransferClaimPage: build() $signedTx $msgSendFormModel $pendingSenderTransaction $pendingRecipientTransaction',
-    );
     return BlocProvider(
       create:
           (context) =>

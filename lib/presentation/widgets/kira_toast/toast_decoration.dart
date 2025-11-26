@@ -38,12 +38,12 @@ class ToastDecoration {
           iconColor: DesignColors.yellowStatus1,
           actionButtonBorderColor: DesignColors.yellowStatus1,
         );
-      default:
+      case ToastType.normal:
         return const ToastDecoration(
           backgroundColor: DesignColors.grey3,
-          titleColor: DesignColors.white1,
-          iconColor: DesignColors.white1,
-          actionButtonBorderColor: DesignColors.white1,
+          titleColor: Colors.lightBlue,
+          iconColor: Colors.lightBlue,
+          actionButtonBorderColor: Colors.lightBlue,
         );
     }
   }

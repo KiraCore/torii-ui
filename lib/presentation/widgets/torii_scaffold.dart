@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:torii_client/utils/theme/design_colors.dart';
 
 class ToriiScaffold extends StatelessWidget {
   const ToriiScaffold({super.key, required this.child, this.hasAppBar = false});

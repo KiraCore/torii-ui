@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/domain/exports.dart';
 import 'package:torii_client/domain/models/network/error_explorer_model.dart';
 import 'package:torii_client/domain/models/tokens/a_msg_form_model.dart';
-import 'package:torii_client/domain/models/tokens/msg_send_form_model.dart';
 import 'package:torii_client/domain/models/transaction/signed_transaction_model.dart';
 import 'package:torii_client/presentation/transfer/error_explorer_dialog/error_explorer_dialog.dart';
 import 'package:torii_client/presentation/transfer/tx_broadcast/cubit/tx_broadcast_cubit.dart';
@@ -26,8 +25,8 @@ class TxBroadcastErrorBody<T extends AMsgFormModel> extends StatelessWidget {
     required this.passphrase,
     required this.kiraRecipient,
     required this.ukexAmount,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

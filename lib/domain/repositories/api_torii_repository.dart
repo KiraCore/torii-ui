@@ -2,12 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:torii_client/data/api/http_client_manager.dart';
 import 'package:torii_client/data/dto/api/query_log_txs/query_log_txs_req.dart';
-import 'package:torii_client/data/dto/api/query_log_txs/query_log_txs_resp.dart';
-import 'package:torii_client/data/dto/api/query_transactions/request/query_transactions_req.dart';
 import 'package:torii_client/data/dto/api_request_model.dart';
-import 'package:torii_client/domain/exports.dart';
 import 'package:torii_client/utils/exports.dart';
-import 'package:torii_client/data/exports.dart';
 
 @injectable
 class ApiToriiRepository {

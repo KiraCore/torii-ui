@@ -25,8 +25,8 @@ class KiraSearchBar extends StatefulWidget {
     this.onClear,
     this.onSubmit,
     this.border,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<StatefulWidget> createState() => _KiraSearchBar();

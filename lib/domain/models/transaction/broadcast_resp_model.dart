@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:torii_client/data/dto/api_kira/broadcast/response/broadcast_resp.dart';
-import 'package:torii_client/domain/models/transaction/broadcast_error_log_model.dart';
 
 class BroadcastRespModel extends Equatable {
   final String hash;

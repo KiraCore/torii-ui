@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:torii_client/utils/exports.dart';
 
 class CenterLoadSpinner extends StatelessWidget {
-  const CenterLoadSpinner({Key? key, this.size = 30}) : super(key: key);
+  const CenterLoadSpinner({super.key, this.size = 30});
 
   final double? size;
 

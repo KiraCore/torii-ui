@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/presentation/transfer/claim/cubit/transfer_claim_cubit.dart';
 import 'package:torii_client/presentation/transfer/claim/widgets/claim_form_preview.dart';
-import 'package:torii_client/presentation/transfer/input/msg_send_form/msg_send_form_preview.dart';
 import 'package:torii_client/presentation/transfer/send/tx_dialog.dart';
 import 'package:torii_client/presentation/transfer/widgets/request_passphrase_dialog.dart';
 import 'package:torii_client/presentation/widgets/exports.dart';

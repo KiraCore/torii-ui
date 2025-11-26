@@ -4,7 +4,6 @@ import 'package:injectable/injectable.dart';
 import 'package:torii_client/domain/models/page_data.dart';
 import 'package:torii_client/domain/models/tokens/list/tx_list_item_model.dart';
 import 'package:torii_client/presentation/global/logs/torii_logs_cubit.dart';
-import 'package:torii_client/utils/extensions/page_data_extension.dart';
 
 part 'transaction_list_state.dart';
 
@@ -51,10 +50,10 @@ class TransactionListCubit extends Cubit<TransactionListState> {
           bool hashMatch = item.hash.toLowerCase().contains(pattern);
           bool fromMatch =
               item.txMsgModels.isNotEmpty &&
-              (item.txMsgModels.first.fromWalletAddress?.address.toLowerCase().contains(pattern) ?? false);
+              (item.txMsgModels.first.fromWalletAddress.address.toLowerCase().contains(pattern) ?? false);
           bool toMatch =
               item.txMsgModels.isNotEmpty &&
-              (item.txMsgModels.first.toWalletAddress?.address.toLowerCase().contains(pattern) ?? false);
+              (item.txMsgModels.first.toWalletAddress.address.toLowerCase().contains(pattern) ?? false);
           return hashMatch || fromMatch || toMatch;
         }).toList() ??
         [];

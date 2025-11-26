@@ -1,9 +1,7 @@
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:torii_client/domain/models/messages/msg_send_model.dart';
 import 'package:torii_client/domain/models/tokens/msg_send_form_model.dart';
-import 'package:torii_client/domain/models/tokens/token_alias_model.dart';
 import 'package:torii_client/domain/models/tokens/token_amount_model.dart';
 import 'package:torii_client/domain/models/tokens/token_denomination_model.dart';
 import 'package:torii_client/domain/models/transaction/tx_local_info_model.dart';
@@ -18,9 +16,7 @@ import 'package:torii_client/utils/extensions/tx_utils.dart';
 class MsgSendFormPreview extends StatefulWidget {
   final TxLocalInfoModel? txLocalInfoModel;
 
-  MsgSendFormPreview({required this.txLocalInfoModel, Key? key})
-    : assert(txLocalInfoModel?.txMsgModel is MsgSendModel?, 'ITxMsgModel must be an instance of MsgSendModel'),
-      super(key: key);
+  const MsgSendFormPreview({required this.txLocalInfoModel, super.key});
 
   @override
   State<StatefulWidget> createState() => _MsgSendFormPreview();

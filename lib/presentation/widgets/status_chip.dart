@@ -9,8 +9,8 @@ class StatusChip extends StatelessWidget {
     required this.text,
     required this.color,
     this.icon,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

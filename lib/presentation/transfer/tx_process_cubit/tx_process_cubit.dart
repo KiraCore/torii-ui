@@ -123,8 +123,8 @@ class TxProcessCubit<T extends AMsgFormModel> extends Cubit<ATxProcessState> {
       emit(
         TxProcessConfirmFromEthState(
           txProcessLoadedState: state as TxProcessLoadedState,
-          kiraRecipient: (msgFormModel as MsgSendFormModel).recipientWalletAddress!.address,
-          ukexAmount: (msgFormModel as MsgSendFormModel).tokenAmountModel!.getAmountInDefaultDenomination(),
+          kiraRecipient: msgFormModel.recipientWalletAddress!.address,
+          ukexAmount: msgFormModel.tokenAmountModel!.getAmountInDefaultDenomination(),
           passphrase: passphrase,
         ),
       );
