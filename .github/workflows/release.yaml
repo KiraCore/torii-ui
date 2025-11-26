@@ -118,21 +118,38 @@ jobs:
           zip -r ../../html-web-app.zip ./*
           cd ../..
 
+      - name: Install ipfs-api
+        run: |
+          TOOLS_VERSION="v0.3.56"
+          curl -sL "https://github.com/KiraCore/tools/releases/download/${TOOLS_VERSION}/ipfs-api-linux-amd64.deb" -o /tmp/ipfs-api.deb
+          dpkg-deb -x /tmp/ipfs-api.deb /tmp/ipfs-api
+          cp -f /tmp/ipfs-api/bin/ipfs-api /usr/local/bin/ipfs-api
+          chmod +x /usr/local/bin/ipfs-api
+          ipfs-api --version
+
       - name: Pin/Upload to IPFS
         run: |
           IPFS_HASH=""
           IPFS_UPLOAD_NAME="torii-www-$RELEASE_VER"
+          START_TIME=$(date +%s)
+          TIMEOUT=120
 
-          bash-utils timerStart "pin-timeout"
+          while [ -z "$IPFS_HASH" ]; do
+            ELAPSED=$(($(date +%s) - START_TIME))
+            if [ $ELAPSED -gt $TIMEOUT ]; then
+              echo "ERROR: IPFS pin timeout after ${TIMEOUT}s"
+              exit 1
+            fi
 
-          while [ -z "$IPFS_HASH" ] || [ $(bash-utils timerSpan "pin-timeout") -gt 120 ]; do
-            bash-utils echoInfo "INFO: Attempting files pin to IPFS..."
-            [ -e ./ipfs-pin.log ] && rm ./ipfs-pin.log
+            echo "INFO: Attempting files pin to IPFS... (${ELAPSED}s elapsed)"
+            rm -f ./ipfs-pin.log
             touch ./ipfs-pin.log
-            ipfs-api delete $IPFS_UPLOAD_NAME --key=${{ secrets.PINATA_API_JWT }} --verbose=true || echo "WARNING: Failed to delete existing pin"
-            ipfs-api pin ./build/web $IPFS_UPLOAD_NAME --key=${{ secrets.PINATA_API_JWT }} --verbose=true | tee -a ./ipfs-pin.log || echo "ERROR: Failed to pin web app"
-            IPFS_HASH=$(cat ./ipfs-pin.log | tail -n 1 | bash-utils jsonParse ".hash" || echo "")
-            sleep 10
+
+            ipfs-api unpin "$IPFS_UPLOAD_NAME" --key=${{ secrets.PINATA_API_JWT }} --verbose=true || echo "WARNING: Failed to delete existing pin"
+            ipfs-api pin ./build/web "$IPFS_UPLOAD_NAME" --key=${{ secrets.PINATA_API_JWT }} --verbose=true | tee -a ./ipfs-pin.log || echo "ERROR: Failed to pin web app"
+            IPFS_HASH=$(cat ./ipfs-pin.log | tail -n 1 | jq -r '.hash // empty' 2>/dev/null || echo "")
+
+            [ -z "$IPFS_HASH" ] && sleep 10
           done
 
           echo "IPFS_HASH=$IPFS_HASH" >> $GITHUB_ENV
