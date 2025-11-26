@@ -6,6 +6,9 @@ on:
     branches:
       - dev
 
+env:
+  FLUTTER_VERSION: '3.29.0'
+
 jobs:
   app-version-check:
     runs-on: ubuntu-20.04
@@ -43,14 +46,24 @@ jobs:
   run-unit-tests:
     needs: app-version-check
     runs-on: ubuntu-20.04
+    container:
+      image: ghcr.io/cirruslabs/flutter:${{ env.FLUTTER_VERSION }}
     steps:
       # https://github.com/marketplace/actions/checkout
       - uses: actions/checkout@main
-      # https://github.com/marketplace/actions/flutter-action
-      - uses: subosito/flutter-action@main
-        with:
-          flutter-version: '3.29.0'
-          channel: stable
+
+      # TODO: Replace hardcoded values with secrets for production:
+      #   TORII_LOG_ACCESS_TOKEN="${{ secrets.TORII_LOG_ACCESS_TOKEN }}"
+      #   TORII_LOG_URL="${{ secrets.TORII_LOG_URL }}"
+      - name: Create .env file
+        run: |
+          cat <<EOF > .env
+          TORII_LOG_ACCESS_TOKEN="lafijsiadnm/a@@#lsa\$fd8f"
+          TORII_LOG_URL="http://157.180.16.117:8890/"
+          KIRA_ETH_ENABLED=false
+          IS_TEST_ENVIRONMENT=true
+          EOF
+
       - run: flutter pub get
       - run: flutter analyze
       - run: flutter test "test/unit" --platform chrome --null-assertions
