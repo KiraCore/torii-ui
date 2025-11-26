@@ -5,10 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:torii_client/domain/exports.dart';
-import 'package:torii_client/domain/models/connection/connection_error_type.dart';
 import 'package:torii_client/domain/models/tokens/list/tx_list_item_model.dart';
-import 'package:torii_client/domain/models/transaction/signed_transaction_model.dart';
-import 'package:torii_client/presentation/global/logs/torii_logs_cubit.dart';
+import 'package:torii_client/main.dart';
 import 'package:torii_client/presentation/intro/intro_page.dart';
 import 'package:torii_client/presentation/loading/loading_page.dart';
 import 'package:torii_client/presentation/network/network_drawer_page/network_drawer_page.dart';
@@ -71,14 +69,21 @@ class IntroRoute extends GoRouteData {
 
 @TypedShellRoute<TransferRoute>(
   routes: <TypedRoute<RouteData>>[
-    TypedGoRoute<TransferInputRoute>(path: '/transfer'),
-    TypedGoRoute<ClaimProgressRoute>(path: '/claim'),
+    TypedGoRoute<TransferInputRoute>(
+      path: '/',
+      routes: <TypedRoute<RouteData>>[
+        TypedGoRoute<NotificationsDrawerRoute>(path: 'notifications'),
+        TypedGoRoute<NotificationDetailsDrawerRoute>(path: 'notifications/:hash'),
+      ],
+    ),
+    // TODO: deprecated. Remove in future.
+    // TypedGoRoute<ClaimProgressRoute>(path: '/claim'),
   ],
 )
 class TransferRoute extends ShellRouteData {
   const TransferRoute();
 
-  static String initialRoute = '/transfer';
+  static String initialRoute = '/';
 
   @override
   Widget builder(BuildContext context, GoRouterState state, Widget navigator) => navigator;
@@ -92,7 +97,7 @@ class TransferInputRoute extends GoRouteData {
     if (!context.read<SessionCubit>().state.isLoggedIn) {
       return const IntroRoute().location;
     }
-    //todo
+    // TODO:
     // final pendingSenderTransaction = context.read<ToriiLogsCubit>().state.pendingSenderTransaction;
     // final pendingRecipientTransaction = context.read<ToriiLogsCubit>().state.pendingRecipientTransaction;
     // if (pendingSenderTransaction != null || pendingRecipientTransaction != null) {
@@ -112,6 +117,7 @@ class TransferInputRoute extends GoRouteData {
   Widget build(BuildContext context, GoRouterState state) => const TransferInputPage();
 }
 
+@Deprecated('Use ClaimDrawerRoute instead')
 class ClaimProgressRoute extends GoRouteData {
   const ClaimProgressRoute(this.$extra);
 
@@ -143,10 +149,9 @@ class TransactionListRoute extends GoRouteData {
   }
 }
 
-
 // ---- Dialogs ----
 
-@TypedGoRoute<SignInDrawerRoute>(path: '/sign-in-drawer')
+@TypedGoRoute<SignInDrawerRoute>(path: '/sign-in')
 class SignInDrawerRoute extends GoRouteData {
   const SignInDrawerRoute();
 
@@ -154,12 +159,20 @@ class SignInDrawerRoute extends GoRouteData {
   static final GlobalKey<NavigatorState> $parentNavigatorKey = navigatorKey;
 
   @override
+  FutureOr<String?> redirect(BuildContext context, GoRouterState state) {
+    if (!kiraEthEnabled) {
+      return TransferRoute.initialRoute;
+    }
+    return super.redirect(context, state);
+  }
+
+  @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
     return RouterDialogPage(builder: (_) => SignInDrawerPage());
   }
 }
 
-@TypedGoRoute<SignInMnemonicDrawerRoute>(path: '/sign-in-mnemonic-drawer')
+@TypedGoRoute<SignInMnemonicDrawerRoute>(path: '/sign-in-mnemonic')
 class SignInMnemonicDrawerRoute extends GoRouteData {
   const SignInMnemonicDrawerRoute();
 
@@ -167,12 +180,20 @@ class SignInMnemonicDrawerRoute extends GoRouteData {
   static final GlobalKey<NavigatorState> $parentNavigatorKey = navigatorKey;
 
   @override
+  FutureOr<String?> redirect(BuildContext context, GoRouterState state) {
+    if (!kiraEthEnabled) {
+      return TransferRoute.initialRoute;
+    }
+    return super.redirect(context, state);
+  }
+
+  @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
     return RouterDialogPage(builder: (_) => SignInMnemonicDrawerPage());
   }
 }
 
-@TypedGoRoute<SignInKeyfileDrawerRoute>(path: '/sign-in-keyfile-drawer')
+@TypedGoRoute<SignInKeyfileDrawerRoute>(path: '/sign-in-keyfile')
 class SignInKeyfileDrawerRoute extends GoRouteData {
   const SignInKeyfileDrawerRoute();
 
@@ -180,12 +201,20 @@ class SignInKeyfileDrawerRoute extends GoRouteData {
   static final GlobalKey<NavigatorState> $parentNavigatorKey = navigatorKey;
 
   @override
+  FutureOr<String?> redirect(BuildContext context, GoRouterState state) {
+    if (!kiraEthEnabled) {
+      return TransferRoute.initialRoute;
+    }
+    return super.redirect(context, state);
+  }
+
+  @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
     return RouterDialogPage(builder: (_) => SignInKeyfileDrawerPage());
   }
 }
 
-@TypedGoRoute<NetworkDrawerRoute>(path: '/network-drawer')
+@TypedGoRoute<NetworkDrawerRoute>(path: '/network')
 class NetworkDrawerRoute extends GoRouteData {
   const NetworkDrawerRoute();
 
@@ -193,16 +222,24 @@ class NetworkDrawerRoute extends GoRouteData {
   static final GlobalKey<NavigatorState> $parentNavigatorKey = navigatorKey;
 
   @override
+  FutureOr<String?> redirect(BuildContext context, GoRouterState state) {
+    if (!kiraEthEnabled) {
+      return TransferRoute.initialRoute;
+    }
+    return super.redirect(context, state);
+  }
+
+  @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
     return RouterDialogPage(builder: (_) => NetworkDrawerPage());
   }
 }
 
-// TODO: add id into path
-@TypedGoRoute<TransactionDetailsDrawerRoute>(path: '/transaction-details-drawer')
+@TypedGoRoute<TransactionDetailsDrawerRoute>(path: '/transactions/:id')
 class TransactionDetailsDrawerRoute extends GoRouteData {
-  const TransactionDetailsDrawerRoute(this.$extra);
+  const TransactionDetailsDrawerRoute(this.$extra, {required this.id});
 
+  final String id;
   final TxListItemModel? $extra;
 
   // NOTE: obligated for dialogs: go from navigator key state because of parent ShellRoutes
@@ -214,7 +251,6 @@ class TransactionDetailsDrawerRoute extends GoRouteData {
   }
 }
 
-@TypedGoRoute<NotificationsDrawerRoute>(path: '/notification-drawer')
 class NotificationsDrawerRoute extends GoRouteData {
   const NotificationsDrawerRoute();
 
@@ -222,12 +258,45 @@ class NotificationsDrawerRoute extends GoRouteData {
   static final GlobalKey<NavigatorState> $parentNavigatorKey = navigatorKey;
 
   @override
+  FutureOr<String?> redirect(BuildContext context, GoRouterState state) {
+    if (!kiraEthEnabled || !context.read<SessionCubit>().state.isEthereumLoggedIn) {
+      return TransferRoute.initialRoute;
+    }
+    return super.redirect(context, state);
+  }
+
+  @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
     return RouterDialogPage(padding: EdgeInsets.zero, builder: (_) => NotificationsDrawerPage());
   }
 }
 
-@TypedGoRoute<ClaimDrawerRoute>(path: '/claim-drawer')
+class NotificationDetailsDrawerRoute extends GoRouteData {
+  const NotificationDetailsDrawerRoute({required this.hash});
+
+  final String hash;
+
+  // NOTE: obligated for dialogs: go from navigator key state because of parent ShellRoutes
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = navigatorKey;
+
+  @override
+  FutureOr<String?> redirect(BuildContext context, GoRouterState state) {
+    if (!kiraEthEnabled || !context.read<SessionCubit>().state.isEthereumLoggedIn) {
+      return TransferRoute.initialRoute;
+    }
+    return super.redirect(context, state);
+  }
+
+  @override
+  Page<void> buildPage(BuildContext context, GoRouterState state) {
+    return RouterDialogPage(
+      padding: EdgeInsets.zero,
+      builder: (_) => NotificationsDrawerPage(hash: hash.trim().isEmpty ? null : hash),
+    );
+  }
+}
+
+@TypedGoRoute<ClaimDrawerRoute>(path: '/claim')
 class ClaimDrawerRoute extends GoRouteData {
   const ClaimDrawerRoute(this.$extra);
 
@@ -237,8 +306,15 @@ class ClaimDrawerRoute extends GoRouteData {
   static final GlobalKey<NavigatorState> $parentNavigatorKey = navigatorKey;
 
   @override
+  FutureOr<String?> redirect(BuildContext context, GoRouterState state) {
+    if (!kiraEthEnabled && !context.read<SessionCubit>().state.isEthereumLoggedIn) {
+      return TransferRoute.initialRoute;
+    }
+    return super.redirect(context, state);
+  }
+
+  @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
-    print('ClaimDrawerRoute.buildPage ${$extra}');
     return RouterDialogPage(padding: EdgeInsets.zero, builder: (_) => ClaimDrawerPage(pendingTransaction: $extra!));
   }
 }

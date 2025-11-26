@@ -7,8 +7,6 @@ import 'package:torii_client/data/dto/api_request_model.dart';
 import 'package:torii_client/domain/models/tokens/token_alias_model.dart';
 import 'package:torii_client/domain/models/tokens/token_default_denom_model.dart';
 import 'package:torii_client/domain/repositories/api_kira_repository.dart';
-import 'package:torii_client/presentation/network/bloc/network_module_bloc.dart';
-import 'package:torii_client/utils/exports.dart';
 
 @injectable
 class QueryKiraTokensAliasesService {
@@ -20,7 +18,7 @@ class QueryKiraTokensAliasesService {
   static const QueryKiraTokensAliasesResp _defaultAliases = QueryKiraTokensAliasesResp(
     tokenAliases: <TokenAlias>[
       TokenAlias(
-        decimals: 9,
+        decimals: 6,
         denoms: <String>['KEX'],
         name: 'KEX',
         symbol: 'KEX',
@@ -32,9 +30,9 @@ class QueryKiraTokensAliasesService {
       ),
       TokenAlias(
         decimals: 0,
-        denoms: <String>['ukex'],
-        name: 'ukex',
-        symbol: 'ukex',
+        denoms: <String>['uKEX'],
+        name: 'uKEX',
+        symbol: 'uKEX',
         // TODO(Mykyta): make nullable
         icon: '',
         // TODO(Mykyta): make int, and get from api, but in another model
@@ -51,7 +49,7 @@ class QueryKiraTokensAliasesService {
         amount: '0',
       ),
     ],
-    defaultDenom: 'ukex',
+    defaultDenom: 'uKEX',
     bech32Prefix: 'kira',
   );
 
@@ -69,7 +67,7 @@ class QueryKiraTokensAliasesService {
     //   QueryKiraTokensAliasesResp queryKiraTokensAliasesResp = QueryKiraTokensAliasesResp.fromJson(
     //     response.data as Map<String, dynamic>,
     //   );
-      return queryKiraTokensAliasesResp.tokenAliases.map(TokenAliasModel.fromDto).toList();
+    return queryKiraTokensAliasesResp.tokenAliases.map(TokenAliasModel.fromDto).toList();
     // } catch (e) {
     //   getIt<Logger>().e('QueryKiraTokensAliasesService: Cannot parse getTokenAliasModels() for URI $networkUri $e');
     //   rethrow;
@@ -126,10 +124,7 @@ class QueryKiraTokensAliasesService {
   }
 
   Future<TokenAliasModel> _getAliasByTokenName(
-    String tokenName, {
-    Uri? networkUri,
-    bool forceRequestBool = false,
-  }) async {
+    String tokenName) async {
     QueryKiraTokensAliasesResp queryKiraTokensAliasesResp = _defaultAliases;
     return TokenAliasModel.fromDto(
       queryKiraTokensAliasesResp.tokenAliases.firstWhere(

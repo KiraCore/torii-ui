@@ -8,6 +8,8 @@ import 'package:torii_client/domain/models/network/error_explorer_model.dart';
 import 'package:torii_client/domain/models/transaction/broadcast_resp_model.dart';
 import 'package:torii_client/domain/models/transaction/signed_transaction_model.dart';
 import 'package:torii_client/domain/services/miro/broadcast_service.dart';
+import 'package:torii_client/presentation/global/logs/torii_logs_cubit.dart';
+import 'package:torii_client/presentation/global/session/cubit/session_cubit.dart';
 import 'package:torii_client/presentation/transfer/tx_broadcast/cubit/a_tx_broadcast_state.dart';
 import 'package:torii_client/presentation/transfer/tx_broadcast/cubit/states/tx_broadcast_completed_state.dart';
 import 'package:torii_client/presentation/transfer/tx_broadcast/cubit/states/tx_broadcast_error_state.dart';
@@ -16,10 +18,13 @@ import 'package:torii_client/utils/exports.dart';
 
 @injectable
 class TxBroadcastCubit extends Cubit<ATxBroadcastState> {
-  TxBroadcastCubit(this._broadcastService, this._ethereumService) : super(TxBroadcastLoadingState());
+  TxBroadcastCubit(this._broadcastService, this._ethereumService, this._toriiLogsCubit, this._sessionCubit)
+    : super(TxBroadcastLoadingState());
 
   final BroadcastService _broadcastService;
   final EthereumService _ethereumService;
+  final ToriiLogsCubit _toriiLogsCubit;
+  final SessionCubit _sessionCubit;
 
   // TODO: test error explorer
   Future<void> broadcastFromEth({
@@ -69,6 +74,10 @@ class TxBroadcastCubit extends Cubit<ATxBroadcastState> {
     try {
       BroadcastRespModel broadcastRespModel = await _broadcastService.broadcastTx(signedTxModel);
       emit(TxBroadcastCompletedState(broadcastRespModel: broadcastRespModel, isEthRecipient: true));
+
+      if (signedTxModel.txLocalInfoModel.txMsgModel.toWalletAddress == _sessionCubit.state.ethereumWallet?.address) {
+        await _toriiLogsCubit.triggerLongPolling();
+      }
     } on DioException catch (e) {
       getIt<Logger>().e('Error broadcasting from Kira: $e');
       ErrorExplorerModel errorExplorerModel = ErrorExplorerModel.fromDioConnectException(e);
@@ -84,6 +93,8 @@ class TxBroadcastCubit extends Cubit<ATxBroadcastState> {
       );
       emit(TxBroadcastErrorState(errorExplorerModel: errorExplorerModel));
     }
+
+    // TODO:
     // on DioParseException catch (dioParseException) {
     //   ErrorExplorerModel errorExplorerModel = ErrorExplorerModel.fromDioParseException(dioParseException);
     //   emit(TxBroadcastErrorState(errorExplorerModel: errorExplorerModel));

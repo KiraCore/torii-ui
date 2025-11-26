@@ -3,29 +3,39 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:torii_client/domain/models/tokens/list/tx_list_item_model.dart';
 import 'package:torii_client/presentation/global/logs/torii_logs_cubit.dart';
-import 'package:torii_client/presentation/network/bloc/network_module_bloc.dart';
-import 'package:torii_client/presentation/network/bloc/network_module_state.dart';
-import 'package:torii_client/presentation/network/widgets/network_custom_section/network_custom_section.dart';
-import 'package:torii_client/presentation/network/widgets/network_list.dart';
 import 'package:torii_client/presentation/widgets/buttons/ink_wrapper.dart';
 import 'package:torii_client/presentation/widgets/drawer/drawer_subtitle.dart';
 import 'package:torii_client/presentation/widgets/key_value/copy_hover_title_value.dart';
-import 'package:torii_client/presentation/widgets/key_value/copy_title_value.dart';
 import 'package:torii_client/presentation/widgets/key_value/detail_title_value.dart';
 import 'package:torii_client/utils/exports.dart';
 import 'package:torii_client/utils/extensions/page_data_extension.dart';
-import 'package:torii_client/utils/network/app_config.dart';
 
 class NotificationsDrawerPage extends StatelessWidget {
-  const NotificationsDrawerPage({super.key});
+  const NotificationsDrawerPage({super.key, this.hash});
+
+  final String? hash;
+  // todo
+  static bool isNavigating = false;
 
   @override
   Widget build(BuildContext context) {
-    final TextTheme textTheme = Theme.of(context).textTheme;
     return BlocBuilder<ToriiLogsCubit, ToriiLogsState>(
       buildWhen: (previous, current) => previous.pendingEthTxs != current.pendingEthTxs,
       builder: (context, ToriiLogsState toriiLogsState) {
         List<TxListItemModel> list = toriiLogsState.pendingEthTxs?.sortDescByDate().listItems ?? [];
+        if (hash != null && list.isNotEmpty && !isNavigating) {
+          isNavigating = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            try {
+              final item = list.where((element) => element.hash.toLowerCase() == hash!.toLowerCase()).firstOrNull;
+              if (item != null) {
+                ClaimDrawerRoute(item).push(context);
+              }
+            } catch (e) {
+              getIt<Logger>().e('NotificationsDrawerPage.build: $e');
+            }
+          });
+        }
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -63,7 +73,12 @@ class NotificationsDrawerPage extends StatelessWidget {
                         children: [
                           Text(DateFormat('dd/MM/yyyy, HH:mm:ss').format(list[index].time.toLocal()), maxLines: 2),
                           const SizedBox(height: 4),
-                          CopyTitleValue(title: 'From', value: model.fromWalletAddress.address),
+                          CopyHoverTitleValue(
+                            title: 'From',
+                            value: model.fromWalletAddress.address,
+                            hoverUsingIcon: true,
+                            shortenAddress: true,
+                          ),
                           const SizedBox(height: 4),
                           DetailTitleValue(title: 'Amount', value: model.tokenAmountModel.toString()),
                         ],

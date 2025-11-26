@@ -2,9 +2,6 @@ import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/domain/exports.dart';
-import 'package:torii_client/domain/models/messages/msg_send_model.dart';
-import 'package:torii_client/domain/models/transaction/signed_transaction_model.dart';
-import 'package:torii_client/domain/models/transaction/unsigned_tx_model.dart';
 import 'package:torii_client/presentation/global/metamask/cubit/metamask_cubit.dart';
 import 'package:torii_client/presentation/global/session/cubit/session_cubit.dart';
 import 'package:torii_client/presentation/transfer/send/tx_send_form_completing_indicator.dart';
@@ -16,13 +13,12 @@ import 'package:torii_client/presentation/transfer/tx_form_builder_cubit/tx_form
 import 'package:torii_client/presentation/transfer/tx_process_cubit/tx_process_cubit.dart';
 import 'package:torii_client/presentation/transfer/widgets/request_passphrase_dialog.dart';
 import 'package:torii_client/utils/exports.dart';
-import 'package:torii_client/domain/models/tokens/a_msg_form_model.dart';
 
 class TxSendFormFooter extends StatefulWidget {
   final TokenAmountModel feeTokenAmountModel;
   final GlobalKey<FormState> formKey;
 
-  const TxSendFormFooter({required this.feeTokenAmountModel, required this.formKey, Key? key}) : super(key: key);
+  const TxSendFormFooter({required this.feeTokenAmountModel, required this.formKey, super.key});
 
   @override
   State<StatefulWidget> createState() => _TxSendFormFooter();
@@ -82,7 +78,6 @@ class _TxSendFormFooter extends State<TxSendFormFooter> {
     final model = context.read<TxProcessCubit<MsgSendFormModel>>().msgFormModel;
     if (model.senderWalletAddress is EthereumWalletAddress) {
       try {
-        // TODO(Mykyta): is there possibility that model can be not a MsgSendModel ? (`send-via-metamask` task)
         // ignore:unused_local_variable
         Decimal amount = model.tokenAmountModel?.getAmountInBaseDenomination() ?? Decimal.zero;
         if (amount == Decimal.zero || model.recipientWalletAddress == null) {
@@ -97,22 +92,6 @@ class _TxSendFormFooter extends State<TxSendFormFooter> {
           },
           needToConfirm: true,
         );
-
-        // RequestPassphraseDialog.show(
-        //   context,
-        //   onProceed: ({required String passphrase}) {
-        //     getIt<EthereumService>().exportContractTokens(
-        //       passphrase: passphrase,
-        //       kiraAddress: model.recipientWalletAddress!.address,
-        //       amountInEth: model.tokenAmountModel!.getAmountInBaseDenomination(),
-        //     );
-        //   },
-        //   needToConfirm: true,
-        // );
-        // await metamaskCubit.pay(
-        //   to: model.recipientWalletAddress!,
-        //   amount: model.tokenAmountModel!.getAmountInBaseDenomination().toDouble().toInt(),
-        // );
       } catch (e) {
         getIt<Logger>().e('Metamask pay ${e.toString()}');
       }

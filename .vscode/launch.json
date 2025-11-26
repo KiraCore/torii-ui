@@ -7,19 +7,31 @@
         {
             "name": "torii_client",
             "request": "launch",
-            "type": "dart"
+            "deviceId": "chrome",
+            "type": "dart",
+            "args": [
+                "--dart-define-from-file=.env",
+            ]
         },
         {
             "name": "torii_client (profile mode)",
             "request": "launch",
+            "deviceId": "chrome",
             "type": "dart",
-            "flutterMode": "profile"
+            "flutterMode": "profile",
+            "args": [
+                "--dart-define-from-file=.env",
+            ]
         },
         {
             "name": "torii_client (release mode)",
             "request": "launch",
+            "deviceId": "chrome",
             "type": "dart",
-            "flutterMode": "release"
+            "flutterMode": "release",
+            "args": [
+                "--dart-define-from-file=.env",
+            ]
         }
     ]
 }

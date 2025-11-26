@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
-import 'package:go_router/go_router.dart';
 import 'package:torii_client/torii_app.dart';
 import 'package:torii_client/utils/exports.dart';
+
+const kiraEthEnabled = bool.fromEnvironment('KIRA_ETH_ENABLED', defaultValue: false);
+const isTestEnv = bool.fromEnvironment('IS_TEST_ENVIRONMENT', defaultValue: false);
 
 void main() {
   runZonedGuarded<Future<void>>(

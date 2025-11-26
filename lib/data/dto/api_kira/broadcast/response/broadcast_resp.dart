@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:torii_client/data/dto/api_kira/broadcast/response/broadcast_tx.dart';
 
 class BroadcastResp extends Equatable {
   final int code;

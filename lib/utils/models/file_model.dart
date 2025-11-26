@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:html' as html;
 import 'dart:math';
+import 'package:web/web.dart';
 
 import 'package:equatable/equatable.dart';
 import 'package:file_picker/file_picker.dart';
@@ -23,9 +23,9 @@ class FileModel extends Equatable {
     );
   }
 
-  static Future<FileModel> fromHtmlFile(html.File htmlFile) async {
+  static Future<FileModel> fromHtmlFile(File htmlFile) async {
     final Completer<FileModel> kiraDropzoneFileModelCompleter = Completer<FileModel>();
-    final html.FileReader htmlFileReader = html.FileReader()..readAsText(htmlFile);
+    final FileReader htmlFileReader = FileReader()..readAsText(htmlFile);
     final StreamSubscription<dynamic> fileUploadStream = htmlFileReader.onLoadEnd.listen((_) {
       String result = htmlFileReader.result.toString();
       FileModel kiraDropzoneFileModel = FileModel(

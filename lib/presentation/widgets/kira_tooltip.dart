@@ -38,6 +38,24 @@ class KiraToolTip extends StatelessWidget {
     super.key,
   });
 
+  const KiraToolTip.kiraNotSupported({
+    this.childMargin = const EdgeInsets.all(8),
+    this.height,
+    this.padding,
+    this.margin,
+    this.verticalOffset,
+    this.preferBelow,
+    this.excludeFromSemantics,
+    this.textStyle,
+    this.waitDuration,
+    this.showDuration,
+    this.child,
+    this.iconColor = DesignColors.accent,
+    this.triggerMode = TooltipTriggerMode.tap,
+    this.enableFeedback,
+    super.key,
+  }) : message = 'Transfer from Kira to Ethereum is not yet supported';
+
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;

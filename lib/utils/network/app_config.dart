@@ -18,7 +18,9 @@ class AppConfig {
   final RpcBrowserUrlController rpcBrowserUrlController;
   final int _refreshIntervalSeconds;
 
-  late List<NetworkUnknownModel> _networkList = List<NetworkUnknownModel>.empty(growable: true);
+  late List<NetworkUnknownModel> _networkList = List<NetworkUnknownModel>.empty(
+    growable: true,
+  );
 
   AppConfig({
     required this.proxyServerUri,
@@ -33,14 +35,17 @@ class AppConfig {
        _keyValueRepository = getIt<KeyValueRepository>();
 
   @factoryMethod
-  factory AppConfig.buildDefaultConfig(RpcBrowserUrlController rpcBrowserUrlController) {
+  factory AppConfig.buildDefaultConfig(
+    RpcBrowserUrlController rpcBrowserUrlController,
+  ) {
     return AppConfig(
       proxyServerUri: Uri.parse('https://cors.kira.network'),
       bulkSinglePageSize: 500,
       defaultApiCacheMaxAge: const Duration(seconds: 60),
       outdatedBlockDuration: const Duration(minutes: 5),
       loadingPageTimerDuration: const Duration(seconds: 4),
-      supportedInterxVersions: <String>['v0.4.46', 'v0.4.48'],
+      // TODO: think about adding a support per versions once API will be more stable
+      supportedInterxVersions: [], //<String>['v0.4.46', 'v0.4.48'],
       rpcBrowserUrlController: rpcBrowserUrlController,
       // TODO: decrease refresh interval
       refreshIntervalSeconds: 6000,
@@ -58,10 +63,15 @@ class AppConfig {
     _initNetworkList(_keyValueRepository.readNetworkList());
   }
 
-  NetworkUnknownModel findNetworkModelInConfig(NetworkUnknownModel networkUnknownModel) {
+  NetworkUnknownModel findNetworkModelInConfig(
+    NetworkUnknownModel networkUnknownModel,
+  ) {
     List<NetworkUnknownModel> matchingNetworkUnknownModels =
         networkList
-            .where((NetworkUnknownModel e) => NetworkUtils.compareUrisByUrn(e.uri, networkUnknownModel.uri))
+            .where(
+              (NetworkUnknownModel e) =>
+                  NetworkUtils.compareUrisByUrn(e.uri, networkUnknownModel.uri),
+            )
             .toList();
 
     if (matchingNetworkUnknownModels.isEmpty) {
@@ -71,7 +81,8 @@ class AppConfig {
   }
 
   NetworkUnknownModel? getDefaultNetworkUnknownModel() {
-    NetworkUnknownModel? urlNetworkUnknownModel = _getNetworkUnknownModelFromUrl();
+    NetworkUnknownModel? urlNetworkUnknownModel =
+        _getNetworkUnknownModelFromUrl();
     if (urlNetworkUnknownModel == null) {
       if (networkList.isNotEmpty) {
         return networkList.first;
@@ -88,6 +99,8 @@ class AppConfig {
   }
 
   bool isInterxVersionOutdated(String version) {
+    // TODO: think about adding a support per versions once API will be more stable
+    return false;
     bool isVersionSupported = supportedInterxVersions.contains(version);
     if (isVersionSupported) {
       return false;
@@ -110,13 +123,21 @@ class AppConfig {
       return null;
     }
     Uri uri = NetworkUtils.parseUrlToInterxUri(networkAddress);
-    NetworkUnknownModel urlNetworkUnknownModel = NetworkUnknownModel.fromUri(uri);
+    NetworkUnknownModel urlNetworkUnknownModel = NetworkUnknownModel.fromUri(
+      uri,
+    );
     urlNetworkUnknownModel = findNetworkModelInConfig(urlNetworkUnknownModel);
     return urlNetworkUnknownModel;
   }
 }
 
-enum ConnectionStatusType { connecting, autoConnected, connected, disconnected, refreshing }
+enum ConnectionStatusType {
+  connecting,
+  autoConnected,
+  connected,
+  disconnected,
+  refreshing,
+}
 
 extension ConnectionStatusTypeExtension on ConnectionStatusType {
   bool get isConnected =>

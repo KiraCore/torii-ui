@@ -1,8 +1,7 @@
-import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:torii_client/main.dart';
 import 'package:torii_client/presentation/global/session/cubit/session_cubit.dart';
 import 'package:torii_client/presentation/transfer/input/cubit/transfer_input_cubit.dart';
 import 'package:torii_client/presentation/widgets/kira_tooltip.dart';
@@ -25,6 +24,7 @@ class ToggleBetweenWalletAddressTypes extends StatelessWidget {
             builder: (BuildContext context, TransferInputState state) {
               String fromAsset = state.fromWallet.isKira ? Assets.kiraLogo : Assets.ethereumLogo;
               String toAsset = state.fromWallet.isKira ? Assets.ethereumLogo : Assets.kiraLogo;
+              // TODO: figure out switching widget
               final widget =
               // Container(
               //   // height: 48,
@@ -75,9 +75,11 @@ class ToggleBetweenWalletAddressTypes extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   child: KiraToolTip(
                     childMargin: EdgeInsets.zero,
-                    message:
+                    message: 
                         sessionState.isEthereumLoggedIn
-                            ? 'You are not logged in to KIRA'
+                            ? kiraEthEnabled
+                                ? 'You are not logged in to KIRA'
+                                : 'Transfer from Kira to Ethereum is not yet supported'
                             : 'You are not logged in to Ethereum',
                     child: widget,
                   ),

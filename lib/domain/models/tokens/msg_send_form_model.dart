@@ -75,7 +75,8 @@ class MsgSendFormModel extends AMsgFormModel {
 
   set recipientRelativeAmount(TokenAmountModel? recipientRelativeAmount) {
     _recipientRelativeAmount = recipientRelativeAmount;
-    notifyListeners();
+    // TODO: refactor the form
+    // notifyListeners();
   }
 
   AWalletAddress? get senderWalletAddress => _senderWalletAddress;
@@ -89,6 +90,6 @@ class MsgSendFormModel extends AMsgFormModel {
 
   set tokenAmountModel(TokenAmountModel? tokenAmountModel) {
     _tokenAmountModel = tokenAmountModel;
-    notifyListeners();
+    // notifyListeners();
   }
 }

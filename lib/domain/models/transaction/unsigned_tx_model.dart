@@ -7,6 +7,7 @@ import 'package:torii_client/domain/exports.dart';
 import 'package:torii_client/domain/models/transaction/signed_transaction_model.dart';
 import 'package:torii_client/domain/models/transaction/tx_local_info_model.dart';
 import 'package:torii_client/domain/models/transaction/tx_remote_info_model.dart';
+import 'package:torii_client/utils/extensions/cosmos_coin_extension.dart';
 
 class UnsignedTxModel extends Equatable {
   final TxLocalInfoModel txLocalInfoModel;
@@ -56,7 +57,7 @@ class UnsignedTxModel extends Equatable {
       ],
       fee: CosmosFee(
         gasLimit: BigInt.from(20000),
-        amount: <CosmosCoin>[CosmosCoin(denom: feeDenom, amount: feeAmount)],
+        amount: <CosmosCoin>[CosmosCoin(denom: feeDenom.toLowerCase(), amount: feeAmount)].withRemoteDenomFormat(),
       ),
     );
 

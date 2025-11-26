@@ -3,10 +3,18 @@ import 'package:torii_client/presentation/widgets/key_value/copy_hover_value.dar
 import 'package:torii_client/presentation/widgets/key_value/detail_title.dart';
 
 class CopyHoverTitleValue extends StatelessWidget {
-  const CopyHoverTitleValue({required this.title, required this.value, super.key});
+  const CopyHoverTitleValue({
+    required this.title,
+    required this.value,
+    this.hoverUsingIcon = false,
+    this.shortenAddress = false,
+    super.key,
+  });
 
   final String title;
   final String value;
+  final bool hoverUsingIcon;
+  final bool shortenAddress;
 
   @override
   Widget build(BuildContext context) {

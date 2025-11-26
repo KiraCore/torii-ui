@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:torii_client/domain/exports.dart';
+import 'package:torii_client/main.dart';
 import 'package:torii_client/presentation/global/metamask/cubit/metamask_cubit.dart';
 import 'package:torii_client/presentation/network/network_drawer_page/current_network_button.dart';
 import 'package:torii_client/presentation/widgets/buttons/kira_outlined_button.dart';
+import 'package:torii_client/presentation/widgets/kira_tooltip.dart';
 import 'package:torii_client/presentation/widgets/torii_scaffold.dart';
 import 'package:torii_client/utils/exports.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -21,6 +23,23 @@ class IntroPage extends StatelessWidget {
     });
 
     double width = MediaQuery.of(context).size.width > 900 ? 300 : 200;
+
+    final mnemoButton = KiraOutlinedButton(
+      width: width,
+      onPressed: () {
+        router.push(SignInMnemonicDrawerRoute().location);
+      },
+      title: S.of(context).mnemonic,
+      disabled: !kiraEthEnabled,
+    );
+    final keyfileButton = KiraOutlinedButton(
+      width: width,
+      onPressed: () {
+        router.push(SignInKeyfileDrawerRoute().location);
+      },
+      title: S.of(context).keyfile,
+      disabled: !kiraEthEnabled,
+    );
     return ToriiScaffold(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -69,21 +88,15 @@ class IntroPage extends StatelessWidget {
                 const Spacer(flex: 2),
                 Column(
                   children: [
-                    KiraOutlinedButton(
-                      width: width,
-                      onPressed: () {
-                        router.push(SignInKeyfileDrawerRoute().location);
-                      },
-                      title: S.of(context).keyfile,
-                    ),
+                    if (kiraEthEnabled)
+                      mnemoButton
+                    else
+                      KiraToolTip.kiraNotSupported(childMargin: EdgeInsets.zero, child: mnemoButton),
                     const SizedBox(height: 10),
-                    KiraOutlinedButton(
-                      width: width,
-                      onPressed: () {
-                        router.push(SignInMnemonicDrawerRoute().location);
-                      },
-                      title: S.of(context).mnemonic,
-                    ),
+                    if (kiraEthEnabled)
+                      keyfileButton
+                    else
+                      KiraToolTip.kiraNotSupported(childMargin: EdgeInsets.zero, child: keyfileButton),
                   ],
                 ),
                 const Spacer(flex: 1),

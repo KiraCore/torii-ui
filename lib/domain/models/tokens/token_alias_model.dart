@@ -18,15 +18,17 @@ class TokenAliasModel extends Equatable {
   factory TokenAliasModel.wkex() {
     return TokenAliasModel(
       name: 'wKEX',
-      defaultTokenDenominationModel: TokenDenominationModel(name: 'ukex', decimals: 0),
+      defaultTokenDenominationModel: TokenDenominationModel(name: 'uKEX', decimals: 0),
+      // TODO: update to 6 after wKEX contract will contain 6, not 9
       baseTokenDenominationModel: TokenDenominationModel(name: 'wKEX', decimals: 9),
     );
   }
 
   factory TokenAliasModel.kex() {
     return TokenAliasModel(
-      name: 'ukex',
-      defaultTokenDenominationModel: TokenDenominationModel(name: 'ukex', decimals: 0),
+      name: 'uKEX',
+      defaultTokenDenominationModel: TokenDenominationModel(name: 'uKEX', decimals: 0),
+      // TODO: update to 6 after wKEX contract will contain 6, not 9
       baseTokenDenominationModel: TokenDenominationModel(name: 'KEX', decimals: 9),
     );
   }
@@ -56,6 +58,7 @@ class TokenAliasModel extends Equatable {
             : networkTokenDenominationModel;
     TokenDenominationModel baseTokenDenominationModel = networkTokenDenominationModel;
     if (tokenAlias.name.toLowerCase() == 'wkex') {
+      // TODO: update to 6 after wKEX contract will contain 6, not 9
       baseTokenDenominationModel = TokenDenominationModel(name: 'wKEX', decimals: 9);
     } else if (tokenAlias.name.toLowerCase() == 'ukex') {
       baseTokenDenominationModel = TokenDenominationModel(name: 'KEX', decimals: 9);

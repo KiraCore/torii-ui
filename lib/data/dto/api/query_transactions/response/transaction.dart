@@ -1,9 +1,7 @@
 import 'package:cryptography_utils/cryptography_utils.dart';
 import 'package:equatable/equatable.dart';
 import 'package:torii_client/data/dto/coin.dart';
-import 'package:torii_client/data/dto/messages/a_tx_msg.dart';
 import 'package:torii_client/data/dto/messages/msg_send.dart';
-import 'package:torii_client/domain/exports.dart';
 import 'package:torii_client/domain/models/tokens/list/tx_direction_type.dart';
 import 'package:torii_client/domain/models/tokens/list/tx_status_type.dart';
 
@@ -55,7 +53,7 @@ class Transaction extends Equatable {
       // TODO: memo
       memo: '',
       // TODO: update fee. For now it's always 100 as default
-      fee: [Coin(amount: '100', denom: 'ukex')],
+      fee: [Coin(amount: '100', denom: 'uKEX')],
       txs: txs,
     );
   }
@@ -70,10 +68,10 @@ class Transaction extends Equatable {
       // TODO: memo
       memo: '',
       // TODO: check fee if correct field. For now it's always 0
-      fee: [Coin(amount: json['Amount'].toString(), denom: 'ukex')],
+      fee: [Coin(amount: json['Amount'].toString(), denom: 'uKEX')],
       txs: [
         MsgSend(
-          amount: [CosmosCoin(amount: BigInt.parse(json['Input']['amount'].toString()), denom: 'ukex')],
+          amount: [CosmosCoin(amount: BigInt.parse(json['Input']['amount'].toString()), denom: 'uKEX')],
           fromAddress: json['From'],
           toAddress: json['Input']['cyclAddress'],
           passphrase: '',
@@ -81,7 +79,6 @@ class Transaction extends Equatable {
       ],
     );
   }
-
 
   @override
   List<Object?> get props => <Object?>[time, hash, status, direction, memo, fee, txs];
